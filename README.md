@@ -696,17 +696,65 @@ EXTRA_IMAGE_FEATURES = "ssh-server-dropbear debug-tweaks allow-root-login allow-
 EXTRA_USERS_PARAMS = "usermod -p testpasswd root;"
 ```
 
+### Preparing for the Build
+
+**Note: I'm including this section as, currently, there's an issue with the `do_package()` tasks on all packages with `tar` >= v1.34. See this [issue](https://errors.yoctoproject.org/Errors/Details/893482/) for more information.**
+
+The fix for this is to fetch an older version of the tar utility, build, and install it. Thankfully, my [LFS](https://www.linuxfromscratch.org/lfs/view/stable/) knowledge is coming in handy here!
+
+To fix this:
+
+1. Exit out of your current terminal and create a new one
+2. Change directory into Downloads
+    - `$ cd ~/Downloads`
+3. Grab tar v1.33 from one the [GNU mirrors](https://ftp.wayne.edu/gnu/tar/). GNU has quite a bit of mirrors so if a tarball is not downloading or fetching quick enough, just pick another one.
+    - `$ wget https://ftp.gnu.org/gnu/tar/tar-1.33.tar.xz`
+4. Untar
+    - `$ tar -xvf ./tar-1.33.tar.xz`
+5. Change directory into the untarred
+    - `$ cd ./tar-133`
+6. Run the configure script to set up the build
+    - `$ ./configure`
+7. Build
+    - `$ make`
+8. I recommend uninstalling your current tar using your package manager (mine is DNF)
+    - `$ sudo dnf remove tar`
+9. Install the older tar
+    - `$ sudo make install`
+    - `$ sudo ln -sv /usr/local/bin/tar /usr/bin/tar`
+
+**WARNING: We are using an externally built utility outside of the scope of the package manager. Thus, once you're done, please uninstall the older tar and install back the package controlled by the PM as so:**
+
+- `$ cd ~/Downloads/tar-1.33/`
+- `$ sudo make uninstall`
+- `$ sudo rm -v /usr/bin/tar`
+- `$ sudo dnf install tar`
+
 ### Building Project
 
 We're now done configuring everything and it's time for a build:
 
 - `$ bitbake core-image-minimal`
 
-**Note: Depending on how powerful the computer is, it will take a long while for the build to complete**
+**Note: Depending on how powerful the computer is, it will take a long while for the build to complete. It took roughly 20 minutes for me to build this.**
 
 ### Packaging Images
 
-[TBD]
+Now that the project is built, we need 4 files:
+
+1. BOOT.BIN: Packages the bitstream, FSBL (First-Stage Bootloader), U-Boot (Second-Stage Bootloader), ATF (ARM Trusted Firmware), PMUFW (Power Management Unit Firmware) into a binary.
+2. boot.scr: This is our U-Boot boot script that is derived from our .cmd file that we created in the [U-Boot Configuration section](#u-boot-configuration).
+3. image.ub: This is the FIT image that contains the kernel image and the rootfs bundled with it as that is our INITRAMFS
+4. zynqmp_fsbl.elf: This is the executable of our FSBL (This is mainly only useful for flashing but we're not flashing for this demo)
+
+To get the files:
+
+- `$ mkdir ../extracted-images`
+- `$ cp -Lv ./tmp/deploy/images/zcu104/BOOT-zcu104.bin ../extracted-images/BOOT.BIN`
+- `$ cp -v ./tmp/deploy/images/zcu104/boot.scr ../extracted-images/boot.scr`
+- `$ cp -Lv ./tmp/deploy/images/zcu104/fitImage ../extracted-images/image.ub`
+- `$ cp -v ./tmp/deploy/images/zcu104/fsbl-zcu104.elf ../extracted-images/zynqmp_fsbl.elf`
+
 
 ### Boot Process
 
