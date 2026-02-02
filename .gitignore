@@ -1,0 +1,12 @@
+# General
+**/.vscode/
+
+# Vivado
+Vivado/*
+!Vivado/simple_zcu104.xsa
+!Vivado/simple-zcu104.xpr
+Vivado/*/
+!Vivado/simple-zcu104.srcs/
+
+# Yocto
+Yocto/build
