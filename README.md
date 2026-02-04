@@ -324,8 +324,8 @@ I will do the same thing for U-Boot, but I will not only configure U-Boot, but I
 - `$ touch ../sources/meta-custom/recipes-bsp/u-boot/files/platform-top.h`
 - `$ touch ../sources/meta-custom/recipes-bsp/u-boot/files/u-boot.cfg`
 - `$ bitbake virtual/bootloader -c menuconfig`
-    - CONFIG_SYS_CONFIG_NAME="platform-top"
     - CONFIG_BOOT_SCRIPT_OFFSET=0x03280000
+    - CONFIG_SYS_BOOTM_LEN=0x12c00000
     - CONFIG_QSPI_BOOT=y
     - CONFIG_SD_BOOT=y
     - CONFIG_SD_BOOT_QSPI=y
@@ -341,33 +341,6 @@ I will do the same thing for U-Boot, but I will not only configure U-Boot, but I
 - `$ bitbake virtual/bootloader -c diffconfig`
     - After this command, you will be given a path for a .cfg file. Merge the differences from that .cfg and place them into: *../sources/meta-custom/recipes-bsp/u-boot/files/u-boot.cfg*
 - `$ bitbake virtual/bootloader -c cleansstate`
-
-Now to edit the top platform header. We need to expand the default boot length. Because we're using an INITRAMFS image, the boot image will be quite larger than normal. By default, most bootloaders have a boot length cap. I don't know what exactly that length limit is, but we can explicitly define a limit.
-
-- `$ vim ../sources/meta-custom/recipes-bsp/u-boot/files/platform-top.h`
-
-```
-#if defined(CONFIG_MICROBLAZE)
-#include <configs/microblaze-generic.h>
-#define CONFIG_SYS_BOOTM_LEN 0xF000000
-#endif
-#if defined(CONFIG_ARCH_ZYNQ)
-#include <configs/zynq-common.h>
-#undef CONFIG_SYS_BOOTMAPSZ
-#define CONFIG_SYS_BOOTM_LEN 0x0C800000
-#endif
-#if defined(CONFIG_ARCH_ZYNQMP)
-#include <configs/xilinx_zynqmp.h>
-#undef CONFIG_SYS_BOOTMAPSZ
-#define CONFIG_SYS_BOOTM_LEN 0x12C00000
-#endif
-#if defined(CONFIG_ARCH_VERSAL)
-#include <configs/xilinx_versal.h>
-#endif
-#if defined(CONFIG_ARCH_VERSAL_NET)
-#include <configs/xilinx_versal_net.h>
-#endif
-```
 
 Last thing to edit, we'll edit the boot script that will eventually become the `boot.scr` file. This file assists the U-Boot bootloader to find the FIT image and load it into memory by the specified addresses.
 
@@ -425,15 +398,8 @@ This will call `mkimage` to overwrite the default boot.scr.
 ```
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
-# Custom Config Header
-SRC_URI += "file://platform-top.h"
-
 # Custom U-Boot Diffconfig
 SRC_URI += "file://u-boot.cfg"
-
-do_configure:append() {
-    install ${WORKDIR}/platform-top.h ${S}/include/configs/
-}
 ```
 
 ### RootFS Configuration
@@ -471,14 +437,14 @@ do_install:append() {
 
 #### <ins>Udev</ins>
 
-We will append to the udev rules. udev is the Linux kernel's device manager utility. We will modify the rules for udev so that each detected network interface will be renamed back to `eth0`. This is to we can easily script out networking configurations in our initscripts.
+We will append to the udev rules. udev is the Linux kernel's device manager utility. We will modify the rules for udev so that each detected network interface will be renamed back to `end0`. This is to we can easily script out networking configurations in our initscripts.
 
 - `$ mkdir -p ../sources/meta-custom/recipes-core/eudev/files`
 - `$ vim ../sources/meta-custom/recipes-core/eudev/files/70-persistent-net.rules`
 
 ```
 # Prevent Ethernet Renaming from eth0
-SUBSYSTEM=="net", ACTION=="add", DRIVERS=="?*", ATTR{address}=="00:0a:35:00:1e:53", ATTR{type}=="1", KERNEL=="eth*", NAME="eth0"
+SUBSYSTEM=="net", ACTION=="add", DRIVERS=="?*", ATTR{address}=="00:0a:35:00:1e:53", ATTR{type}=="1", KERNEL=="eth*", NAME="end0"
 ```
 **NOTE: The ATTR{address} must match the MAC address in the device tree**
 
@@ -508,8 +474,8 @@ Now that we told udev to preserve the ethernet interface naming schema we want, 
 auto lo
 iface lo inet loopback
 
-auto eth0
-iface eth0 inet static
+auto end0
+iface end0 inet static
     address 192.168.1.10
     netmask 255.255.255.0
     gateway 192.168.1.1
@@ -625,11 +591,22 @@ WantedBy=multi-user.target
 
 echo -e "######## Bootscript Start! ########"
 
+# Try to configure ethernet
+ifconfig end0 192.168.1.10 netmask 255.255.255.0
+
+if [ $? -ne 0 ]; then
+    echo "Network configuration failed!"
+    exit 1
+else
+    echo "Network configured successfully"
+fi
+
 # Mount SD Card
 mkdir -p /mnt/sd
 mount /dev/mmcblk0p1 /mnt/sd
 echo "Mounted SD"
 tcp-server
+exit 0
 ```
 
 - `$ vim ../sources/meta-custom/recipes-apps/tcp-server/bootscript.bb`
@@ -689,10 +666,11 @@ INIT_MANAGER = "systemd"
 DISTRO_FEATURES:append = " timezone"
 PACKAGE_INSTALL = "${IMAGE_INSTALL} \
                     bootscript \
+                    dropbear \
                     tcp-server"
 
 # Development Build Features
-EXTRA_IMAGE_FEATURES = "ssh-server-dropbear debug-tweaks allow-root-login allow-empty-password empty-root-password serial-autologin-root"
+EXTRA_IMAGE_FEATURES = "debug-tweaks allow-root-login allow-empty-password empty-root-password serial-autologin-root"
 EXTRA_USERS_PARAMS = "usermod -p testpasswd root;"
 ```
 
@@ -757,6 +735,8 @@ To get the files:
 
 
 ### Boot Process
+
+**NOTE: Please double check and correct mistakes in the snippets above as there's been quite a few changes made!!!**
 
 [TBD]
 
