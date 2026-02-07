@@ -1,7 +1,7 @@
 / {
     // AMD Zynq Ultrascale+ MPSoC ZCU104
     model = "Zynq MPSoC ZCU104 Development Board";
-    compatible = "xlnx,zynqmp";
+    compatible = "xlnx,zynqmp-zcu104-revC", "xlnx,zynqmp-zcu104", "xlnx,zynqmp";
 
     // Boot Arguments
     chosen {
@@ -11,13 +11,109 @@
 };
 
 // Processing System
-&amba {
-    // Ethernet
-    gem3: ethernet@ff0e0000 {
-        status = "okay";
-        local-mac-address = [00 0a 35 00 1e 53];
-    };
+&gem3 {
+    status = "okay";
+    local-mac-address = [00 0a 35 00 1e 53];
+	phy-handle = <&phy0>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_gem3_default>;
+	mdio: mdio {
+		#address-cells = <1>;
+		#size-cells = <0>;
+		phy0: ethernet-phy@c {
+			#phy-cells = <1>;
+			compatible = "ethernet-phy-id2000.a231";
+			reg = <0xc>;
+			ti,rx-internal-delay = <0x8>;
+			ti,tx-internal-delay = <0xa>;
+			ti,fifo-depth = <0x1>;
+			ti,dp83867-rxctrl-strap-quirk;
+		};
+	};
 };
+
+&pinctrl0 {
+	status = "okay";
+
+	pinctrl_gem3_default: gem3-default {
+		mux {
+			function = "ethernet3";
+			groups = "ethernet3_0_grp";
+		};
+
+		conf {
+			groups = "ethernet3_0_grp";
+			slew-rate = <1>;
+			power-source = <1>;
+			drive-strength = <12>;
+		};
+
+		conf-rx {
+			pins = "MIO70", "MIO71", "MIO72", "MIO73", "MIO74",
+									"MIO75";
+			bias-high-impedance;
+			low-power-disable;
+		};
+
+		conf-tx {
+			pins = "MIO64", "MIO65", "MIO66", "MIO67", "MIO68",
+									"MIO69";
+			bias-disable;
+			low-power-enable;
+		};
+
+		mux-mdio {
+			function = "mdio3";
+			groups = "mdio3_0_grp";
+		};
+
+		conf-mdio {
+			groups = "mdio3_0_grp";
+			slew-rate = <1>;
+			power-source = <1>;
+			bias-disable;
+		};
+	};
+
+	pinctrl_sdhci1_default: sdhci1-default {
+		mux {
+			groups = "sdio1_0_grp";
+			function = "sdio1";
+		};
+
+		conf {
+			groups = "sdio1_0_grp";
+			slew-rate = <1>;
+			power-source = <1>;
+			bias-disable;
+			drive-strength = <12>;
+		};
+
+		mux-cd {
+			groups = "sdio1_cd_0_grp";
+			function = "sdio1_cd";
+		};
+
+		conf-cd {
+			groups = "sdio1_cd_0_grp";
+			bias-high-impedance;
+			bias-pull-up;
+			slew-rate = <1>;
+			power-source = <1>;
+		};
+	};
+
+	
+};
+
+/* SD1 with level shifter */
+&sdhci1 {
+    status = "okay";
+	no-1-8-v;
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_sdhci1_default>;
+};
+
 
 // Programmable Logic
 &amba_pl {
