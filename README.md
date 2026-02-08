@@ -443,7 +443,7 @@ We will append to the udev rules. udev is the Linux kernel's device manager util
 - `$ vim ../sources/meta-custom/recipes-core/eudev/files/70-persistent-net.rules`
 
 ```
-# Prevent Ethernet Renaming from eth0
+# Prevent Ethernet Renaming from end0
 SUBSYSTEM=="net", ACTION=="add", DRIVERS=="?*", ATTR{address}=="00:0a:35:00:1e:53", ATTR{type}=="1", KERNEL=="eth*", NAME="end0"
 ```
 **NOTE: The ATTR{address} must match the MAC address in the device tree**
@@ -671,8 +671,15 @@ PACKAGE_INSTALL = "${IMAGE_INSTALL} \
 
 # Development Build Features
 EXTRA_IMAGE_FEATURES = "debug-tweaks allow-root-login allow-empty-password empty-root-password serial-autologin-root"
-EXTRA_USERS_PARAMS = "usermod -p testpasswd root;"
+EXTRA_USERS_PARAMS = "usermod -p '(HASH)' root;"
 ```
+
+For the root password, Poky only accepts encrypted passwords. This is done in the following manner:
+- `$ openssl passwd -1 (TEXT PASSWORD)`
+	- This will generate an encrypted password. Copy this into the local.conf. For example:
+ 	- openssl passwd -1 testpassword --> $1$YgYwXK6M$BiBC4QQxDlw1fvx3L.FqE.
+    	- This will turn into: `EXTRA_USERS_PARAMS = "usermod -p '\$1\$YgYwXK6M\$BiBC4QQxDlw1fvx3L.FqE.' root;"
+    		- **Notice how each dollar sign is escaped. Keep that in mind!** 
 
 ### Preparing for the Build
 
