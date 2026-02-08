@@ -676,9 +676,9 @@ EXTRA_USERS_PARAMS = "usermod -p '(HASH)' root;"
 
 For the root password, Poky only accepts encrypted passwords. This is done in the following manner:
 - `$ openssl passwd -1 (TEXT PASSWORD)`
-	- This will generate an encrypted password. Copy this into the local.conf. For example:
+	- This will generate an encrypted password. Copy this into the '(HASH)' part in the local.conf. For example:
  	- openssl passwd -1 testpassword --> $1$YgYwXK6M$BiBC4QQxDlw1fvx3L.FqE.
-    	- This will turn into: `EXTRA_USERS_PARAMS = "usermod -p '\$1\$YgYwXK6M\$BiBC4QQxDlw1fvx3L.FqE.' root;"
+    	- This will turn into: `EXTRA_USERS_PARAMS = "usermod -p '\$1\$YgYwXK6M\$BiBC4QQxDlw1fvx3L.FqE.' root;"`
     		- **Notice how each dollar sign is escaped. Keep that in mind!** 
 
 ### Preparing for the Build
