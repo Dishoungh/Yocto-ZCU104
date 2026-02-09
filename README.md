@@ -585,6 +585,9 @@ WantedBy=multi-user.target
 ```
 
 - `$ vim ../sources/meta-custom/recipes-apps/bootscript/files/bootscript.sh`
+	- **NOTE: It will be better to set the IP address like this:
+ 		- `ip addr del 192.168.1.10/24 dev end0`
+   		- `ip addr add 192.168.1.(X)/24 dev end0`
 
 ```
 #!/bin/bash
