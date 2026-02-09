@@ -572,7 +572,7 @@ do_install() {
 [Unit]
 Description=simple-script
 Requires=network.target
-After=network.target dropbear@.service
+After=network.target dropbear.socket
   
 [Service]
 Type=oneshot
@@ -667,14 +667,14 @@ KERNEL_IMAGETYPES:append = " fitImage vmlinux"
 # Rootfs Settings
 INIT_MANAGER = "systemd"
 DISTRO_FEATURES:append = " timezone"
+
+EXTRA_USERS_PARAMS = "usermod -p '(HASH)' root;"
+EXTRA_IMAGE_FEATURES = "debug-tweaks allow-root-login allow-empty-password empty-root-password serial-autologin-root"
+IMAGE_INSTALL:append = " dropbear"
+
 PACKAGE_INSTALL = "${IMAGE_INSTALL} \
                     bootscript \
-                    dropbear \
                     tcp-server"
-
-# Development Build Features
-EXTRA_IMAGE_FEATURES = "debug-tweaks allow-root-login allow-empty-password empty-root-password serial-autologin-root"
-EXTRA_USERS_PARAMS = "usermod -p '(HASH)' root;"
 ```
 
 For the root password, Poky only accepts encrypted passwords. This is done in the following manner:
