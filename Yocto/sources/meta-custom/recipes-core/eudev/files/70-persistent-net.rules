@@ -1,0 +1,2 @@
+# Prevent Ethernet Renaming from eth0
+SUBSYSTEM=="net", ACTION=="add", DRIVERS=="?*", ATTR{address}=="00:0a:35:00:1e:53", ATTR{type}=="1", KERNEL=="eth*", NAME="end0"
