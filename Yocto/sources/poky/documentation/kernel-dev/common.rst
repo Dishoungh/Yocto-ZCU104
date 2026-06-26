@@ -650,13 +650,9 @@ the Broadcom 2708/2709 chipset::
 
    KBUILD_DEFCONFIG:raspberrypi2 ?= "bcm2709_defconfig"
 
-Aside from modifying your kernel recipe and providing your own
-``defconfig`` file, you need to be sure no files or statements set
-:term:`SRC_URI` to use a ``defconfig`` other than your "in-tree" file (e.g.
-a kernel's ``linux-``\ `machine`\ ``.inc`` file). In other words, if the
-build system detects a statement that identifies an "out-of-tree"
-``defconfig`` file, that statement will override your
-:term:`KBUILD_DEFCONFIG` variable.
+If the build system detects a statement that identifies an "out-of-tree"
+``defconfig`` file, your :term:`KBUILD_DEFCONFIG` variable will take precedence
+over it.
 
 See the
 :term:`KBUILD_DEFCONFIG`
@@ -1195,10 +1191,12 @@ appear in the ``.config`` file, which is in the :term:`Build Directory`.
 
 It is simple to create a configuration fragment. One method is to use
 shell commands. For example, issuing the following from the shell
-creates a configuration fragment file named ``my_smp.cfg`` that enables
-multi-processor support within the kernel::
+creates a configuration fragment file named ``my_changes.cfg`` that enables
+multi-processor support within the kernel and disables the FPGA
+Configuration Framework::
 
-   $ echo "CONFIG_SMP=y" >> my_smp.cfg
+   $ echo "CONFIG_SMP=y" >> my_changes.cfg
+   $ echo "# CONFIG_FPGA is not set" >> my_changes.cfg
 
 .. note::
 
@@ -1435,15 +1433,13 @@ Expanding Variables
 ===================
 
 Sometimes it is helpful to determine what a variable expands to during a
-build. You can examine the values of variables by examining the
-output of the ``bitbake -e`` command. The output is long and is more
-easily managed in a text file, which allows for easy searches::
+build. You can examine the value of a variable by running the ``bitbake-getvar``
+command::
 
-   $ bitbake -e virtual/kernel > some_text_file
+   $ bitbake-getvar -r virtual/kernel VARIABLE
 
-Within the text file, you can see
-exactly how each variable is expanded and used by the OpenEmbedded build
-system.
+The output of the command explains exactly how the variable is expanded and used
+by the :term:`OpenEmbedded Build System`.
 
 Working with a "Dirty" Kernel Version String
 ============================================

@@ -16,6 +16,9 @@ SRC_URI[sha256sum] = "bbfd113ec55708c05816252a4f09e4237df4f3bbfc8171cbbc33057d25
 PYPI_PACKAGE = "M2Crypto"
 inherit pypi siteinfo setuptools3
 
+CVE_STATUS[CVE-2009-0127] = "disputed: upstream claims there is no bug"
+CVE_STATUS[CVE-2020-25657] = "fixed-version: the used version (0.40.1) contains the fix already"
+
 DEPENDS += "openssl swig-native"
 RDEPENDS:${PN} += "\
   python3-datetime \
@@ -42,6 +45,11 @@ SWIG_FEATURES:append:x32 = " -D__ILP32__"
 export SWIG_FEATURES
 
 export STAGING_DIR
+
+do_configure:prepend:class-target() {
+    # workaround for https://github.com/swiftlang/swift/issues/69311
+    sed -i "/sys\/types.h/d" ${RECIPE_SYSROOT}${includedir}/openssl/e_os2.h
+}
 
 do_install:append() {
     rm -f ${D}${PYTHON_SITEPACKAGES_DIR}/M2Crypto/SSL/__pycache__/*.cpython-*.pyc

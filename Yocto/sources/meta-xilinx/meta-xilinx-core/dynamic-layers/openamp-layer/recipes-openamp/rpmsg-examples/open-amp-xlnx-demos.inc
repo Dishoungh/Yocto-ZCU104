@@ -5,11 +5,10 @@ OPENAMP_DEPENDS ?= "${SYSTEM_DTFILE_DEPENDS}"
 OPENAMP_DTFILE ?= "${SYSTEM_DTFILE}"
 
 DEPENDS += "${OPENAMP_DEPENDS}"
-DEPENDS += "open-amp-xlnx libmetal-xlnx device-tree python3-native python3-pyyaml-native lopper-native python3-dtc-native"
+DEPENDS += "open-amp-xlnx libmetal-xlnx libmetal-xlnx-extension device-tree python3-native python3-pyyaml-native lopper-native python3-dtc-native"
 
 DEPENDS_BAREMETAL ??= ""
-DEPENDS_BAREMETAL:armv7r = "xiltimer libxil xilstandalone xiltimer "
-DEPENDS_BAREMETAL:armv8r = "xiltimer libxil xilstandalone xiltimer "
+DEPENDS_BAREMETAL:xilinx-standalone = "xiltimer libxil xilstandalone xiltimer "
 DEPENDS_BAREMETAL:linux = ""
 DEPENDS += "${DEPENDS_BAREMETAL}"
 
@@ -59,6 +58,10 @@ DEMO_LINK_FLAGS:append:armv7r = " -lxilstandalone -lscugic -lxiltimer"
 DEMO_LINK_FLAGS:append:armv8r = " -lxilstandalone -lscugic -lxiltimer"
 DEMO_LINK_FLAGS:append:xilinx-freertos = " -lfreertos"
 
+OPENAMP_CMAKE_MACHINE ?= ""
+OPENAMP_CMAKE_MACHINE:zynqmp = "ZYNQMP"
+OPENAMP_CMAKE_MACHINE:versal = "VERSAL"
+
 OPENAMP_APP_NAME ?= "echo"
 
 EXTRA_OECMAKE:append:xilinx-standalone = " \
@@ -75,10 +78,11 @@ cmake_do_generate_toolchain_file:append:arm() {
 	set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ")
 	set (CMAKE_SYSTEM_NAME      "${OPENAMP_CMAKE_SYSTEM_NAME}")
 	set (MACHINE                "${TOOLCHAIN_FILE_MACHINE}" )
-	set (CMAKE_LIBRARY_PATH     "${CMAKE_LIBRARY_PATH}:${PKG_CONFIG_SYSROOT_DIR}/usr/lib" CACHE STRING "" FORCE)
+	list(APPEND CMAKE_LIBRARY_PATH "${PKG_CONFIG_SYSROOT_DIR}/usr/lib")
 	set (CMAKE_INCLUDE_PATH     "${CMAKE_INCLUDE_PATH} ${PKG_CONFIG_SYSROOT_DIR}/usr/include/" CACHE STRING "")
 	set (CMAKE_FIND_ROOT_PATH   "${CMAKE_FIND_ROOT_PATH} ${STAGING_LIBDIR} ${CMAKE_INCLUDE_PATH} " CACHE STRING "")
 	set (PROJECT_VENDOR         "xlnx" CACHE STRING "" FORCE)
+        set (CMAKE_MACHINE "${OPENAMP_CMAKE_MACHINE}")
 
 	set (LIBMETAL_INCLUDE_DIR   " ${PKG_CONFIG_SYSROOT_DIR}/usr/include/" CACHE STRING "")
 	set (LIBMETAL_LIB_DIR       " ${PKG_CONFIG_SYSROOT_DIR}/usr/lib" CACHE STRING "")
@@ -102,6 +106,7 @@ LOPPER_GEN_FILE_OUTPUT:armv8r = "zynqmp_r5"
 FW_MACHINE:zynqmp = "cortexr5-0"
 FW_MACHINE:versal = "cortexr5-0"
 FW_MACHINE:versal-net = "cortexr52-0"
+FW_MACHINE:versal-2ve-2vm = "cortexr52-0"
 FW_OS ?= "${MCNAME}"
 SUPPORTED_OS_LIST = "baremetal freertos"
 BBCLASSEXTEND = "${@' '.join(['mcextend:'+x for x in d.getVar('SUPPORTED_OS_LIST').split()])}"
@@ -112,7 +117,7 @@ python () {
 
 FW_TARGET ?= "${MACHINE}-${FW_MACHINE}-${FW_OS}"
 
-OPENAMP_CFG_HEADER = "${S}/machine/${LOPPER_GEN_FILE_OUTPUT}/amd_platform_info.h"
+OPENAMP_CFG_HEADER = "${S}/machine/xlnx/${LOPPER_GEN_FILE_OUTPUT}/amd_platform_info.h"
 OPENAMP_CFG_HEADER:linux = ""
 
 # no apps for linux build. this is handled by rpmsg-example recipes
@@ -125,9 +130,9 @@ addtask do_deploy before do_build after do_install
 do_configure:prepend() {
     export LOPPER_DTC_FLAGS="-b 0 -@"
 
-    cd ${S}/machine/${LOPPER_GEN_FILE_OUTPUT}
-    lopper -O -f -v --enhanced  --permissive \
-      -O . ${CONFIG_DTFILE} -- openamp --openamp_header_only \
+    cd ${S}/machine/xlnx/${LOPPER_GEN_FILE_OUTPUT}
+    lopper -f -O . --enhanced  --permissive \
+      ${CONFIG_DTFILE} -- openamp --openamp_header_only \
       --openamp_output_filename=amd_platform_info.h \
       --openamp_remote=${ESW_MACHINE}
     cd -
@@ -140,12 +145,9 @@ do_configure:prepend() {
     fi
 
     cd ${S}/
-    lopper -O ${S} ${CONFIG_DTFILE} -- baremetallinker_xlnx ${ESW_MACHINE} ${S} openamp
-    mv *Example.cmake ${LINKER_METADATA_FILE}
+    lopper -f -O . ${CONFIG_DTFILE} -- baremetallinker_xlnx ${ESW_MACHINE} ${S} openamp
     cd -
 
-    sed -i -e 's/CXX//g' ${S}/cmake/vendor/xlnx/CMakeLists.txt
-    sed -i -e '/find_package(common)/d' ${S}/cmake/vendor/xlnx/CMakeLists.txt
     touch ${S}/UserConfig.cmake
 }
 
@@ -189,5 +191,5 @@ do_deploy:armv8r() {
 }
 
 addtask do_deploy before do_build after do_install
-FILES:${PN}:append:armv7r = " ${libdir}/*.a ${bindir}/*.elf ${bindir}/*bin ${bindir}/*out "
-FILES:${PN}:append:armv8r = " ${libdir}/*.a ${bindir}/*.elf ${bindir}/*bin ${bindir}/*out "
+FILES:${PN}:append:armv7r = " ${bindir}/*.elf ${bindir}/*bin "
+FILES:${PN}:append:armv8r = " ${bindir}/*.elf ${bindir}/*bin "

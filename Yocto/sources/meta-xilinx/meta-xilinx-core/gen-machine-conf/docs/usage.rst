@@ -2,6 +2,8 @@
 
 .. SPDX-License-Identifier: MIT
 
+.. _usage:
+
 Gen Machine Conf Usage Introduction
 -----------------------------------
 
@@ -9,7 +11,7 @@ gen-machine-conf has two sub commands parse-xsa and parse-sdt you must
 use one or the other. Most options work for either sub command but some
 are only available/required in one sub command or the other.
 
-gen-machine-conf is capible of auto-detecting the subcommand based on
+gen-machine-conf is capable of auto-detecting the subcommand based on
 the file/URI specified with --hw-description.
 If a .xsa file is specified, it uses the subcommand parse-xsa, and
 if system-top.dts is specified, it uses the subcommand parse-sdt.
@@ -24,7 +26,8 @@ gen-machine-conf usage
 
   $ gen-machine-conf -h
   usage: gen-machine-conf [--template Template yaml file] [--hw-description [<PATH_TO_XSA>/<xsa_name>.xsa] or <PATH_TO_SDTDIR>]
-                          [--soc-family {microblaze,zynq,zynqmp,versal,versal-2ve-2vm}] [--soc-variant SOC_VARIANT] [--machine-name MACHINE]
+                          [--soc-family {microblaze,microblaze-v,zynq,zynqmp,versal,versal-2ve-2vm}]
+                          [--soc-variant SOC_VARIANT] [--machine-name MACHINE]
                           [-c <config_dir>] [-r REQUIRE_MACHINE] [-O MACHINE_OVERRIDES] [--output OUTPUT] [--native-sysroot NATIVE_SYSROOT]
                           [--menuconfig [{project,rootfs}]] [--petalinux] [--add-config [CONFIG_<macro>=y]] [--add-rootfsconfig ADD_ROOTFSCONFIG] [-D]
                           [-h] [-v]
@@ -39,7 +42,7 @@ gen-machine-conf usage
   options:
     --template Template yaml file
                           Yaml template file
-    --soc-family {microblaze,zynq,zynqmp,versal,versal-2ve-2vm}
+    --soc-family {microblaze,microblaze-v,zynq,zynqmp,versal,versal-2ve-2vm}
                           SOC family type from choice list (usually auto detected).
     --soc-variant SOC_VARIANT
                           SOC Variant: Ex: cg, dr, eg, ev, ai-prime, premium (usually auto detected).
@@ -69,11 +72,10 @@ gen-machine-conf usage
 
   subcommands:
     <subcommand>
-      parse-sdt           Parse System devicet-tree file and generate Yocto/PetaLinux configurations.
+      parse-sdt           Parse System device-tree file and generate Yocto/PetaLinux configurations.
       parse-xsa           Parse xsa file and generate Yocto/PetaLinux configurations.
 
   Use gen-machine-conf <subcommand> --help to get help on a specific command
-
 
 gen-machine-conf parse-xsa usage
 --------------------------------
@@ -101,6 +103,14 @@ The parse-sdt is the "newer" way of getting hardware configuration
 information into Yocto. It uses the output of AMD Vivado™ Design Suite
 after it has been processed by System Device Tree Generator.
 
+For QEMU-capable designs, the SDT flow also derives the hardware DDR map
+from the QEMU command line description. gen-machine-conf runs the lopper
+``gen_qemu_mem_cfg`` subcommand, reads the generated
+``memory.qemuboot.conf`` file, and appends the resulting ``QB_MEM``
+setting to the generated machine override. This allows later tools such
+as ``qemuboot-tool`` to merge the same memory map into the combined QEMU
+configuration used by ``runqemu``.
+
 .. code-block:: console
 
   $ gen-machine-conf parse-sdt -h
@@ -109,7 +119,12 @@ after it has been processed by System Device Tree Generator.
   options:
     -h, --help            show this help message and exit
     -g {full,dfx}, --gen-pl-overlay {full,dfx}
-                          Generate pl overlay for full, dfx configuration using xlnx_overlay_pl_dt lopper script
+                          Generate PL overlays for full or DFX configurations using
+                          the xlnx_overlay_pl_dt lopper script.
+
+                          Use this option only when PL is present in the design. Do
+                          not use this option if the design does not include PL,
+                          as no overlay is required.
     -d <domain_file>, --domain-file <domain_file>
                           Path to domain file (.yaml) to use for generating the device tree.
     -i <psu_init_path>, --psu-init-path <psu_init_path>

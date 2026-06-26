@@ -1,6 +1,6 @@
 # meta-amd-zephyr
 
-This layer enables AMD Apdative SoC's Zephyr configurations and features for
+This layer enables AMD Adaptive SoC's Zephyr configurations and features for
 Microblaze-V and Versal devices and also provides related metadata such as system
 device tree(SDT) build metadata such as machine configurations files, multiconfig
 files, system device tree files, kernel configuration fragments, amd zephyr
@@ -64,18 +64,18 @@ This layer depends on:
         https://git.yoctoproject.org/meta-zephyr (official version)
         https://github.com/Xilinx/meta-zephyr (development and AMD release)
 	layers: meta-zephyr-core, meta-zephyr-bsp.
-	branch: scarthgap or AMD release version (e.g. rel-v2025.1)
+	branch: scarthgap or AMD release version (e.g. rel-v2026.1)
 
 	URI:
         https://git.yoctoproject.org/meta-xilinx (official version)
         https://github.com/Xilinx/meta-xilinx (development and AMD release)
 	layers: meta-xilinx-core, meta-microblaze.
-	branch: scarthgap or AMD release version (e.g. rel-v2025.1)
+	branch: scarthgap or AMD release version (e.g. rel-v2026.1)
 
 	URI:
         https://git.yoctoproject.org/meta-virtualization (official version)
         https://github.com/Xilinx/meta-virtualization (development and AMD release)
-	branch: scarthgap or AMD release version (e.g. rel-v2025.1)
+	branch: scarthgap or AMD release version (e.g. rel-v2026.1)
 
 	URI: https://git.yoctoproject.org/meta-arm
 	layers: meta-arm, meta-arm-toolchain

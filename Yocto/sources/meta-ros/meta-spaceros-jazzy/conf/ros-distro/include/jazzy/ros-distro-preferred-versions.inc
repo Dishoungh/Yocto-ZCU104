@@ -1,0 +1,23 @@
+# jazzy/ros-distro-preferred-versions.inc
+#
+# Copyright (c) 2020 LG Electronics, Inc.
+
+# Set PREFERRED_VERSION_<PN> here for non-platform packages for which the layers provide multiple versions and to override those
+# set in ros-distro-platform-preferred-versions.inc .
+
+# REP-0003 specifies 1.10.1 for noetic
+# REP-2000 specifies 1.12.1 for humble and iron and 1.13.0 for jazzy
+# This is necessary as with ROS1 many recipes fail to build
+# as documented in https://github.com/ros/meta-ros/pull/936
+PREFERRED_VERSION_pcl = "1.13.0"
+
+PREFERRED_VERSION_sdformat = "14.9.0"
+
+PREFERRED_VERSION_dartsim = "6.13.2"
+
+PREFERRED_VERSION_ogre-next = "2.3.3"
+
+PREFERRED_VERSION_gz-cmake3 = "3.5.6"
+PREFERRED_VERSION_gz-math7 = "7.6.0"
+PREFERRED_VERSION_gz-tools2 = "2.0.3"
+PREFERRED_VERSION_gz-utils2 = "2.2.1"

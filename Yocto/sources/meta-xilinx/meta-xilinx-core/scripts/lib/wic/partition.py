@@ -403,8 +403,10 @@ class Partition():
         logger.info("dosfs_cmd(rootfs): %s" % dosfs_cmd)
         exec_native_cmd(dosfs_cmd, native_sysroot)
 
-        mcopy_cmd = "mcopy -i %s -s %s/* ::/" % (rootfs, rootfs_dir)
-        exec_native_cmd(mcopy_cmd, native_sysroot)
+        if os.listdir(rootfs_dir):
+            mcopy_cmd = "mcopy -i %s -s %s/* ::/" % (rootfs, rootfs_dir)
+            logger.info("mcopy_cmd(rootfs): %s" % mcopy_cmd)
+            exec_native_cmd(mcopy_cmd, native_sysroot)
 
         if self.updated_fstab_path and self.has_fstab and not self.no_fstab_update:
             mcopy_cmd = "mcopy -m -i %s %s ::/etc/fstab" % (rootfs, self.updated_fstab_path)

@@ -12,7 +12,7 @@ known security vulnerabilities, as tracked by the public
 database.
 
 The Yocto Project maintains a `list of known vulnerabilities
-<https://autobuilder.yocto.io/pub/non-release/patchmetrics/>`__
+<https://valkyrie.yocto.io/pub/non-release/patchmetrics/>`__
 for packages in Poky and OE-Core, tracking the evolution of the number of
 unpatched CVEs and the status of patches. Such information is available for
 the current development version and for each supported release.
@@ -314,7 +314,7 @@ products defined in :term:`CVE_PRODUCT`. Then, for each found CVE:
 The CVE database is stored in :term:`DL_DIR` and can be inspected using
 ``sqlite3`` command as follows::
 
-   sqlite3 downloads/CVE_CHECK/nvdcve_1.1.db .dump | grep CVE-2021-37462
+   sqlite3 downloads/CVE_CHECK/nvd*.db .dump | grep CVE-2021-37462
 
 When analyzing CVEs, it is recommended to:
 

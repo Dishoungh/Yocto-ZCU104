@@ -12,6 +12,7 @@ import os
 import re
 import shutil
 import common_utils
+import bitbake_utils
 import logging
 
 logger = logging.getLogger('Gen-Machineconf')
@@ -86,7 +87,7 @@ def AddUserLayers(args):
     with open(layers_list, 'a') as layers_list_f:
         for layer in bb_layers:
             if layer in add_layers and os.path.isdir(layer):
-                common_utils.Bitbake.shutdown()
+                bitbake_utils.Bitbake.shutdown()
                 logger.debug('Adding layer: %s' % layer)
                 command = 'bitbake-layers -F add-layer %s' % (layer)
                 common_utils.RunCmd(command, builddir, shell=True)
@@ -108,7 +109,7 @@ def GenLocalConf(conf_file, machine_conf_file, system_conffile, petalinux):
     if multiconfig_min:
         sdt_conf_str += '\n# Avoid errors in some baremetal configs as these layers may be present\n'
         sdt_conf_str += '# but are not used.  Note the following lines are optional and can be\n'
-        sdt_conf_str += '# safetly disabled.\n'
+        sdt_conf_str += '# safely disabled.\n'
         sdt_conf_str += 'SKIP_META_VIRT_SANITY_CHECK = "1"\n'
         sdt_conf_str += 'SKIP_META_SECURITY_SANITY_CHECK = "1"\n'
         sdt_conf_str += 'SKIP_META_TPM_SANITY_CHECK = "1"\n'

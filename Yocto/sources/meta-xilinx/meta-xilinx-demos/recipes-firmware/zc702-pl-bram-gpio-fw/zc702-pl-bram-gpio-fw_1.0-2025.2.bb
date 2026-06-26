@@ -13,7 +13,7 @@ COMPATIBLE_MACHINE = "^$"
 COMPATIBLE_MACHINE:amd-cortexa9thf-neon-common = "${MACHINE}"
 COMPATIBLE_MACHINE:zynq-zc702-sdt-full = "${MACHINE}"
 
-# When do_upack is exectuted it will extract tar file with original directory
+# When do_unpack is executed it will extract tar file with original directory
 # name so set the FW_DIR pointing to pdi and dtsi files.
 FW_DIR = "zc702-pl-bram-gpio-fw"
 FW_INSTALL_DIR = "zc702/pl/${FW_DIR}"

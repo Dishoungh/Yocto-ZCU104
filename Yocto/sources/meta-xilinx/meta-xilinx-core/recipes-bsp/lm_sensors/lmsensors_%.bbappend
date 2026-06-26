@@ -1,7 +1,6 @@
 LMSENSOR_ADDITIONAL_INCLUDE = ""
 
 # Make the changes only apply to AMD FPGA boards
-LMSENSOR_ADDITIONAL_INCLUDE:eval-brd-sc-zynqmp = "amd-fpga-fancontrol.inc"
 LMSENSOR_ADDITIONAL_INCLUDE:zynqmp         = "amd-fpga-fancontrol.inc"
 LMSENSOR_ADDITIONAL_INCLUDE:versal         = "amd-fpga-fancontrol.inc"
 LMSENSOR_ADDITIONAL_INCLUDE:versal-net     = "amd-fpga-fancontrol.inc"

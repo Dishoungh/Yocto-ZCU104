@@ -22,8 +22,14 @@ logger = logging.getLogger('Gen-Machineconf')
 global inherit_ext
 inherit_ext = ''
 
+system_conffile = None
+def RequireSystemConfFile():
+    if not system_conffile:
+        raise RuntimeError('system_conffile is not initialised; call GeneratePlnxConfig before adding sources.')
+
 
 def AddRemoteSources(component, Kcomponent):
+    RequireSystemConfFile()
     is_remote = common_utils.GetConfigValue('CONFIG_SUBSYSTEM_COMPONENT_%s_NAME_REMOTE'
                                             % Kcomponent, system_conffile)
     conf_prop = {
@@ -62,6 +68,7 @@ def AddRemoteSources(component, Kcomponent):
 
 
 def AddExternalSources(component, Kcomponent):
+    RequireSystemConfFile()
     is_external = common_utils.GetConfigValue('CONFIG_SUBSYSTEM_COMPONENT_%s_NAME_EXT__LOCAL__SRC'
                                               % Kcomponent, system_conffile)
     ext_source = ''
@@ -85,6 +92,7 @@ def AddExternalSources(component, Kcomponent):
 
 
 def GenerateKernelCfg(args):
+    RequireSystemConfFile()
     logger.info('Generating kernel configuration files')
     genmachine_scripts = project_config.GenMachineScriptsPath()
     sysconf_koptions = os.path.join(
@@ -93,7 +101,7 @@ def GenerateKernelCfg(args):
     with open(sysconf_koptions, 'r') as sysconf_koptions_f:
         sysconf_koptions_data = yaml.safe_load(sysconf_koptions_f)
     sysconf_koptions_f.close()
-    invalide_props = []
+    invalid_props = []
     # Filter sysconf_koptions.yaml, remove the ip list which are not enabled in design
     for device in sysconf_koptions_data['selected_device'].keys():
         is_invalid = ''
@@ -105,14 +113,14 @@ def GenerateKernelCfg(args):
 
                 if value != 'n':
                     if cfg_value != value:
-                        if not device in invalide_props:
-                            invalide_props.append(device)
+                        if device not in invalid_props:
+                            invalid_props.append(device)
                 else:
                     if cfg_value == 'n':
-                        if not device in invalide_props:
-                            invalide_props.append(device)
-    # remove the ip's in invalide_props from sysconf_koptions_data
-    for prop in invalide_props:
+                        if device not in invalid_props:
+                            invalid_props.append(device)
+    # remove the ip's in invalid_props from sysconf_koptions_data
+    for prop in invalid_props:
         sysconf_koptions_data['selected_device'].pop(prop)
     kernel_opts = ''
     # Add linux_kernel_properties from sysconf_koptions.yaml
@@ -290,7 +298,7 @@ def GeneratePlnxConfig(args, machine_conf_file):
                 uninative_path + '/*/x86_64-nativesdk-libc*')
             if uninative_file:
                 uninative_dir = os.path.dirname(uninative_file[0])
-                # Add trainling slash if not present
+                # Add trailing slash if not present
                 if not uninative_dir.endswith(os.path.sep):
                     uninative_dir += os.path.sep
                 override_string += 'UNINATIVE_URL = "file://%s"\n' % uninative_dir
@@ -352,11 +360,6 @@ def GeneratePlnxConfig(args, machine_conf_file):
     override_string += AddRemoteSources('linux-xlnx', 'LINUX__KERNEL')
     override_string += AddExternalSources('linux-xlnx', 'LINUX__KERNEL')
     override_string += 'RRECOMMENDS:${KERNEL_PACKAGE_NAME}-base = ""\n'
-    kernel_config = common_utils.GetConfigValue('CONFIG_SUBSYSTEM_LINUX_CONFIG_TARGET',
-                                                system_conffile)
-    if kernel_config and kernel_config.lower() != 'auto':
-        override_string += 'KBUILD_DEFCONFIG:%s = "%s"\n' % (
-            soc_family, kernel_config)
     kernel_autoconfig = common_utils.GetConfigValue('CONFIG_SUBSYSTEM_AUTOCONFIG_KERNEL',
                                                     system_conffile)
 
@@ -453,10 +456,6 @@ def GeneratePlnxConfig(args, machine_conf_file):
             'trusted-firmware-a', 'TRUSTED__FIRMWARE__ARM')
         override_string += AddExternalSources(
             'trusted-firmware-a', 'TRUSTED__FIRMWARE__ARM')
-        atf_debug = common_utils.GetConfigValue(
-            'CONFIG_SUBSYSTEM_TF-A_DEBUG', system_conffile)
-        if atf_debug:
-            override_string += 'DEBUG_ATF = "1"\n'
 
     if soc_family in ['zynqmp', 'zynq']:
         fsbl_bspcompiler_flags = common_utils.GetConfigValue('CONFIG_SUBSYSTEM_FSBL_BSPCOMPILER_FLAGS',
@@ -648,7 +647,7 @@ def GeneratePlnxConfig(args, machine_conf_file):
                    'u-boot-xlnx-scr'],
         'versal': ['virtual/bootloader', 'virtual/psm-firmware', 'virtual/plm',
                    'virtual/arm-trusted-firmware', 'u-boot-xlnx-scr',
-                   'qemu-devicetrees-native', 'extract-cdo'],
+                   'qemu-devicetrees-native'],
     }
     imagedepends_remove = ['virtual/boot-bin']
     is_imgsel = common_utils.GetConfigValue('CONFIG_SUBSYSTEM_COMPONENT_IMG_SEL',

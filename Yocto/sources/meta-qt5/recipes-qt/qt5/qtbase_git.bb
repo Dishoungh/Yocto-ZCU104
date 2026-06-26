@@ -66,7 +66,7 @@ RDEPENDS:${PN}-tools += "perl"
 inherit pkgconfig
 
 # separate some parts of PACKAGECONFIG which are often changed
-PACKAGECONFIG_GL ?= "${@bb.utils.contains('DISTRO_FEATURES', 'opengl', 'gl', 'no-opengl', d)}"
+PACKAGECONFIG_GL ?= "${@bb.utils.contains('DISTRO_FEATURES', 'opengl', bb.utils.contains('DISTRO_FEATURES', 'x11', 'gl', 'kms gbm gles2 eglfs', d), 'no-opengl', d)}"
 PACKAGECONFIG_FB ?= "${@bb.utils.contains('DISTRO_FEATURES', 'directfb', 'directfb', '', d)}"
 PACKAGECONFIG_X11 ?= "${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'xcb glib xkbcommon', '', d)}"
 PACKAGECONFIG_KDE ?= "${@bb.utils.contains('DISTRO_FEATURES', 'kde', 'sm cups fontconfig kms gbm libinput sql-sqlite openssl', '', d)}"
@@ -238,7 +238,7 @@ do_configure() {
     # Avoid qmake error "Cannot read [...]/usr/lib/qt5/mkspecs/oe-device-extra.pri: No such file or directory" during configuration
     touch ${S}/mkspecs/oe-device-extra.pri
 
-    ${S}/configure -v \
+    MAKEFLAGS="${PARALLEL_MAKE}" ${S}/configure -v \
         -${QT_EDITION} -confirm-license \
         -sysroot ${STAGING_DIR_TARGET} \
         -prefix ${OE_QMAKE_PATH_PREFIX} \

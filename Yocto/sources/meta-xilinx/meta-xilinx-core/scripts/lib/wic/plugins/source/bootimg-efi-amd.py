@@ -425,13 +425,21 @@ class BootimgEFIPlugin(SourcePlugin):
             if source_params['loader'] == 'grub-efi':
                 shutil.copyfile("%s/hdd/boot/EFI/BOOT/grub.cfg" % cr_workdir,
                                 "%s/grub.cfg" % cr_workdir)
-                for mod in [x for x in os.listdir(kernel_dir) if x.startswith("grub-efi-")]:
+                grub_files = [x for x in os.listdir(kernel_dir) if x.startswith("grub-efi-")]
+                if not grub_files:
+                    raise WicError("grub-efi loader specified but no grub-efi-* files "
+                                   "found in %s. Ensure grub-efi is built and deployed." % kernel_dir)
+                for mod in grub_files:
                     cp_cmd = "cp %s/%s %s/EFI/BOOT/%s" % (kernel_dir, mod, hdddir, mod[9:])
                     exec_cmd(cp_cmd, True)
                 shutil.move("%s/grub.cfg" % cr_workdir,
                             "%s/hdd/boot/EFI/BOOT/grub.cfg" % cr_workdir)
             elif source_params['loader'] == 'systemd-boot':
-                for mod in [x for x in os.listdir(kernel_dir) if x.startswith("systemd-")]:
+                systemd_files = [x for x in os.listdir(kernel_dir) if x.startswith("systemd-")]
+                if not systemd_files:
+                    raise WicError("systemd-boot loader specified but no systemd-* files "
+                                   "found in %s. Ensure systemd-boot is built and deployed." % kernel_dir)
+                for mod in systemd_files:
                     cp_cmd = "cp %s/%s %s/EFI/BOOT/%s" % (kernel_dir, mod, hdddir, mod[8:])
                     exec_cmd(cp_cmd, True)
             elif source_params['loader'] == 'uefi-kernel':
@@ -453,7 +461,11 @@ class BootimgEFIPlugin(SourcePlugin):
                 else:
                     raise WicError("UEFI stub kernel is incompatible with target %s" % target)
 
-                for mod in [x for x in os.listdir(kernel_dir) if x.startswith(kernel)]:
+                kernel_files = [x for x in os.listdir(kernel_dir) if x.startswith(kernel)]
+                if not kernel_files:
+                    raise WicError("uefi-kernel loader specified but no %s* files "
+                                   "found in %s. Ensure kernel is built and deployed." % (kernel, kernel_dir))
+                for mod in kernel_files:
                     cp_cmd = "cp %s/%s %s/EFI/BOOT/%s" % (kernel_dir, mod, hdddir, kernel_efi_image)
                     exec_cmd(cp_cmd, True)
             else:

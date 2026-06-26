@@ -29,7 +29,7 @@ https://docs.yoctoproject.org/dev/contributor-guide/submit-changes.html#
 `git format-patch -s --subject-prefix="meta-kria][<BRANCH_NAME>][PATCH" -1`
 
 **Example:**
-`git format-patch -s --subject-prefix="meta-kria][rel-v2025.2][PATCH" -1`
+`git format-patch -s --subject-prefix="meta-kria][rel-v2026.1][PATCH" -1`
 
 **Maintainers:**
 
@@ -53,19 +53,13 @@ This layer depends on:
 	URI:
         https://git.yoctoproject.org/meta-xilinx (official version)
         https://github.com/Xilinx/meta-xilinx (development and AMD release)
-	layers: meta-xilinx-microblaze, meta-xilinx-core
-	branch: scarthgap or AMD release version (e.g. rel-v2025.2)
+	layers: meta-xilinx-microblaze, meta-xilinx-core, meta-xilinx-standalone
+	branch: scarthgap or AMD release version (e.g. rel-v2026.1)
 
 	URI:
         https://git.yoctoproject.org/meta-xilinx-tools (official version)
         https://github.com/Xilinx/meta-xilinx-tools (development and AMD release)
-	branch: scarthgap or AMD release version (e.g. rel-v2025.2)
-
-	URI: https://github.com/Xilinx/meta-petalinux
-	branch: AMD release version (e.g. rel-v2025.2)
-
-	URI: https://github.com/Xilinx/meta-jupyter
-	branch: scarthgap or AMD release version (e.g. rel-v2025.2)
+	branch: scarthgap or AMD release version (e.g. rel-v2026.1)
 
 	URI: https://git.yoctoproject.org/meta-security
 	layers: meta-tpm

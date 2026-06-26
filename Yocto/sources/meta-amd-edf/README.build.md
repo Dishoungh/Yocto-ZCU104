@@ -69,11 +69,11 @@ $ source edf-init-build-env
 >    you will run into templateconf errors.
 >    `Error: TEMPLATECONF value points to nonexistent directory '<template-path>'`
 
-6. Once environment is initialized `bblayers.conf` add `local.conf` are set from
-   meta-amd-edf templates.
+6. Once the environment is initialized, `bblayers.conf` and `local.conf` are set
+   from the meta-amd-edf templates.
 
-7. For list of available board machines see meta-adaptive-socs/meta-amd-<eval-board>/conf/machine/*.conf
-   file.
+7. For list of available board machines see
+   meta-amd-adaptive-socs/meta-amd-adaptive-socs-bsp/conf/machine/*.conf file.
 
 8. For NFS build host system modify the build/conf/local.conf and add TMPDIR
    path as shown below. On local storage $TMPDIR will be set to build/tmp
@@ -83,7 +83,7 @@ $ source edf-init-build-env
 > **Note:**
 > Depending on the build configuration, several 10s of GB of storage space may
 > be required in the TMPDIR. Please make sure you have plenty of storage space
-> available. Alternatively, to save disk space, you can add the below varibale to
+> available. Alternatively, to save disk space, you can add the below variable to
 > build/conf/local.conf file. This option removes the work dir after build and only
 > keeps the logs around.
 >  ```
@@ -99,12 +99,12 @@ $ source edf-init-build-env
 >     10.
 >  2. To build qemu-helper-native recipes you can use any one of the
 >     amd-<tunearch>-common machine name. Here is the list of supported common
->     machines https://github.com/Xilinx/meta-xilinx/tree/rel-v2025.2/meta-xilinx-core/conf/machine
+>     machines https://github.com/Xilinx/meta-xilinx/tree/rel-v2026.1/meta-xilinx-core/conf/machine
 
 10. Manually configure a tap interface for your build system. As root run
    <path-to>/sources/poky/scripts/runqemu-gen-tapdevs, which should generate a
-   list of tap devices. Once tap interfaces are successfully create you should
-   be able to see all the interfaces by running ifconfig command.
+   list of tap devices. Once the tap interfaces are successfully created, you
+   should be able to see all the interfaces by running the ifconfig command.
       ```
       $ sudo ./<path-to-layer>/poky/scripts/runqemu-gen-tapdevs $(id -g $USER) 4
       ```
@@ -141,6 +141,12 @@ $ source edf-init-build-env
       $ MACHINE=amd-cortexa78-mali-common bitbake edf-linux-disk-image
       ```
 
+   To include Xen and OpenAMP platform packages, build the platform image
+   instead:
+      ```
+      $ MACHINE=amd-cortexa72-common bitbake edf-platform-disk-image
+      ```
+
 4. Once complete the images for the target machine will be available in the output
    directory `${TMPDIR}/deploy/images/${MACHINE}/`.
 
@@ -150,7 +156,7 @@ $ source edf-init-build-env
 ## Release Information
 
 Refer [AMD Xilinx Yocto wiki](https://xilinx-wiki.atlassian.net/wiki/spaces/A/pages/2613018625)
-page for release features, known issue and limitations.
+page for release features, known issues and limitations.
 
 ## Additional Documentation
 

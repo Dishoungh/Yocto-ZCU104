@@ -2,6 +2,8 @@
 
 .. SPDX-License-Identifier: MIT
 
+.. _options:
+
 Gen Machine Conf: Detailed Options and Usage
 --------------------------------------------
 
@@ -16,12 +18,12 @@ The --hw-description option specifies the hardware description input for the too
 It is a required argument and determines the hardware platform for which the
 machine configuration will be generated.
 
-The tool will handles the process of validating, copying or unpacking the hardware
+The tool handles the process of validating, copying or unpacking the hardware
 description file or directory. It ensures the provided path is absolute and exists,
 and adapts its behavior depending on whether the workflow is for
 PetaLinux (which does not use BitBake) or Yocto (which may use BitBake to fetch and unpack URIs).
 
-The tool also ensuring that only supported file types are processed.
+The tool also ensures that only supported file types are processed.
 It distinguishes between .xsa files and System Device-tree directories,
 and can auto-select the appropriate flow if both are present. It also prevents ambiguous situations,
 such as multiple .xsa or system-top.dts files in the same directory.
@@ -34,6 +36,7 @@ such as multiple .xsa or system-top.dts files in the same directory.
     $ gen-machine-conf --hw-description ./sdt_output/
     $ gen-machine-conf --hw-description https://edf.amd.com/bsp.tar.gz
     $ gen-machine-conf --hw-description ./bsp.tar.gz
+    $ gen-machine-conf --hw-description "git://github.com/sdt.git;branch=<BRANCH>;rev=<SRCREV>;S=<SUBDIR>"
 
 --template <yaml_file>
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -89,7 +92,165 @@ it and apply them to arguments that are not explicitly set on the command line.
                 op: '='
                 val: "-serial null -serial null -serial null -serial mon:stdio"
 
+**Supported input methods**
+
+- Args: Supported via command line and YAML.
+  Command-line flags passed directly to ``gen-machine-conf``. The same flags
+  can be pre-defined in YAML under ``args:`` to avoid repetition. Values
+  provided on the command line are applied on top of the YAML defaults.
+
+- Kconfig: Supported via command line and YAML.
+  Low-level configuration macros (for Yocto, U-Boot, TF-A, etc.) that can be
+  supplied using ``--add-config`` on the command line or under ``kconfig:``
+  in YAML. Command-line Kconfig entries are merged after YAML entries, so
+  they can override or extend them.
+
+- Machine (pre/post): Supported via YAML only.
+  Yocto machine configuration overrides read exclusively from YAML. Use
+  ``pre`` to inject variables before the generic machine include,
+  and ``post`` to append or override settings afterward using
+  explicit operations such as ``op: '='`` with ``val:``.
+
+**Advanced YAML Example with Inherit and Merge Operations**
+
+The template YAML supports advanced features including inheritance from other YAML files
+and selective merging using append/prepend operations:
+
+.. code-block:: yaml
+
+    # base-board.yaml - Base configuration for a board family
+    args:
+        - --hw-description https://edf.amd.com/base-board.tar.gz
+        - --soc-family versal
+        - --machine-name base-versal-board
+        - --domain-file base_domain.yaml
+    kconfig:
+        CONFIG_SUBSYSTEM_SERIAL_OP-TEE_IP_NAME: '1'
+        CONFIG_SUBSYSTEM_OPTEE: y
+        CONFIG_YOCTO_BBMC_LINUX_DTSI: 'base-system-conf.dtsi'
+    machine:
+        pre:
+            UBOOT_ENTRYPOINT:
+                op: '?='
+                val: '0x20200000'
+
+.. code-block:: yaml
+
+    # custom-board.yaml - Inherits from base and extends with custom settings
+    inherit: base-board.yaml
+
+    # Override machine name
+    args:
+        - --machine-name custom-versal-board
+
+    # Prepend domain files before inherited args
+    args_prepend:
+        - --domain-file vek385.yaml
+
+    # Append additional domain files after inherited args
+    args_append:
+        - --domain-file openamp.yaml
+
+    # Add kconfig on top of inherited settings
+    kconfig:
+        CONFIG_SUBSYSTEM_TF-A_MEMORY_SETTINGS: y
+        CONFIG_SUBSYSTEM_TF-A_MEM_BASE: '0x1600000'
+        CONFIG_SUBSYSTEM_TF-A_MEM_SIZE: '0x200000'
+
+    # Prepend kconfig settings (higher priority - evaluated first)
+    kconfig_prepend:
+        CONFIG_YOCTO_BBMC_LINUX_DTSI: 'custom-early-system-conf.dtsi'
+
+    # Append kconfig settings (evaluated after inherited values)
+    kconfig_append:
+        CONFIG_YOCTO_BBMC_LINUX_DTSI: 'board-system-conf.dtsi'
+
+    # Override and extend machine configurations
+    machine:
+        pre:
+            UBOOT_LOADADDRESS:
+                op: '?='
+                val: '0x20200000'
+        post:
+            QEMU_HW_DTB_PS:
+                op: '='
+                val: "${QEMU_HW_DTB_PATH}/board-versal2-psxc-vek385.dtb"
+            QEMU_HW_BOOT_MODE:
+                op: '='
+                val: "8"
+
+    # Prepend machine setting values
+    machine_prepend:
+        pre:
+            KERNEL_IMAGETYPE:
+                val: 'Image'
+
+    # Append machine settings
+    machine_append:
+        post:
+            QEMU_HW_SERIAL:
+                val: "-serial null -serial null -serial null -serial mon:stdio"
+
+**Merge Behavior**:
+
+- **inherit**: Loads the specified YAML file(s) as a base. Multiple files can be space-separated.
+  Supports environment variables and BitBake variables in paths. The inherit file is loaded first,
+  then the current YAML file's values are merged on top.
+
+- **args/kconfig/machine**: Direct keys in the current YAML override inherited values for the same key.
+
+- **args_prepend/kconfig_prepend/machine_prepend**: Values are merged **before** inherited values
+  (prepend → inherited → append order).
+
+- **args_append/kconfig_append/machine_append**: Values are merged **after** inherited values
+  (prepend → inherited → append order).
+
+- **Merge order for same key**: When the same configuration key appears in multiple sections,
+  the final value is space-concatenated in this order:
+
+  1. Values from ``<key>_prepend`` (if present)
+  2. Values from inherited YAML file's ``<key>`` section
+  3. Values from current YAML file's ``<key>`` section
+  4. Values from ``<key>_append`` (if present)
+
+  In the example above, ``CONFIG_YOCTO_BBMC_LINUX_DTSI`` appears in:
+
+  - ``kconfig_prepend`` with ``custom-early-system-conf.dtsi``
+  - Inherited base-board.yaml ``kconfig`` with ``base-system-conf.dtsi``
+  - ``kconfig_append`` with ``board-system-conf.dtsi``
+
+  The final merged value will be:
+  ``custom-early-system-conf.dtsi base-system-conf.dtsi board-system-conf.dtsi``
+
+.. important::
+
+    **Prepend/Append is designed for configs or variables that accept space-separated string values.**
+
+    Suitable use cases:
+
+    - ``CONFIG_YOCTO_BBMC_LINUX_DTSI`` - accepts multiple space-separated DTSI file paths
+    - ``--domain-file`` - accepts multiple space-separated YAML file paths
+    - Machine variables that support multiple values
+
+    .. warning::
+
+        **Do not use prepend/append for boolean configs or single-value settings.**
+
+        Boolean configs (e.g., ``CONFIG_SUBSYSTEM_OPTEE=y``) or single-value numeric settings
+        (e.g., ``CONFIG_SUBSYSTEM_TF-A_MEM_BASE='0x1600000'``) will be space-concatenated,
+        resulting in invalid values like ``"y y"`` or ``"0x1600000 0x1800000"``.
+
+        For such configs, use the direct ``kconfig:`` key in the current YAML file, which will
+        override the inherited value completely.
+
 **Usage Example**
+
+.. code-block:: console
+
+    $ gen-machine-conf --template custom-board.yaml --output ./custom_output
+
+    This will first load base-board.yaml, then merge custom-board.yaml settings on top,
+    with prepend/append operations applied in the appropriate order.
 
 .. code-block:: console
 
@@ -101,6 +262,12 @@ it and apply them to arguments that are not explicitly set on the command line.
 .. note::
 
     Specifying --domain-file from command-line will append to the values specified in the template YAML file.
+
+.. note::
+
+    When using inherit with multiple YAML files, machine names from all files are automatically
+    collected and added to MACHINEOVERRIDES, allowing your configuration to inherit settings
+    from multiple base machines.
 
 .. tip::
 
@@ -127,8 +294,10 @@ If not provided on the command line:
 --soc-family <family>
 ~~~~~~~~~~~~~~~~~~~~~
 
-Specifies the SoC family (microblaze, zynq, zynqmp, versal).
-If not provided on the command line gen-machine-conf will extracted from the System-Device-Tree (SDT) file
+Specifies the SoC family (microblaze, microblaze-v, zynq, zynqmp, versal, versal-2ve-2vm).
+``microblaze-v`` is supported only in the system device tree (SDT) flow and
+is not supported in the XSA/XSCT flow.
+If not provided on the command line gen-machine-conf will be extracted from the System-Device-Tree (SDT) file
 based on the Processor name.
 
 **Usage Example**
@@ -141,7 +310,7 @@ based on the Processor name.
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 Specify SoC variant (e.g., cg, dr, eg, ev, ai-prime, premium).
-If not provided on the command line gen-machine-conf will extracted from the System-Device-Tree (SDT) file
+If not provided on the command line gen-machine-conf will be extracted from the System-Device-Tree (SDT) file
 based on the Device-id.
 
 **Usage Example**
@@ -219,13 +388,67 @@ This allows you to specify additional configuration overrides for the generated 
 configuration. These overrides are typically used to enable or customize specific features,
 settings, or behaviors in the machine configuration file.
 The value provided to --machine-overrides is a string containing one or more override tokens,
-separated by spaces.
+separated by colons.
+
+This option lets you add extra override tokens to the generated machine configuration.
+These overrides control how BitBake applies machine-specific settings, feature flags, and
+.bbappend files during the build.
+
+For More details see:
+
+- `OVERRIDES variable <https://docs.yoctoproject.org/ref-manual/variables.html#term-OVERRIDES>`_
+- `Conditional Syntax (Overrides) <https://docs.yoctoproject.org/bitbake/2.8/bitbake-user-manual/bitbake-user-manual-metadata.html#conditional-syntax-overrides>`_
+
+Syntax
+^^^^^^
+
+.. code-block:: text
+
+    --machine-overrides <override1:override2:...>
+
+The value is a colon-separated list of tokens appended to BitBake's MACHINEOVERRIDES
+variable in the generated <machine>.conf.
+
+Purpose
+^^^^^^^
+
+gen-machine-conf automatically adds the machine name as an override. Use this option
+when you want BitBake to additionally treat your machine as:
+
+- An existing reference machine (inherit its BSP logic)
+- A board revision or variant
+- A feature-specific configuration
+
+How overrides work in BitBake
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+- BitBake evaluates overrides from left to right
+- Later overrides take precedence over earlier ones
+- Overrides added via this option appear after the machine name, allowing them to refine or
+  supersede generic settings
+- Only overrides that match entries in your layers have any effect; unused tokens are
+  silently ignored
 
 **Usage Example**
 
 .. code-block:: console
 
-    $ gen-machine-conf --hw-description ./system-top.dts --machine-overrides "feature1 feature2"
+    $ gen-machine-conf --hw-description ./system-top.dts --machine-overrides "feature1:feature2"
+    $ gen-machine-conf --machine-name myboard --machine-overrides "versal-vck190:revB"
+
+Generates in conf/machine/myboard-*.conf:
+
+.. code-block:: text
+
+    MACHINEOVERRIDES .= ":versal-vck190:revB"
+
+Effective resolution order (assuming base overrides exist):
+
+.. code-block:: text
+
+    <base-overrides>:myboard:versal-vck190:revB
+
+This allows myboard to inherit settings from versal-vck190 and further specialize with revB overrides.
 
 --native-sysroot <path>
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -322,16 +545,70 @@ When you use parse-sdt, the tool:
 -g {full,dfx}, --gen-pl-overlay {full,dfx}
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This option would be used to invocation of the Lopper tool for generating programmable logic (PL)
+This option is used to invoke the Lopper tool for generating programmable logic (PL)
 overlays in device tree source (DTS) files as part of the machine configuration process.
 Generate overlay files or configuration fragments that can be used to program or manage the
 FPGA portion during boot or runtime.
+
+The two components represent different PL configuration approaches:
+
+full Component
+^^^^^^^^^^^^^^
+
+**Purpose**: Generates a complete PL overlay that includes all programmable logic IP blocks.
+
+**Use Case**:
+
+- When you want all PL (FPGA fabric) IP blocks to be loaded as an overlay once Linux boot is completed
+- Suitable for static FPGA designs where all PL resources are programmed together
+- The entire PL configuration is treated as a single unit
+
+**What it does**:
+
+- Removes all PL device tree nodes from the main PS (Processing System) device tree
+- Creates a separate pl.dtsi file containing all PL IP blocks
+- This overlay can be applied to program the FPGA and register all PL peripherals with the kernel
+- Stored in pl-overlay-full/pl.dtsi directory
 
 **Usage Example**
 
 .. code-block:: console
 
+    # Generate full PL overlay
     $ gen-machine-conf --hw-description ./sdt_output/ -g full
+
+dfx Component
+^^^^^^^^^^^^^
+
+**Purpose**: Generates a DFX (Dynamic Function eXchange) static overlay for partial reconfiguration designs.
+
+**Use Case**:
+
+- For designs using DFX/partial reconfiguration where parts of the FPGA can be reprogrammed at runtime
+- Creates the static region overlay - the parts of the PL that remain constant
+- Dynamic regions can be loaded separately at runtime without affecting the static logic
+
+**What it does**:
+
+- Extracts only the static (non-reconfigurable) PL IP blocks into the overlay
+- Creates pl.dtsi with the static PL configuration
+- Stored in pl-overlay-dfx/pl.dtsi directory and remaining pl dtsi files present under sdt_output_dir:
+
+  - Static PL: <sdt_output_dir>/pl.dtsi
+  - RP partials: <sdt_output_dir>/rp0rm0/rp0rm0_partial.dtsi, <sdt_output_dir>/rp1rm0/rp1rm0_partial.dtsi, etc.
+
+- Copy these into the corresponding Yocto firmware recipe files/ folders, which then install the runtime overlays under:
+
+  - Static base: /lib/firmware/xilinx/vek385static/
+  - RPs: /lib/firmware/xilinx/vek385static/rp0rm0/rp0rm0_slot0/ and .../rp1rm0/rp1rm0_slot0/ (with the generated pl-overlay-dfx/pl.dtsi overlays)
+
+- Allows dynamic partial bitstreams to be loaded later for the reconfigurable regions
+
+**Usage Example**
+
+.. code-block:: console
+
+    # Generate DFX static overlay
     $ gen-machine-conf --hw-description ./sdt_output/ -g dfx
 
 -d <domain_file>, --domain-file <domain_file>

@@ -5,8 +5,7 @@ require conf/machine/include/soc-family.inc
 require soc-tune-include.inc
 
 # Linux Configuration
-KERNEL_IMAGETYPE ?= "Image"
-KERNEL_IMAGETYPES += "uImage"
+ARCH_DEFAULT_KERNELIMAGETYPE:microblaze-v = "Image"
 KEEPUIMAGE = "no"
 
 UBOOT_ELF ?= "u-boot"

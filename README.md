@@ -6,10 +6,16 @@ This project will *thoroughly* document from **start to finish** creating a simp
 
 ## Overview
 
-- Project Version: 2025.2
-- OS Version: Alma Linux 9.7
+- Project Version: 2026.1
+- OS Version: Alma Linux 9.8
 - Yocto Upstream Version: Scarthgap LTS (v5.0)
 - FPGA: [AMD Zynq Ultrascale+ MPSoC ZCU104](https://www.amd.com/en/products/adaptive-socs-and-fpgas/evaluation-boards/zcu104.html)
+
+## What's New?
+
+AMD has made some pretty controversial changes starting with 2026.1, namely their [licensing model](https://www.amd.com/en/products/software/adaptive-socs-and-fpgas/vivado/vivado-buy.html#tiers).
+
+**At least for the free tier, you now have to register a license annually to use the free version of Vivado. Otherwise, Vivado and Vitis will not open!** I will try to document how I was able to get a license for this release. For those of you who use enterprise licenses, it doesn't seem like much has changed, but I could be wrong.
 
 ## Installation
 
@@ -26,23 +32,41 @@ This project will *thoroughly* document from **start to finish** creating a simp
         - In case if it's not: `$ sudo localectl set-locale LANGE=en_US.UTF-8`
 
 - Vivado Install
-    - Go to [Vivado Downloads](https://www.xilinx.com/support/download.html)
+    - Go to [Vivado Downloads](https://www.amd.com/en/support/downloads/adaptive-socs-and-fpgas/development-tools/2026-1.html)
         - ![Vivado Installer](./IMG/Vivado_Download.png)
-    - `$ sudo mkdir -p /opt/Xilinx`
-    - `$ sudo chown -R $USER:$USER /opt/Xilinx`
-    - `$ chmod +x ~/Downloads/FPGAs_AdaptiveSoCs_Unified_SDI_2025.2_1114_2157_Lin64.bin`
+    - `$ sudo mkdir -p /opt/AMD`
+    - `$ sudo chown -R $USER:$USER /opt/AMD`
+    - `$ chmod +x ~/Downloads/FPGAs_AdaptiveSoCs_Unified_SDI_2026.1_0616_1700_Lin64.bin`
     - Install Vivado with the Self Extracting Installer
         - **Warning: AMD Account Required!!!**
-        - `$ ~/Downloads/FPGAs_AdaptiveSoCs_Unified_SDI_2025.2_1114_2157_Lin64.bin`
-    - Vivado is installed under: */opt/Xilinx/2025.2/Vivado*
+        - `$ ~/Downloads/FPGAs_AdaptiveSoCs_Unified_SDI_2026.1_0616_1700_Lin64.bin`
+    - Vivado is installed under: */opt/AMD/2026.1/Vivado*
 
 - Yocto Artifacts (Downloads + Sstate Cache)
-    - Go to [Embedded Software](https://www.xilinx.com/support/download/index.html/content/xilinx/en/downloadNav/embedded-design-tools.html)
+    - Go to [Embedded Software](https://www.amd.com/en/support/downloads/adaptive-socs-and-fpgas/embedded-software.html)
         - ![Yocto Artifacts](./IMG/Yocto_Artifacts.png)
         - **Warning: AMD Account Required!!!**
-    - `$ mkdir -p /opt/Xilinx/2025.2/Yocto`
-    - `$ tar -xpvf ~/Downloads/downloads_edf_25.11_11151020.tar.gz -C /opt/Xilinx/2025.2/Yocto`
-    - `$ tar -xpvf ~/Downloads/sstate-cache_edf_25.11_11151020.tar.gz -C /opt/Xilinx/2025.2/Yocto`
+    - `$ mkdir -p /opt/AMD/2026.1/Yocto/sstate-cache`
+    - `$ tar -xpvf ~/Downloads/downloads_2026.1_06060014.tar.gz -C /opt/AMD/2026.1/Yocto`
+    - `$ tar -xpvf ~/Downloads/sstate_aarch64_2026.1_06060014.tar.gz -C /opt/AMD/2026.1/Yocto/sstate-cache`
+
+- License Acquisition
+    - Go to [AMD's Vivado License Page](https://account.amd.com/en/forms/license/license-form.html)
+        - **Warning: AMD Account Required!!!**
+    - After signing in, you should see this menu:
+        - ![Licensing Menu](./IMG/Licensing.png)
+    - Under "Certificate Based Licenses", select "Vivado Basic Tier License, Node Locked License"
+        - ![Free License](./IMG/Free-License-Selection.png)
+    - Click "Generate Node-Locked License"
+    - Fill out the License Form and you should get an email associated with your AMD Account with your .lic file.
+    - Download the .lic file that was emailed to you and save it.
+    - Source Vivado and run Vivado License Manager
+        - `$ source /opt/AMD/2026.1/Vivado/settings64.sh`
+        - `$ vlm`
+    - After opening the License Manager, go to the Load License tab, and click "Copy License..."
+        - ![Load License](./IMG/Load-License.png)
+    - Select the .lic file you just saved and your license should now be applied
+        - **Warning: Free licenses seem to only last for a year, so you must renew your license anually to keep using the free version of Vivado**
 
 - Optional: Visual Studio Code
     - `$ sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc`
@@ -63,17 +87,14 @@ This project will *thoroughly* document from **start to finish** creating a simp
 After installing everything I need, open Vivado.
 
 - `$ cd ~/workspace/Yocto-ZCU104/Vivado`
-- `$ source /opt/Xilinx/2025.2/Vivado/settings64.sh`
+- `$ source /opt/AMD/2026.1/Vivado/settings64.sh`
 - `$ vivado`
 
 I'm going to start with the PL design using Vivado. The PL design will be pretty simple. It will only use the LEDs, push buttons, and DIP switches included into the ZCU104 via AXI GPIO.
 
-*I'm able to enable Dark Mode with these settings:*
+*I'm able to enable Dark Mode with these by simply enabling "New Vivado IDE" at the settings menu:*
 
 ![Dark Mode Settings](./IMG/Dark_Mode_Settings.png)
-
-![Dark Mode Block Design](./IMG/Dark_Mode_BD.png)
-
 
 Block Design:
 
@@ -92,9 +113,9 @@ After generating the bitstream, I exported the hardware platform.
 After generating the XSA, I created the System Device Tree (SDT) using `SDTGen`.
 
 - `$ sdtgen`
-- `% set_dt_param -dir ../SDT -xsa ./Simple.xsa`
-- `% generate_sdt`
-- `% exit`
+- `sdtgen% set_dt_param -dir ../SDT -xsa ./simple_zcu104.xsa`
+- `sdtgen% generate_sdt`
+- `sdtgen% exit`
 
 This is what the generated SDT looks like:
 
@@ -111,15 +132,15 @@ I have generated an XSA and derived the SDT ([System Device Tree](https://static
 To start with AMD's EDF, I need to use `repo` (this was installed in the [Installation section](#installation)) to grab the necessary components to build our image for ZCU104.
 
 - `$ cd ~/workspace/Yocto-ZCU104/Yocto`
-- `$ repo init -u https://github.com/Xilinx/yocto-manifests.git -b rel-v2025.2 -m default-edf.xml`
+- `$ repo init -u https://github.com/Xilinx/yocto-manifests.git -b rel-v2026.1 -m default-edf.xml`
 - `$ repo sync`
 
 With the `repo sync` command, we now should have everything for EDF. However, I'm going to remove repo's metadata and all of the layer's git metadata so our larger git project will add and push to my repo. **Yes, I know I'm not supposed to do this, but I don't care for this demo until I know of a better way to version control this project.**
 
 - `$ rm -rfv ./.repo/`
 - `$ rm -v ./sources/*/.git`
+- `$ rm -rfv ./sources/*/.github`
 - `$ rm -v ./sources/meta-xilinx/meta-xilinx-core/gen-machine-conf/.git`
-- `$ rm -rfv ./sources/{meta-rauc,meta-ros}/.github`
 - `$ rm -v ./sources/{meta-ros,meta-xilinx}/.gitmodules`
 
 ### Sourcing Yocto Development
@@ -176,9 +197,11 @@ BBLAYERS ?= " \
   ${YOCTOROOT}/sources/poky/../meta-xilinx/meta-xilinx-mali400 \
   ${YOCTOROOT}/sources/poky/../meta-xilinx/meta-xilinx-gpu-malig78ae \
   ${YOCTOROOT}/sources/poky/../meta-xilinx/meta-microblaze \
+  ${YOCTOROOT}/sources/poky/../meta-xilinx/meta-amd-zephyr \
   ${YOCTOROOT}/sources/poky/../meta-xilinx-tsn \
   ${YOCTOROOT}/sources/poky/../meta-openamp \
   ${YOCTOROOT}/sources/poky/../meta-amd-edf \
+  ${YOCTOROOT}/sources/poky/../meta-amd-edf/meta-amd-edf-bsp \
   ${YOCTOROOT}/sources/poky/../meta-kria \
   ${YOCTOROOT}/sources/poky/../meta-amd-adaptive-socs/meta-amd-adaptive-socs-core \
   ${YOCTOROOT}/sources/poky/../meta-amd-adaptive-socs/meta-amd-adaptive-socs-bsp \
@@ -191,6 +214,9 @@ BBLAYERS ?= " \
   ${YOCTOROOT}/sources/poky/../meta-ros/meta-ros2-jazzy \
   ${YOCTOROOT}/sources/poky/../meta-qt5 \
   ${YOCTOROOT}/sources/poky/../meta-vitis \
+  ${YOCTOROOT}/sources/poky/../meta-zephyr/meta-zephyr-core \
+  ${YOCTOROOT}/sources/poky/../meta-zephyr/meta-zephyr-bsp \
+  ${YOCTOROOT}/sources/poky/../meta-embedded-plus \
   ${YOCTOROOT}/sources/meta-custom \
   "
 ```
@@ -199,12 +225,12 @@ BBLAYERS ?= " \
 
 ```
 # Source and Sstate mirror settings
-AMD-EDF_VERSION = "25.11"
+AMD-EDF_VERSION = "26.06"
 
 BB_NO_NETWORK = "1"
 INHERIT += "own-mirrors"
-SOURCE_MIRROR_URL = "file:///opt/Xilinx/2025.2/Yocto/downloads"
-SSTATE_MIRRORS = "file://.* file:///opt/Xilinx/2025.2/Yocto/sstate-cache/PATH"
+SOURCE_MIRROR_URL = "file:///opt/AMD/2026.1/Yocto/downloads"
+SSTATE_MIRRORS = "file://.* file:///opt/AMD/2026.1/Yocto/sstate-cache/PATH"
 ```
 
 6. Edit edf-init-build-env
@@ -393,11 +419,14 @@ We now have our device tree accounted for! Now let's configure the kernel to bui
 - `$ mkdir -p ../sources/meta-custom/recipes-kernel/linux-xlnx/files`
 - `$ touch ../sources/meta-custom/recipes-kernel/linux-xlnx/files/kernel.cfg`
 - `$ bitbake virtual/kernel -c menuconfig`
+    - CONFIG_PREEMPT_RT=y
+    - CONFIG_PREEMPT_RT_NEEDS_BH_LOCK=y
     - CONFIG_UIO_PDRV_GENIRQ=y
     - CONFIG_UIO_DMEM_GENIRQ=y
     - CONFIG_UIO_XILINX_AI_ENGINE=y
 - `$ bitbake virtual/kernel -c diffconfig`
-    - This command will generate a diffconfig. Merge the diffs into *../sources/meta-custom/recipes-kernel/linux-xlnx/files/kernel.cfg*
+    - This command will generate a diffconfig.
+    - Merge the diffconfig into *../sources/meta-custom/recipes-kernel/linux-xlnx/files/kernel.cfg*
 - `$ vim ../sources/meta-custom/recipes-kernel/linux-xlnx_%.bbappend`
 
 ```
@@ -406,7 +435,7 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 SRC_URI += "file://kernel.cfg"
 ```
 
-- `$ bitbake virtual/bootloader -c cleansstate`
+- `$ bitbake virtual/kernel -c cleansstate`
 
 ### U-Boot Configuration
 
@@ -559,7 +588,7 @@ do_install:append() {
 
 #### <ins>Networking</ins>
 
-Now that we told udev to preserve the ethernet interface naming schema we want, now we have to initialize `eth0` with IP address, netmask, and gateway settings on bootup.
+Now that we told udev to preserve the ethernet interface naming schema we want, now we have to initialize `end0` with IP address, netmask, and gateway settings on bootup.
 
 - `$ mkdir -p ../sources/meta-custom/recipes-core/init-ifupdown/files`
 - `$ vim ../sources/meta-custom/recipes-core/init-ifupdown/files/interfaces`
@@ -803,45 +832,21 @@ PACKAGE_INSTALL:append = " uio-test"
 ```
 
 For the root password, Poky only accepts encrypted passwords. This is done in the following manner:
-- `$ openssl passwd -1 (TEXT PASSWORD)`
-	- This will generate an encrypted password. Copy this into the '(HASH)' part in the local.conf. For example:
- 	- openssl passwd -1 testpassword --> $1$YgYwXK6M$BiBC4QQxDlw1fvx3L.FqE.
-    	- This will turn into: `EXTRA_USERS_PARAMS = "usermod -p '\$1\$YgYwXK6M\$BiBC4QQxDlw1fvx3L.FqE.' root;"`
+- `$ openssl passwd -1 (PASSWD) | sed 's/\$/\\\$/g'`
+	- This will generate an encrypted password with each dollar sign escaped. We need to do this or BitBake will interpret the dollar signs as trying to reference a variable. Copy this output into the '(HASH)' part in the local.conf. For example:
+ 	- openssl passwd -1 testpassword | sed 's/\$/\\\$/g' --> \$1\$pKP1spiZ\$4iZbQK3.b4hdNPCuMTeFD0
+    	- Now put this line in the local.conf: `EXTRA_USERS_PARAMS = "usermod -p '\$1\$pKP1spiZ\$4iZbQK3.b4hdNPCuMTeFD0' root;"`
     		- **Notice how each dollar sign is escaped. Keep that in mind!** 
 
-### Preparing for the Build
+### Adding Package to Local Downloads
 
-**Note: I'm including this section as, currently, there's an issue with the `do_package()` tasks on all packages with `tar` >= v1.34. See this [issue](https://errors.yoctoproject.org/Errors/Details/893482/) for more information.**
+In some cases, a fetching error can occur when a particular package that the build requires doesn't exist in the Downloads cache we set up earlier.
 
-The fix for this is to fetch an older version of the tar utility, build, and install it. Thankfully, my [LFS](https://www.linuxfromscratch.org/lfs/view/stable/) knowledge is coming in handy here!
+- ![Fetching Error](./IMG/Fetching-Error.png)
 
-To fix this:
+To fix this, you need to grab the package from the [official Yocto Project downloads mirror](https://downloads.yoctoproject.org/mirror/sources/). In this example, I need to get bind-9.18.41.tar.xz. Just search for that file and download it in */opt/AMD/2026.1/Yocto/downloads*.
 
-1. Exit out of your current terminal and create a new one
-2. Change directory into Downloads
-    - `$ cd ~/Downloads`
-3. Grab tar v1.33 from one the [GNU mirrors](https://ftp.wayne.edu/gnu/tar/). GNU has quite a bit of mirrors so if a tarball is not downloading or fetching quick enough, just pick another one.
-    - `$ wget https://ftp.gnu.org/gnu/tar/tar-1.33.tar.xz`
-4. Untar
-    - `$ tar -xvf ./tar-1.33.tar.xz`
-5. Change directory into the untarred
-    - `$ cd ./tar-133`
-6. Run the configure script to set up the build
-    - `$ ./configure`
-7. Build
-    - `$ make`
-8. I recommend uninstalling your current tar using your package manager (mine is DNF)
-    - `$ sudo dnf remove tar`
-9. Install the older tar
-    - `$ sudo make install`
-    - `$ sudo ln -sv /usr/local/bin/tar /usr/bin/tar`
-
-**WARNING: We are using an externally built utility outside of the scope of the package manager. Thus, once you're done, please uninstall the older tar and install back the package controlled by the PM as so:**
-
-- `$ cd ~/Downloads/tar-1.33/`
-- `$ sudo make uninstall`
-- `$ sudo rm -v /usr/bin/tar`
-- `$ sudo dnf install tar`
+Rebuild and the package should be fetchable now.
 
 ### Building Project
 

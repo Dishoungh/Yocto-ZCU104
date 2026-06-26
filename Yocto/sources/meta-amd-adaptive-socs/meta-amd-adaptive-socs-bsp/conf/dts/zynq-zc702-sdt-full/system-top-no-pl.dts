@@ -14,7 +14,7 @@
 
                 u-boot {
                         compatible = "u-boot,config";
-                        bootscr-address = <0x0 0x3000000>;
+                        bootscr-address = /bits/ 64 <0x3000000>;
                 };
         };
 
@@ -315,6 +315,7 @@
                                         eeprom: eeprom@54 {
                                                 phandle = <0x44>;
                                                 compatible = "atmel,24c08";
+                                                label = "eeprom_zc702";
                                                 reg = <0x54>;
                                         };
                                 };
@@ -452,6 +453,7 @@
                         reg = <0xe0001000 0x1000>;
                         interrupts = <0x0 0x32 0x4>;
                         interrupt-parent = <&intc>;
+                        device_type = "serial";
                         xlnx,clock-freq = <0x2faf080>;
                         xlnx,has-modem = <0x0>;
                         xlnx,ip-name = "ps7_uart";
@@ -1333,7 +1335,6 @@
                         compatible = "xlnx,ps7-m-axi-gp-1.00.a";
                         status = "okay";
                         xlnx,ip-name = "ps7_m_axi_gp";
-                        xlnx,is-hierarchy;
                         reg = <0x40000000 0x40000000>;
                         xlnx,name = "ps7_m_axi_gp0";
                 };
@@ -1346,11 +1347,14 @@
 
         axi_bram_ctrl_0_memory: memory@40000000 {
                 phandle = <0x2>;
+                ranges = <0x0 0x40000000 0x2000>;
                 compatible = "xlnx,axi-bram-ctrl-4.1";
+                #address-cells = <0x1>;
                 xlnx,ip-name = "axi_bram_ctrl";
                 device_type = "memory";
+                #size-cells = <0x1>;
                 memory_type = "memory";
-                reg = <0x0 0x40000000 0x0 0x2000>;
+                reg = <0x40000000 0x2000>;
         };
 
         ps7_qspi_linear_0_memory: memory@fc000000 {
@@ -1390,8 +1394,8 @@
         };
 
         chosen {
+                bootargs = "earlycon";
                 stdout-path = "serial0:115200n8";
-                bootargs = "";
         };
 
         aliases {
@@ -1535,5 +1539,19 @@
                 ps7_ram_0_memory = "/memory@0";
                 ps7_ram_1_memory = "/memory@ffff0000";
                 usb_phy0 = "/phy0@e0002000";
+        };
+
+        domains {
+
+                APU_Linux {
+                        compatible = "openamp,domain-v1";
+                        cpus = <&cpus_a9 0x3 0x80000003>;
+                        os,type = "linux";
+
+                        chosen {
+                                bootargs = "earlycon";
+                                stdout-path = "serial0:115200n8";
+                        };
+                };
         };
 };

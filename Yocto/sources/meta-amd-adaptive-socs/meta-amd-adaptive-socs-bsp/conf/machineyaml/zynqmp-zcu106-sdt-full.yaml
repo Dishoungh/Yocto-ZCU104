@@ -1,11 +1,18 @@
 args:
-    - --hw-description https://edf.amd.com/sswreleases/rel-v2025.2/sdt/2025.2/2025.2_1115_1_11150857/external/zynqmp-zcu106-sdt-full/zynqmp-zcu106-sdt-full_2025.2_1115_1_11150857.tar.gz
+    - --hw-description https://edf.amd.com/sswreleases/rel-v2026.1/sdt/2026.1/2026.1_0609_1_06092108/external/zynqmp-zcu106-sdt-full/zynqmp-zcu106-sdt-full_2026.1_0609_1_06092108.tar.gz
     - --machine-name zynqmp-zcu106-sdt-full
     - -g full
+    - --domain-file ${LAYER_PATH_xilinx-standalone-sdt}/conf/domainyaml/zynqmp-linux-only-base.yaml \
+                    ${BSPLAYERDIR_amd-adaptive-socs-bsp}/conf/domainyaml/zcu106-linux-overlay.yaml
+
 kconfig:
+    CONFIG_SUBSYSTEM_BOOTMODE_5: y
 
 machine:
-    pre:
+    description: >-
+        Machine configuration for the AMD Zynq UltraScale+ MPSoC ZCU106
+        evaluation kit (Cortex-A53 Linux plus FSBL and MicroBlaze PMU
+        sub-machines), built from system device tree.
     post:
         QB_MEM:
             op: '='
@@ -16,10 +23,3 @@ machine:
         QEMU_HW_DTB_PMU:
             op: '='
             val: "${QEMU_HW_DTB_PATH}/zynqmp-pmu.dtb"
-        ENABLE_XEN_DTSI:
-            comment: "Temporarily enable XEN and XEN QEMU DTSI to system.dtb"
-            op: '='
-            val: "1"
-        ENABLE_XEN_QEMU_DTSI:
-            op: '='
-            val: "1"

@@ -1,7 +1,10 @@
+SUMMARY = "Packagegroup pulling in the Kria-SOM-specific runtime \
+(firmware, dashboard, xmutil, platformstats, board-id-data, etc.)."
 DESCRIPTION = "Kria SOM related packages"
 
 COMPATIBLE_MACHINE = "^$"
 COMPATIBLE_MACHINE:kria = "${MACHINE}"
+COMPATIBLE_MACHINE:amd-cortexa53-mali-common = "${MACHINE}"
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 inherit packagegroup
@@ -34,7 +37,6 @@ KRIA_PACKAGES = " \
         python3-numpy \
         python3-shell \
         python3-threading \
-        python3-threading \
         python3-pyserial \
         python3-h5py \
         tree \
@@ -45,6 +47,6 @@ KRIA_PACKAGES = " \
 KRIA_ARCH_PACKAGES = ""
 KRIA_ARCH_PACKAGES:k26-smk = "k26-starter-kits"
 KRIA_ARCH_PACKAGES:k24-smk = "k24-starter-kits"
-KRIA_ARCH_PACKAGES:kria-zynqmp-generic = "k26-starter-kits k24-starter-kits"
+KRIA_ARCH_PACKAGES:amd-cortexa53-mali-common = "k26-starter-kits k24-starter-kits"
 
 RDEPENDS:${PN} = "${KRIA_PACKAGES}"

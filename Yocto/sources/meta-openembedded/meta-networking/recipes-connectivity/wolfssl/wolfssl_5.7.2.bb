@@ -12,10 +12,18 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=b234ee4d69f5fce4486a80fdaf4a4263"
 PROVIDES += "cyassl"
 RPROVIDES:${PN} = "cyassl"
 
-SRC_URI = " \
-    git://github.com/wolfSSL/wolfssl.git;protocol=https;branch=master \
-    file://run-ptest \
-"
+SRC_URI = "git://github.com/wolfSSL/wolfssl.git;protocol=https;branch=master \
+           file://run-ptest \
+           file://CVE-2025-7395-1.patch \
+           file://CVE-2025-7395-2.patch \
+           file://CVE-2025-7395-3.patch \
+           file://CVE-2025-7394-1.patch \
+           file://CVE-2025-7394-2.patch \
+           file://CVE-2025-7394-3.patch \
+           file://CVE-2025-7394-4.patch \
+           file://CVE-2025-7394-5.patch \
+           file://CVE-2025-7394-6.patch \
+           "
 SRCREV = "00e42151ca061463ba6a95adb2290f678cbca472"
 
 S = "${WORKDIR}/git"

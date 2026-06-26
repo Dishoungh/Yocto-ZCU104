@@ -6,7 +6,7 @@
 #include "pcw.dtsi"
 / {
 	board = "zcu104";
-	compatible = "xlnx,zcu104";
+	compatible = "xlnx,zcu104-microblaze";
 	device_id = "xczu7ev";
 	slrcount = <1>;
 	family = "ZynqMP";

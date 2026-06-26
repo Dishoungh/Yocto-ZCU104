@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Copyright (C) 2023, Advanced Micro Devices, Inc.  All rights reserved.
+# Copyright (C) 2023-2026, Advanced Micro Devices, Inc.  All rights reserved.
 #
 # Author:
 #       Raju Kumar Pothuraju <rajukumar.pothuraju@amd.com>
@@ -10,6 +10,8 @@
 import logging
 import os
 import common_utils
+import bitbake_utils
+import yaml_utils
 import sys
 import shutil
 import re
@@ -108,19 +110,22 @@ def AddXsctUtilsPath(xsct_tool):
             os.environ["PATH"] += os.pathsep + os.path.join(xsct_tool, 'bin')
     else:
         try:
-            xilinx_xsct_tool = common_utils.Bitbake.getVar('XILINX_SDK_TOOLCHAIN')
+            xilinx_xsct_tool = bitbake_utils.Bitbake.getVar('XILINX_SDK_TOOLCHAIN')
         except KeyError:
             raise Exception('Unable to get XILINX_SDK_TOOLCHAIN path, please verify meta-xilinx-tools layer is available.')
 
         if xilinx_xsct_tool and not os.path.isdir(xilinx_xsct_tool):
             logger.info('Installing xsct...')
-            common_utils.Bitbake.runBitbakeCmd('xsct-native')
+            bitbake_utils.Bitbake.runBitbakeCmd('xsct-native')
 
         if xilinx_xsct_tool and not os.path.isdir(xilinx_xsct_tool):
             raise Exception('Looking for xsct in "%s" but the path does not exist. '
                          'Use --xsct-tool option to specify the SDK_XSCT path' % xilinx_xsct_tool)
         elif xilinx_xsct_tool:
             os.environ["PATH"] += os.pathsep + xilinx_xsct_tool + '/bin'
+
+    # Disable blocking dependency check in xsct
+    os.environ["XSCT_DEP_CHECK_BLOCKING"] = "FALSE"
 
     # XSCT can only be extracted if we've enabled XSCT
     xsct_exe = common_utils.check_tool('xsct', 'xsct-native', 'xsct command not found, use --xsct-tool option to specify path')
@@ -166,7 +171,7 @@ def GenXsctSystemHwFile(genmachine_scripts,
 def GetFlashInfo(genmachine_scripts, output, system_conffile, hw_file):
     ipinfo_file = os.path.join(genmachine_scripts, 'data', 'ipinfo.yaml')
     flashinfo_file = os.path.join(output, 'flash_parts.txt')
-    # No need to run if system conf file(config) is doesnot change
+    # No need to run if system conf file(config) does not change
     if common_utils.ValidateHashFile(output, 'SYSTEM_CONF', system_conffile, update=False) and \
             os.path.exists(flashinfo_file):
         return 0
@@ -220,14 +225,14 @@ SocCpuDict = {
 
 def ParseXsa(args):
     if args.hw_flow == 'sdt':
-        raise Exception('Invalide HW source Specified for XSCT Flow.')
+        raise Exception('Invalid HW source Specified for XSCT Flow.')
 
     if not 'PETALINUX' in os.environ.keys() and \
-       not common_utils.Bitbake.disabled and common_utils.Bitbake.getVar('XILINX_WITH_ESW') != 'xsct':
-        logger.debug('XILINX_WITH_ESW = %s' % common_utils.Bitbake.getVar('XILINX_WITH_ESW'))
-        common_utils.Bitbake.prepare(prefile=[os.path.join(os.path.dirname(__file__),'../../gen-machine-scripts/data/yocto_esw_xsct.conf')])
-        logger.debug('XILINX_WITH_ESW = %s' % common_utils.Bitbake.getVar('XILINX_WITH_ESW'))
-        if common_utils.Bitbake.getVar('XILINX_WITH_ESW') != 'xsct':
+       not bitbake_utils.Bitbake.disabled and bitbake_utils.Bitbake.getVar('XILINX_WITH_ESW') != 'xsct':
+        logger.debug('XILINX_WITH_ESW = %s' % bitbake_utils.Bitbake.getVar('XILINX_WITH_ESW'))
+        bitbake_utils.Bitbake.prepare(prefile=[os.path.join(os.path.dirname(__file__),'../../gen-machine-scripts/data/yocto_esw_xsct.conf')])
+        logger.debug('XILINX_WITH_ESW = %s' % bitbake_utils.Bitbake.getVar('XILINX_WITH_ESW'))
+        if bitbake_utils.Bitbake.getVar('XILINX_WITH_ESW') != 'xsct':
             raise Exception('XILINX_WITH_ESW must be set to "xsct".  Add the following to your local.conf file: XILINX_WITH_ESW = "xsct"')
 
     def LookupCpuInfoFromSocFam(proc_type):
@@ -371,19 +376,19 @@ def register_commands(subparsers):
                                        ' <PATH_TO_XSA>/<xsa_name>.xsa] [other options]'
                                        )
     parser_xsa.add_argument('--xsct-tool', metavar='[XSCT_TOOL_PATH]',
-                            default=common_utils.AddYamlDefaultValues('--xsct-tool'),
+                            default=yaml_utils.AddYamlDefaultValues('--xsct-tool'),
                             help='Vivado or Vitis XSCT path to use xsct commands (Optional if you are already have AMD tools in your path)')
 
     parser_xsa.add_argument('-l', '--localconf', metavar='<config_file>',
-                            default=common_utils.AddYamlDefaultValues(['-l', '--localconf']),
+                            default=yaml_utils.AddYamlDefaultValues(['-l', '--localconf']),
                             help='Write local.conf changes to this file', type=os.path.realpath)
 
     parser_xsa.add_argument('--multiconfigfull', action='store_true',
-                            default=common_utils.AddYamlDefaultValues('--multiconfigfull'),
+                            default=yaml_utils.AddYamlDefaultValues('--multiconfigfull'),
                             help='Generate/Enable Full set of multiconfig .conf and .dts files. Default is minimal')
 
     parser_xsa.add_argument('--multiconfigenable', action='store_true',
-                            default=common_utils.AddYamlDefaultValues('--multiconfigenable'),
+                            default=yaml_utils.AddYamlDefaultValues('--multiconfigenable'),
                             help='Enable multiconfig support. default is disabled.')
 
     parser_xsa.set_defaults(func=ParseXsa)

@@ -55,9 +55,9 @@ This layer depends on:
         https://git.yoctoproject.org/meta-xilinx (official version)
         https://github.com/Xilinx/meta-xilinx (development and AMD release)
 	layers: meta-xilinx-core, meta-xilinx-standalone, meta-xilinx-standalone-sdt.
-	branch: scarthgap or AMD release version (e.g. rel-v2025.2)
+	branch: scarthgap or AMD release version (e.g. rel-v2026.1)
 
 	URI:
         https://github.com/Xilinx/meta-amd-adaptive-socs (development and AMD release)
 	layers: meta-amd-adaptive-socs-core, meta-amd-adaptive-socs-bsp
-	branch: scarthgap or AMD release version (e.g. rel-v2025.2)
+	branch: scarthgap or AMD release version (e.g. rel-v2026.1)

@@ -1,5 +1,7 @@
 # Copyright (c) 2021 LG Electronics, Inc.
 
+LICENSE = "BSD-3-Clause"
+
 # used only as runtime dependency, but there is no ode/libode recipe, try to set it empty to test in runtime if this new dependency from 1.5.2 version is really mandatory
 # https://github.com/ompl/ompl/compare/1.5.1...1.5.2
 # https://github.com/ompl/ompl/commit/bb0a03c6fe4fbba0282c9a58881c3f499e7564d0 says it's optional
@@ -24,7 +26,12 @@ inherit ros_insane_dev_so
 # ERROR: ompl-1.5.2-1-r0 do_package_qa: QA Issue: ompl: /usr/lib/libompl.so.1.5.2 contains probably-redundant RPATH /usr/lib [useless-rpaths]
 DEPENDS:append:class-target = " chrpath-replacement-native"
 do_install:append() {
-    chrpath --delete ${D}${libdir}/*${SOLIBS}
+    chrpath --delete ${D}${ros_libdir}/*${SOLIBS}
+    # QA Issue: File /opt/ros/rolling/share/ompl/cmake/omplConfig.cmake in package ompl-dev contains reference to TMPDIR [buildpaths]
+    # QA Issue: File /opt/ros/rolling/lib/pkgconfig/ompl.pc in package ompl-dev contains reference to TMPDIR [buildpaths]
+    sed -i -e "s#${RECEIPE_SYSROOT}/usr/lib/##g" ${D}${ros_prefix}/share/ompl/cmake/omplConfig.cmake
+    sed -i -e "s#${RECIPE_SYSROOT}##g" ${D}${ros_prefix}/share/ompl/cmake/omplConfig.cmake
+    sed -i -e "s#${RECIPE_SYSROOT}##g" ${D}${ros_prefix}/lib/pkgconfig/ompl.pc
 }
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/${BPN}:"

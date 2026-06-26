@@ -14,7 +14,7 @@
 
                 u-boot {
                         compatible = "u-boot,config";
-                        bootscr-address = <0x0 0x3000000>;
+                        bootscr-address = /bits/ 64 <0x3000000>;
                 };
         };
 
@@ -275,6 +275,7 @@
                                         eeprom: eeprom@54 {
                                                 phandle = <0x44>;
                                                 compatible = "atmel,24c08";
+                                                label = "eeprom_zc702";
                                                 reg = <0x54>;
                                         };
                                 };
@@ -409,6 +410,7 @@
                         reg = <0xe0001000 0x1000>;
                         interrupts = <0x0 0x32 0x4>;
                         interrupt-parent = <&intc>;
+                        device_type = "serial";
                         xlnx,clock-freq = <0x2faf080>;
                         xlnx,has-modem = <0x0>;
                         xlnx,ip-name = "ps7_uart";
@@ -1178,8 +1180,8 @@
         };
 
         chosen {
+                bootargs = "earlycon";
                 stdout-path = "serial0:115200n8";
-                bootargs = "";
         };
 
         aliases {
@@ -1306,5 +1308,19 @@
                 ps7_qspi_linear_0 = "/axi/ps7_qspi_linear@fc000000";
                 ps7_ddr_0_memory = "/memory@00100000";
                 usb_phy0 = "/phy0@e0002000";
+        };
+
+        domains {
+
+                APU_Linux {
+                        compatible = "openamp,domain-v1";
+                        cpus = <&cpus_a9 0x3 0x80000003>;
+                        os,type = "linux";
+
+                        chosen {
+                                bootargs = "earlycon";
+                                stdout-path = "serial0:115200n8";
+                        };
+                };
         };
 };

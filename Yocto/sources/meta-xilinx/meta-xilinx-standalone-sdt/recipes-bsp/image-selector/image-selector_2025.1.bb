@@ -1,14 +1,10 @@
-inherit esw python3native esw_apps_common deploy
+inherit esw python3native esw_apps_common deploy bootgen-bif
 
 IMGSEL_DEPENDS ?= ""
 IMGSEL_DEPENDS:zynqmp ?= "libxil xiltimer bootgen-native"
 IMGSEL_DEPENDS:versal ?= "xilpdi xilplmi xilloader xilpm xilsecure xilpuf xiltimer xilffs bootgen-native base-pdi"
 IMGSEL_DEPENDS:versal-2ve-2vm ?= "xilpdi xilplmi xilloader xilpm-ng xilsecure xilpuf xiltimer xilffs xilocp xilcert bootgen-native base-pdi"
 
-BOOTGEN_ARCH_DEFAULT:zynqmp = "zynqmp"
-BOOTGEN_ARCH_DEFAULT:versal = "versal"
-BOOTGEN_ARCH_DEFAULT:versal-2ve-2vm = "versal_2ve_2vm"
-BOOTGEN_ARCH ?= "${BOOTGEN_ARCH_DEFAULT}"
 
 DEPENDS += "${IMGSEL_DEPENDS}"
 
@@ -110,8 +106,6 @@ do_compile:append:versal-2ve-2vm () {
 
 do_compile:append () {
     bootgen -image ${WORKDIR}/${PN}.bif -arch ${BOOTGEN_ARCH} -w -o ${B}/${PN}.bin
-
-    printf "* ${PN}\nSRCREV: ${SRCREV}\nBRANCH: ${BRANCH}\n\n" > ${S}/${PN}.manifest
 }
 
 do_install[noexec] = "1"
@@ -121,8 +115,6 @@ do_deploy() {
     ln -sf ${PN}.elf ${DEPLOYDIR}/${PN}-${MACHINE}.elf
     install -Dm 0644 ${B}/${PN}.bin ${DEPLOYDIR}/${PN}.bin
     ln -sf ${PN}.bin ${DEPLOYDIR}/${PN}-${MACHINE}.bin
-
-    install -Dm 0644 ${S}/${PN}.manifest ${DEPLOYDIR}/${PN}-${MACHINE}.manifest
 }
 
 addtask deploy before do_build after do_install

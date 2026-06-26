@@ -17263,6 +17263,8 @@ unsigned long psu_lpd_xppu_data(void)
     * XPPU CONTROL
     */
 
+	dsb();
+
 	return 1;
 }
 unsigned long psu_ddr_xmpu0_data(void)
@@ -21065,6 +21067,7 @@ static int psu_init_xppu_aper_ram(void)
 int psu_lpd_protection(void)
 {
 	psu_init_xppu_aper_ram();
+	dsb();
 	return 0;
 }
 
@@ -21076,17 +21079,20 @@ int psu_ddr_protection(void)
 	psu_ddr_xmpu3_data();
 	psu_ddr_xmpu4_data();
 	psu_ddr_xmpu5_data();
+	dsb();
 	return 0;
 }
 int psu_ocm_protection(void)
 {
 	psu_ocm_xmpu_data();
+	dsb();
 	return 0;
 }
 
 int psu_fpd_protection(void)
 {
 	psu_fpd_xmpu_data();
+	dsb();
 	return 0;
 }
 

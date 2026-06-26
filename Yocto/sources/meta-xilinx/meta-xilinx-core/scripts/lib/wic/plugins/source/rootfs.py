@@ -154,7 +154,7 @@ class RootfsPlugin(SourcePlugin):
                 # Pack files to be included into a tar file.
                 # We need to create a tar file, because that way we can keep the
                 # permissions from the files even when they belong to different
-                # pseudo enviroments.
+                # pseudo environments.
                 # If we simply copy files using copyhardlinktree/copytree... the
                 # copied files will belong to the user running wic.
                 tar_file = os.path.realpath(

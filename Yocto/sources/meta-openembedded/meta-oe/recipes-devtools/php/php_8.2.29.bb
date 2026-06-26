@@ -20,6 +20,9 @@ SRC_URI = "http://php.net/distributions/php-${PV}.tar.bz2 \
            file://0009-php-don-t-use-broken-wrapper-for-mkdir.patch \
            file://0010-iconv-fix-detection.patch \
            file://0001-Change-whether-to-inline-XXH3_hashLong_withSecret-to.patch \
+           file://CVE-2025-14177.patch \
+           file://CVE-2025-14178.patch \
+           file://CVE-2025-14180.patch \
           "
 
 SRC_URI:append:class-target = " \
@@ -43,6 +46,7 @@ CVE_STATUS_PHP = " \
     CVE-2007-3205 \
     CVE-2007-4596 \
 "
+CVE_STATUS[CVE-2024-3566] = "not-applicable-platform: Issue only applies on Windows"
 
 inherit autotools pkgconfig python3native gettext multilib_header multilib_script systemd
 

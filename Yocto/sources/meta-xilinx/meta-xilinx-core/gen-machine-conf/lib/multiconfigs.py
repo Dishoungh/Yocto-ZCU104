@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Copyright (C) 2023, Advanced Micro Devices, Inc.  All rights reserved.
+# Copyright (C) 2023-2026, Advanced Micro Devices, Inc.  All rights reserved.
 #
 # Author:
 #       Raju Kumar Pothuraju <rajukumar.pothuraju@amd.com>
@@ -9,6 +9,7 @@
 
 
 import os
+import re
 import common_utils
 import project_config
 import logging
@@ -19,7 +20,7 @@ logger = logging.getLogger('Gen-Machineconf')
 
 class ParseMultiConfigFiles():
     def ArmCortexSetup(self):
-        cpu = self.cpu[4:].replace('-', '')
+        cpu = self.cpu[4:].replace('-', '').replace('.', '-')
         domain_suffix = '-%s' % self.domain if self.domain and self.domain != 'None' else ''
         if self.os_hint != 'None':
             if self.os_hint.startswith('linux'):
@@ -60,8 +61,8 @@ class ParseMultiConfigFiles():
         pass
 
     def MicroblazeVSetup(self):
-        cpu = self.cpu.replace('xlnx,','')
-        if self.args.soc_family == 'microblaze':
+        cpu = re.sub(r'^(xlnx|amd),', '', self.cpu).replace('.', '-')
+        if self.args.soc_family == 'microblaze-v':
             mc_name = ''
             os_hint = 'linux'
             self.MultiConfMap[mc_name] = { 'cpuname' : self.cpuname, 'cpu' : self.cpu, 'core' : self.core, 'domain' : self.domain, 'os_hint' : os_hint};
@@ -81,7 +82,7 @@ class ParseMultiConfigFiles():
                 self.ArmCortexSetup()
             elif self.cpu == 'xlnx,microblaze':
                 self.MicroblazeSetup()
-            elif self.cpu.startswith('xlnx,microblaze-riscv'):
+            elif self.cpu.startswith(('xlnx,microblaze-riscv', 'amd,mbv')):
                 self.MicroblazeVSetup()
             elif self.cpu == 'pmu-microblaze':
                 mc_name = 'microblaze-pmu'
@@ -142,7 +143,7 @@ class GenerateMultiConfigFiles():
                      'pmc-microblaze' : 'microblaze-pmc',
                      'psm-microblaze' : 'microblaze-psm',
                      'xlnx,microblaze-riscv-1.0' : 'riscv32',
-                     'xlnx,asu-microblaze_riscv' : 'microblaze-riscv-asu' }
+                     'xlnx,asu-microblaze_riscv' : 'microblaze-v-asu' }
 
         if not self.MultiConfUser or not self.MultiConfMap:
             logger.debug("No multilibs enabled.")

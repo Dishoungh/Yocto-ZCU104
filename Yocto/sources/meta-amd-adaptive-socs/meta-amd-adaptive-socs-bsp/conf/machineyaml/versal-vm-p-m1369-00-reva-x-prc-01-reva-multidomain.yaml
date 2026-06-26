@@ -1,0 +1,24 @@
+inherit:
+    ${BSPLAYERDIR_amd-adaptive-socs-bsp}/conf/machineyaml/versal-vm-p-m1369-00-reva-x-prc-01-reva-sdt-seg.yaml
+
+args:
+    - --machine-name versal-vm-p-m1369-00-reva-x-prc-01-reva-multidomain
+    - --domain-file ${LAYER_PATH_xilinx-standalone-sdt}/conf/domainyaml/versal-multidomain-base.yaml \
+                    ${LAYER_PATH_xilinx-standalone-sdt}/conf/domainyaml/versal-openamp-overlay.yaml \
+                    ${LAYER_PATH_xilinx-standalone-sdt}/conf/domainyaml/versal-libmetal-overlay.yaml
+
+kconfig:
+    CONFIG_YOCTO_BBMC_LINUX_DTSI: ${LAYER_PATH_xilinx-virtualization}/recipes-bsp/device-tree/files/versal-xen.dtsi \
+        ${BSPLAYERDIR_amd-adaptive-socs-bsp}/recipes-bsp/device-tree/files/platform-misc.dtsi
+
+machine:
+    description: >-
+        AMP/multidomain machine for the AMD Versal VM-P-M1369-00 Rev A
+        system-on-module on the X-PRC-01 Rev A carrier card: Cortex-A72
+        Linux, Cortex-R5 FreeRTOS/baremetal, and MicroBlaze PMC/PSM
+        sub-machines built from system device tree.
+    post:
+        BOOTBIN_INC:
+            comment: 'Enable libmetal application'
+            op: '='
+            val: 'libmetal-demo-rpu1.inc'

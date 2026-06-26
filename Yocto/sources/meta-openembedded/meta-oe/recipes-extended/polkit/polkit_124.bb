@@ -5,7 +5,11 @@ LICENSE = "LGPL-2.0-or-later"
 LIC_FILES_CHKSUM = "file://COPYING;md5=155db86cdbafa7532b41f390409283eb"
 BUGTRACKER = "https://github.com/polkit-org/polkit/issues"
 
-SRC_URI = "git://github.com/polkit-org/polkit.git;protocol=https;branch=main"
+SRC_URI = "\
+     git://github.com/polkit-org/polkit.git;protocol=https;branch=main \
+     file://CVE-2025-7519.patch \
+     file://meson-build-Support-openembedded-OS-for-PAM-config.patch \
+"
 
 S = "${WORKDIR}/git"
 SRCREV = "82f0924dc0eb23b9df68e88dbaf9e07c81940a5a"
@@ -15,6 +19,10 @@ DEPENDS = "expat glib-2.0"
 inherit meson pkgconfig useradd systemd gettext gobject-introspection features_check
 
 REQUIRED_DISTRO_FEATURES = "polkit"
+
+# Prevent meson.build to try to autodetect host OS (which could lead to
+# non-reproducibility)
+EXTRA_OEMESON = "-Dos_type=openembedded"
 
 PACKAGECONFIG = " \
 	${@bb.utils.filter('DISTRO_FEATURES', 'pam', d)} \

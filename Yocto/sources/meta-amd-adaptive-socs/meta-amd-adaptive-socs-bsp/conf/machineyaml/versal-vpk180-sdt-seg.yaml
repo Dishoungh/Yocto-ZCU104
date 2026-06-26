@@ -1,0 +1,22 @@
+args:
+    - --hw-description https://edf.amd.com/sswreleases/rel-v2026.1/sdt/2026.1/2026.1_0609_1_06092108/external/versal-vpk180-sdt-seg/versal-vpk180-sdt-seg_2026.1_0609_1_06092108.tar.gz
+    - --machine-name versal-vpk180-sdt-seg
+    - -g full
+    - --domain-file ${LAYER_PATH_xilinx-standalone-sdt}/conf/domainyaml/versal-linux-only-base.yaml \
+                    ${BSPLAYERDIR_amd-adaptive-socs-bsp}/conf/domainyaml/vpk180-linux-overlay.yaml
+
+kconfig:
+    CONFIG_SUBSYSTEM_BOOTMODE_14: y
+
+machine:
+    description: >-
+        Segmented SDT machine for the AMD Versal Premium VPK180
+        evaluation kit: Cortex-A72 Linux plus MicroBlaze PMC/PSM
+        firmware sub-machines.
+    post:
+        QEMU_HW_DTB_PS:
+            op: '='
+            val: "${QEMU_HW_DTB_PATH}/board-versal-ps-vpk180.dtb"
+        QEMU_HW_DTB_PMC:
+            op: '='
+            val: "${QEMU_HW_DTB_PATH}/board-versal-pmc-virt.dtb"

@@ -1,3 +1,5 @@
+SUMMARY = "EDF reference image that pulls in every available EDF \
+packagegroup and demo for kitchen-sink validation builds."
 DESCRIPTION = "AMD Embedded Development Framework image everything"
 LICENSE = "MIT"
 
@@ -29,7 +31,7 @@ IMAGE_FEATURES:append:aarch64 = " \
     tools-testapps \
     "
 
-VITISAI_DEPENDENCIES = "opencv googletest protobuf-c boost json-c libunwind"
+VITISAI_DEPENDENCIES = "googletest protobuf-c boost json-c libunwind"
 
 AMD-EDF_IMAGE_FULL_INSTALL += " \
     packagegroup-base \
@@ -38,7 +40,6 @@ AMD-EDF_IMAGE_FULL_INSTALL += " \
     tcpdump \
     wireshark \
     packagegroup-networking-stack \
-    python3-pip\
     python3-multiprocessing \
     python3-numpy \
     python3-shell \
@@ -52,8 +53,7 @@ AMD-EDF_IMAGE_FULL_INSTALL += " \
     e2fsprogs \
     packagegroup-lmsensors \
     packagegroup-xilinx-benchmarks \
-    ${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'packagegroup-core-x11', '', d)} \
-    ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'packagegroup-core-weston', '', d)} \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'packagegroup-core-x11 xeyes xclock', '', d)} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'xen', 'packagegroup-xen', '', d)} \
     bridge-utils \
     nfs-utils \
@@ -76,8 +76,13 @@ AMD-EDF_IMAGE_FULL_INSTALL += " \
     memtester \
     libiio \
     libiio-iiod \
-    libiio-tests \
-    efibootmgr \
+    ${@bb.utils.contains('COMBINED_FEATURES', 'efi', 'efibootmgr', '', d)} \
+    libubootenv \
+    libubootenv-bin \
+    mmc-utils \
+    udev-extraconf \
+    ser2net \
+    picocom \
     "
 
 AMD_RISCV32_FULL_INSTALL += " \
@@ -106,6 +111,8 @@ AMD_CORTEXA53_FULL_INSTALL += " \
     packagegroup-xilinx-jupyter \
     packagegroup-tsn \
     dmidecode \
+    raft \
+    image-update \
     "
 
 AMD_CORTEXA53_MALI_FULL_INSTALL += " \
@@ -114,6 +121,9 @@ AMD_CORTEXA53_MALI_FULL_INSTALL += " \
     glmark2 \
     ${@bb.utils.contains('DISTRO_FEATURES', 'libmali', '', 'kmscube', d)} \
     packagegroup-amd-edf-gui \
+    packagegroup-kria \
+    raft \
+    image-update \
     "
 
 AMD_CORTEXA72_FULL_INSTALL += " \
@@ -132,6 +142,7 @@ AMD_CORTEXA72_FULL_INSTALL += " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'x11 opengl', 'packagegroup-self-hosted', '', d)} \
     packagegroup-xilinx-jupyter \
     packagegroup-tsn \
+    image-update \
     "
 
 AMD_CORTEXA78_FULL_INSTALL += " \
@@ -165,7 +176,7 @@ AMD-EDF_IMAGE_FULL_INSTALL:append:amd-cortexa72-common = " ${AMD_CORTEXA72_FULL_
 AMD-EDF_IMAGE_FULL_INSTALL:append:amd-cortexa78-common = " ${AMD_CORTEXA78_FULL_INSTALL}"
 AMD-EDF_IMAGE_FULL_INSTALL:append:amd-cortexa78-mali-common = " ${AMD_CORTEXA78_MALI_FULL_INSTALL}"
 
-IMAGE_INSTALL = " ${AMD-EDF_IMAGE_COMMON_INSTALL} ${AMD-EDF_IMAGE_FULL_INSTALL}"
+IMAGE_INSTALL = " ${AMD-EDF_IMAGE_COMMON_INSTALL} ${AMD-EDF_IMAGE_FULL_INSTALL} ${AMD-EDF_PLATFORM_INSTALL}"
 
 
 IMAGE_LINGUAS = " "
@@ -181,5 +192,21 @@ DEPENDS:append = " \
     unfs3-native \
     libeigen \
 "
+
+# We want to download the ESW sources, but only if a particular version is enabled
+DEPENDS:append = " ${@'embeddedsw-source-' + d.getVar('XILINX_RELEASE_VERSION').replace('v', '') if d.getVar('XILINX_RELEASE_VERSION') else ''}"
+
+# Extra dependencies
+EXTRA_DEPENDS = ""
+
+EXTRA_DEPENDS:append:aarch64 = " \
+    trusted-firmware-a:do_fetch \
+"
+
+EXTRA_DEPENDS:append:riscv64 = " \
+    opensbi:do_fetch \
+"
+
+do_rootfs[depends] += "${EXTRA_DEPENDS}"
 
 do_rootfs[prefuncs] += "edf_check_rootfs"

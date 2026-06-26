@@ -14,7 +14,8 @@ BIF_OPTEE_ATTR      ??= "${@bb.utils.contains('MACHINE_FEATURES', 'optee', 'opte
 BIF_ASU_ATTR        ??= ""
 BIF_DEVICETREE_ATTR ??= "device-tree"
 BIF_SSBL_ATTR       ??= "u-boot-xlnx"
-BIF_PARTITION_ATTR  ??= "${BIF_FSBL_ATTR} ${BIF_ASU_ATTR} ${BIF_DEVICETREE_ATTR} ${BIF_ATF_ATTR} ${BIF_OPTEE_ATTR} ${BIF_SSBL_ATTR}"
+BIF_APPS_ATTR       ??= ""
+BIF_PARTITION_ATTR  ??= "${BIF_FSBL_ATTR} ${BIF_ASU_ATTR} ${BIF_DEVICETREE_ATTR} ${BIF_ATF_ATTR} ${BIF_OPTEE_ATTR} ${BIF_SSBL_ATTR} ${BIF_APPS_ATTR}"
 
 # Specify BIF partition attributes for base-pdi
 BIF_PARTITION_ATTR[base-pdi] ?= "type=bootimage"

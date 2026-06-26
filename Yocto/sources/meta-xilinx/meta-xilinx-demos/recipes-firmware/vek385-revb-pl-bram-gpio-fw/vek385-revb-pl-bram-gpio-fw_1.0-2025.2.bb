@@ -13,7 +13,7 @@ COMPATIBLE_MACHINE = "^$"
 COMPATIBLE_MACHINE:amd-cortexa78-mali-common = "${MACHINE}"
 COMPATIBLE_MACHINE:versal-2ve-2vm-vek385-revb-sdt-seg = "${MACHINE}"
 
-# When do_upack is exectuted it will extract tar file with original directory
+# When do_unpack is executed it will extract tar file with original directory
 # name so set the FW_DIR pointing to pdi and dtsi files.
 FW_DIR = "vek385-revb-pl-bram-gpio-fw"
 FW_INSTALL_DIR = "vek385-revb/pl/${FW_DIR}"

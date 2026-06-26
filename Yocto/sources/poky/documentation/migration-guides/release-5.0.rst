@@ -19,3 +19,6 @@ Release 5.0 (scarthgap)
    release-notes-5.0.10
    release-notes-5.0.11
    release-notes-5.0.12
+   release-notes-5.0.13
+   release-notes-5.0.14
+   release-notes-5.0.15

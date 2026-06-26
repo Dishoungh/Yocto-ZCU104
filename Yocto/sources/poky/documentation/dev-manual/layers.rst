@@ -123,10 +123,9 @@ Follow these general steps to create your layer without using tools:
       Lists all layers on which this layer depends (if any).
 
    -  :term:`LAYERSERIES_COMPAT`:
-      Lists the :yocto_wiki:`Yocto Project </Releases>`
-      releases for which the current version is compatible. This
-      variable is a good way to indicate if your particular layer is
-      current.
+      Lists the :yocto_home:`Yocto Project releases </development/releases/>`
+      for which the current version is compatible. This variable is a good
+      way to indicate if your particular layer is current.
 
 
    .. note::
@@ -831,6 +830,8 @@ The following list describes the available commands:
 -  ``create-layers-setup``: Writes out a configuration file and/or a script that
    can replicate the directory structure and revisions of the layers in a current build.
    For more information, see ":ref:`dev-manual/layers:saving and restoring the layers setup`".
+
+-  ``show-machines``: Lists the machines available in the currently configured layers.
 
 Creating a General Layer Using the ``bitbake-layers`` Script
 ============================================================

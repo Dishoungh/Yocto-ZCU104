@@ -83,19 +83,20 @@ command::
    OpenEmbedded recipe tool
 
    options:
-     -d, --debug     Enable debug output
-     -q, --quiet     Print only errors
-     --color COLOR   Colorize output (where COLOR is auto, always, never)
-     -h, --help      show this help message and exit
+     -d, --debug       Enable debug output
+     -q, --quiet       Print only errors
+     --color COLOR     Colorize output (where COLOR is auto, always, never)
+     -h, --help        show this help message and exit
 
    subcommands:
-     create          Create a new recipe
-     newappend       Create a bbappend for the specified target in the specified
-                       layer
-     setvar          Set a variable within a recipe
-     appendfile      Create/update a bbappend to replace a target file
-     appendsrcfiles  Create/update a bbappend to add or replace source files
-     appendsrcfile   Create/update a bbappend to add or replace a source file
+     newappend         Create a bbappend for the specified target in the specified layer
+     create            Create a new recipe
+     setvar            Set a variable within a recipe
+     appendfile        Create/update a bbappend to replace a target file
+     appendsrcfiles    Create/update a bbappend to add or replace source files
+     appendsrcfile     Create/update a bbappend to add or replace a source file
+     edit              Edit the recipe and appends for the specified target. This obeys $VISUAL if set,
+                       otherwise $EDITOR, otherwise vi.
    Use recipetool <subcommand> --help to get help on a specific command
 
 Running ``recipetool create -o OUTFILE`` creates the base recipe and
@@ -218,9 +219,9 @@ compilation and packaging files, and so forth.
 
 The path to the per-recipe temporary work directory depends on the
 context in which it is being built. The quickest way to find this path
-is to have BitBake return it by running the following::
+is to use the ``bitbake-getvar`` utility::
 
-   $ bitbake -e basename | grep ^WORKDIR=
+   $ bitbake-getvar -r basename WORKDIR
 
 As an example, assume a Source Directory
 top-level folder named ``poky``, a default :term:`Build Directory` at
@@ -438,7 +439,7 @@ Licensing
 =========
 
 Your recipe needs to define variables related to the license
-under whith the software is distributed. See the
+under which the software is distributed. See the
 :ref:`contributor-guide/recipe-style-guide:recipe license fields`
 section in the Contributor Guide for details.
 

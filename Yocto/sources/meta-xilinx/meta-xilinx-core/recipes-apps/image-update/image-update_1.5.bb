@@ -8,7 +8,7 @@ LIC_FILES_CHKSUM = "file://${WORKDIR}/git/LICENSES/MIT;md5=2ac09a7a37dd6ee0ba23c
 
 BRANCH = "master"
 SRC_URI = "git://github.com/Xilinx/linux-image_update.git;branch=${BRANCH};protocol=https"
-SRCREV = "9e21a6b18c022aaa6414593e749a30b5778a7bce"
+SRCREV = "1cf36645012ead64f05f24972ac6a273038296a4"
 
 inherit autotools-brokensep
 RDEPENDS:${PN} += "freeipmi"

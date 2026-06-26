@@ -1,10 +1,33 @@
 args:
-    - --hw-description https://edf.amd.com/sswreleases/rel-v2025.2/sdt/2025.2/2025.2_1115_1_11150857/external/k24i-sm-sdt/k24i-sm-sdt_2025.2_1115_1_11150857.tar.gz
+    - --hw-description https://edf.amd.com/sswreleases/rel-v2026.1/sdt/2026.1/2026.1_0609_1_06092108/external/k24i-sm-sdt/k24i-sm-sdt_2026.1_0609_1_06092108.tar.gz
     - --machine-name k24i-sm-sdt
     - -g full
     - --require-machine include/k24-sm.inc
+    - --domain-file ${LAYER_PATH_xilinx-standalone-sdt}/conf/domainyaml/zynqmp-multidomain-base.yaml \
+                    ${LAYER_PATH_kria-layer}/conf/domainyaml/k24-linux-overlay.yaml \
+                    ${LAYER_PATH_xilinx-standalone-sdt}/conf/domainyaml/zynqmp-openamp-overlay.yaml
 kconfig:
-    CONFIG_YOCTO_BBMC_CORTEXR5_0_FREERTOS: y
+    CONFIG_SUBSYSTEM_BOOTMODE_2: y
+
 machine:
+    description: >-
+        Machine configuration for the AMD Kria K24 SOM (industrial
+        grade, Zynq UltraScale+ MPSoC): Cortex-A53 Linux plus Cortex-R5
+        FreeRTOS/baremetal and MicroBlaze PMU sub-machines, built from
+        system device tree.
     pre:
     post:
+        QEMU_FLASH_TYPE:
+            op: '='
+            val: 'qspi'
+        QEMU_FLASH_FILE:
+            op: '='
+            val: 'kria-qspi-${MACHINE}'
+        SPI_IMAGE_SIZE:
+            comment: 'QSPI flash size (64MB)'
+            op: '='
+            val: '0x400_0000'
+        QEMU_HW_FLASH:append:
+            comment: 'QSPI Boots from offset (0x20_0000)'
+            op: '='
+            val: " -boot multiboot=${@int(int('0x20_0000', 0) / ( 32 * 1024))}"

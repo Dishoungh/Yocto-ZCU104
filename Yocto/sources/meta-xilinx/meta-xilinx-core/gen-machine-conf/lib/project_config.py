@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # Copyright (C) 2021-2022, Xilinx, Inc.  All rights reserved.
-# Copyright (C) 2022-2023, Advanced Micro Devices, Inc.  All rights reserved.
+# Copyright (C) 2022-2026, Advanced Micro Devices, Inc.  All rights reserved.
 #
 # Author:
 #       Raju Kumar Pothuraju <rajukumar.pothuraju@amd.com>
@@ -13,6 +13,7 @@ import os
 import re
 import yaml
 import common_utils
+import yaml_utils
 import logging
 import glob
 import multiconfigs
@@ -103,6 +104,8 @@ def DetectSocFamily(proc_type):
         return 'zynqmp'
     elif re.search('.*a9.*', proc_type):
         return 'zynq'
+    elif re.search('microblaze_riscv', proc_type):
+        return 'microblaze-v'
     elif re.search('microblaze', proc_type):
         return 'microblaze'
     return proc_type
@@ -137,23 +140,21 @@ def MultiConfigYaml(yaml_file, multiconfig_dict):
     multiconf_yaml = []
     os_hint_yaml = []
     for _file in yaml_file.split():
-        _file = os.path.expandvars(_file)
-        # Expand the bitbake variables
-        _file = common_utils.Bitbake.expand(_file)
-        _file = os.path.realpath(_file)
+        _file = common_utils.ExpandFilePath(_file)
         for mc_config in multiconfig_dict:
             _mc_config_dict = multiconfig_dict.get(mc_config)
             cpuname = _mc_config_dict.get('cpuname', '')
             cpu = _mc_config_dict.get('cpu', '')
             os_hint = _mc_config_dict.get('os_hint', '')
-            domain_name, _ = common_utils.GetDomainName(cpuname, cpu, os_hint, _file)
+            domain_name, _ = yaml_utils.GetDomainName(cpuname, cpu, os_hint, _file)
             if domain_name:
                 os_hint_yaml.append(os_hint)
                 multiconf_yaml.append(mc_config)
-        # Check if linux is present once all yamls parsed
-        if 'linux' not in os_hint_yaml:
-            global LinuxDisabledInYaml
-            LinuxDisabledInYaml = True
+
+    # Check if linux is present once all yamls parsed
+    global LinuxDisabledInYaml
+    if 'linux' not in os_hint_yaml:
+        LinuxDisabledInYaml = True
 
     return multiconf_yaml
 
@@ -238,10 +239,11 @@ def ApplyConfValue(string, system_conffile):
         conf = string.replace('#', '').split()[0]
         value = 'disable'
     else:
-        conf = string.split('=')[0]
-        value = 'y'
-        if len(string.split('=')) == 2:
-            value = string.split('=')[1]
+        if '=' in string:
+            conf, value = string.split('=', 1)  # split only once
+        else:
+            conf = string.strip()
+            value = 'y'
     if conf and value:
         common_utils.UpdateConfigValue(conf, value, system_conffile)
 
@@ -274,7 +276,7 @@ def PreProcessSysConf(args, system_conffile, hw_info):
                                        system_conffile)
 
     # Read the YAML kconfig variables and update the project configs
-    Yamlconfigs = common_utils.TemplateYamlData.get('kconfig', {})
+    Yamlconfigs = yaml_utils.TemplateYamlData.get('kconfig', {})
     for conf, value in (Yamlconfigs or {}).items():
         if not conf or value is None:
             continue

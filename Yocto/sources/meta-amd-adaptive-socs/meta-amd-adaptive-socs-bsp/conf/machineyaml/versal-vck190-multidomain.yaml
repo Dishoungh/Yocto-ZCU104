@@ -1,0 +1,36 @@
+inherit:
+    ${BSPLAYERDIR_amd-adaptive-socs-bsp}/conf/machineyaml/versal-vck190-sdt-seg.yaml
+
+args:
+    - --machine-name versal-vck190-multidomain
+    - --domain-file ${LAYER_PATH_xilinx-standalone-sdt}/conf/domainyaml/versal-multidomain-base.yaml \
+                    ${LAYER_PATH_xilinx-standalone-sdt}/conf/domainyaml/versal-openamp-overlay.yaml \
+                    ${LAYER_PATH_xilinx-standalone-sdt}/conf/domainyaml/versal-libmetal-overlay.yaml
+
+kconfig:
+    CONFIG_YOCTO_BBMC_LINUX_DTSI: \
+        ${LAYER_PATH_xilinx-virtualization}/recipes-bsp/device-tree/files/versal-xen.dtsi \
+        ${BSPLAYERDIR_amd-adaptive-socs-bsp}/recipes-bsp/device-tree/files/platform-misc.dtsi
+ 
+machine:
+    description: >-
+        AMP/multidomain machine for the AMD Versal AI Core VCK190
+        evaluation kit: Cortex-A72 Linux, Cortex-R5 FreeRTOS/baremetal,
+        and MicroBlaze PMC/PSM sub-machines built from system device
+        tree.
+    post:
+        include:
+            comment: "Enable meta-xilinx-imgrcvry if available"
+            op: 'conf/enable-xilinx-imgrcvry.conf'
+        XLNX_CMAKE_BSP_VARS:pn-xilplmi:append:
+            comment: 'Enables the restoration of the multi-boot register for A/B firmware platforms'
+            op: '='
+            val: ' -DPLM_ENABLE_RESTORE_MULTIBOOT'
+        CFLAGS:pn-image-selector:append:
+            comment: 'Enable QSPI flash'
+            op: '='
+            val: ' -DXIS_QSPI_FLSH'
+        BOOTBIN_INC:
+            comment: 'Enable libmetal application'
+            op: '='
+            val: 'libmetal-demo-rpu1.inc'

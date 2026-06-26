@@ -120,7 +120,6 @@
 			status = "okay";
 			power-domains = <&zynqmp_firmware 16>;
 			xlnx,ip-name = "psu_r5_0_btcm_lockstep";
-			xlnx,is-hierarchy;
 			reg = <0x0 0xffe30000 0x0 0x10000>;
 			xlnx,name = "psu_r5_0_btcm_lockstep";
 		};
@@ -147,7 +146,6 @@
 			status = "okay";
 			power-domains = <&zynqmp_firmware 15>;
 			xlnx,ip-name = "psu_r5_0_atcm_lockstep";
-			xlnx,is-hierarchy;
 			reg = <0x0 0xffe10000 0x0 0x10000>;
 			xlnx,name = "psu_r5_0_atcm_lockstep";
 		};
@@ -1751,29 +1749,31 @@
 		xlnx,name = "psu_i2c_1";
 	};
 	&uart1 {
-		status = "okay";
-		xlnx,clock-freq = <100000000>;
-		u-boot,dm-pre-reloc;
-		xlnx,uart-board-interface = "custom";
 		xlnx,has-modem = <0>;
+		xlnx,uart-clk-freq-hz = <100000000>;
+		port-number = <0>;
 		xlnx,ip-name = "psu_uart";
+		xlnx,uart-board-interface = "custom";
 		xlnx,baudrate = <115200>;
 		cts-override;
-		port-number = <0>;
-		xlnx,uart-clk-freq-hz = <100000000>;
+		u-boot,dm-pre-reloc;
+		device_type = "serial";
+		status = "okay";
+		xlnx,clock-freq = <100000000>;
 		xlnx,name = "psu_uart_1";
 	};
 	&uart0 {
-		status = "okay";
-		xlnx,clock-freq = <100000000>;
-		u-boot,dm-pre-reloc;
-		xlnx,uart-board-interface = "custom";
 		xlnx,has-modem = <0>;
+		xlnx,uart-clk-freq-hz = <100000000>;
+		port-number = <0>;
 		xlnx,ip-name = "psu_uart";
+		xlnx,uart-board-interface = "custom";
 		xlnx,baudrate = <115200>;
 		cts-override;
-		port-number = <0>;
-		xlnx,uart-clk-freq-hz = <100000000>;
+		u-boot,dm-pre-reloc;
+		device_type = "serial";
+		status = "okay";
+		xlnx,clock-freq = <100000000>;
 		xlnx,name = "psu_uart_0";
 	};
 	&ams_ps {
@@ -1789,10 +1789,10 @@
 		clock-frequency = <33333000>;
 	};
 	&cpu_opp_table {
-		/delete-node/ opp01;
-		/delete-node/ opp02;
-		/delete-node/ opp03;
-		/delete-node/ opp00;
+		/delete-node/ opp-400000000;
+		/delete-node/ opp-600000000;
+		/delete-node/ opp-300000000;
+		/delete-node/ opp-1200000000;
 		opp-1200000000 {
 			opp-hz = /bits/ 64 <1200000000>;
 			clock-latency-ns = <500000>;

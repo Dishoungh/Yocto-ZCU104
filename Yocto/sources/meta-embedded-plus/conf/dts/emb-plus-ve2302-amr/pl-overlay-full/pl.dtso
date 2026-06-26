@@ -1,0 +1,55 @@
+/dts-v1/;
+/plugin/;
+
+&fpga {
+        firmware-name = "ve2302_xdma_base.pdi";
+
+        misc_clk_0: misc_clk_0 {
+                #clock-cells = <0x0>;
+                clock-frequency = <0x7735940>;
+                compatible = "fixed-clock";
+        };
+
+        fpga_PRDFX_RP: fpga-PRDFX_RP {
+                #size-cells = <0x2>;
+                #address-cells = <0x2>;
+                compatible = "fpga-region";
+                ranges;
+        };
+};
+
+&amba {
+
+        STATIC_DESIGN_xdma_bypass_addr_mask: axi_addr_mask@0 {
+                xlnx,name = "STATIC_DESIGN_xdma_bypass_addr_mask";
+                xlnx,data-width = <0x100>;
+                xlnx,aruser-width = <0x8>;
+                clock-names = "aclk";
+                xlnx,edk-iptype = "PERIPHERAL";
+                xlnx,id-width = <0x4>;
+                clocks = <&misc_clk_0>;
+                xlnx,addr-width = <0x40>;
+                reg = <0x0 0x0 0x0 0x10000000>;
+                xlnx,ip-name = "axi_addr_mask";
+                xlnx,s-addr-mask = <0xfffffff>;
+                xlnx,awuser-width = <0x8>;
+                compatible = "xlnx,axi-addr-mask-1.0";
+        };
+
+        STATIC_DESIGN_xdma_lite_addr_mask: STATIC_DESIGN_xdma_lite_addr_mask@0 {
+                xlnx,name = "STATIC_DESIGN_xdma_lite_addr_mask";
+                xlnx,data-width = <0x20>;
+                xlnx,aruser-width = <0x0>;
+                clock-names = "aclk";
+                xlnx,edk-iptype = "PERIPHERAL";
+                xlnx,id-width = <0x1>;
+                clocks = <&misc_clk_0>;
+                xlnx,addr-width = <0x40>;
+                reg = <0x0 0x0 0x0 0x1000000>;
+                xlnx,ip-name = "axi_addr_mask";
+                xlnx,s-addr-mask = <0xffffff>;
+                xlnx,awuser-width = <0x0>;
+                compatible = "xlnx,axi-addr-mask-1.0";
+        };
+};
+

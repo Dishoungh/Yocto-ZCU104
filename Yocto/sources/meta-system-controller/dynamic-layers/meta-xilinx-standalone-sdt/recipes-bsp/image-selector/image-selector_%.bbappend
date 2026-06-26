@@ -1,1 +1,0 @@
-CFLAGS:zynqmp-k24-sc-sdt-base += "-DXIS_FWU_UPDATE  -DXIS_512G_FLASH  -DXIS_UART_ENABLE"

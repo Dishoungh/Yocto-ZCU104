@@ -1,4 +1,8 @@
 SUMMARY = "RAFT python application"
+DESCRIPTION = "AMD Xilinx RAFT (Remote API Framework) python \
+application: a JSON-RPC server exposing the on-target RFSoC / DFE \
+driver stack so a remote host can configure and stream samples through \
+the data converters and DFE PL DSP IP."
 LICENSE = "MIT & BSD-3-Clause"
 LIC_FILES_CHKSUM = " \
     file://${WORKDIR}/git/LICENSE;md5=cc21c526211d34984839aa67dd16f172 \
@@ -6,7 +10,7 @@ LIC_FILES_CHKSUM = " \
 "
 BRANCH = "2025.2"
 SRC_URI = "git://github.com/Xilinx/RAFT;protocol=https;branch=${BRANCH}"
-SRCREV = "a3e1f3c61a5a09b46d4b3e4c77eb9d8e52832483"
+SRCREV = "5ec18717b2f60b40c7634a48c06d13725df9cfbb"
 
 inherit update-rc.d systemd
 

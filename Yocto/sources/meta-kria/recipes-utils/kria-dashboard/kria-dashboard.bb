@@ -1,8 +1,11 @@
 SUMMARY = "kria-dashboard including dashboard and daemon"
 
+DESCRIPTION = "Web-based dashboard (UI plus collector daemon) that \
+displays live platform telemetry - power, temperature, voltage rails, \
+loaded accelerators - for the AMD Kria SOMs."
 LICENSE = "Apache-2.0"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=2fad2ef643ccf9eb1427b00a4eb5a445"
-BRANCH ?= "xlnx_rel_v2025.2"
+BRANCH ?= "xlnx_rel_v2026.1"
 SRC_URI = "git://github.com/Xilinx/kria-dashboard.git;protocol=https;branch=${BRANCH}"
 SRCREV ?= "e33bcc6b3dbb89a277a365fb3da4b4250e7186c7"
 
@@ -43,3 +46,4 @@ FILES:${PN} += "\
 		${PYTHON_SITEPACKAGES_DIR}\
 		"
 RREPLACES:${PN} = "som-dashboard"
+RPROVIDES:${PN} = "som-dashboard"

@@ -1,0 +1,24 @@
+inherit:
+    ${BSPLAYERDIR_amd-adaptive-socs-bsp}/conf/machineyaml/versal-vmk180-sdt-seg.yaml
+
+args:
+    - --machine-name versal-vmk180-multidomain
+    - --domain-file ${LAYER_PATH_xilinx-standalone-sdt}/conf/domainyaml/versal-multidomain-base.yaml \
+                    ${LAYER_PATH_xilinx-standalone-sdt}/conf/domainyaml/versal-openamp-overlay.yaml \
+                    ${LAYER_PATH_xilinx-standalone-sdt}/conf/domainyaml/versal-libmetal-overlay.yaml
+
+kconfig:
+    CONFIG_YOCTO_BBMC_LINUX_DTSI: ${LAYER_PATH_xilinx-virtualization}/recipes-bsp/device-tree/files/versal-xen.dtsi \
+        ${BSPLAYERDIR_amd-adaptive-socs-bsp}/recipes-bsp/device-tree/files/platform-misc.dtsi
+
+machine:
+    description: >-
+        AMP/multidomain machine for the AMD Versal Prime VMK180
+        evaluation kit: Cortex-A72 Linux, Cortex-R5 FreeRTOS/baremetal,
+        and MicroBlaze PMC/PSM sub-machines built from system device
+        tree.
+    post:
+        BOOTBIN_INC:
+            comment: 'Enable libmetal application'
+            op: '=' 
+            val: 'libmetal-demo-rpu1.inc'

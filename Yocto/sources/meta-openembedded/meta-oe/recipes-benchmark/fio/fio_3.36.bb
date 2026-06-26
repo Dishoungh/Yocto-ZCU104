@@ -28,6 +28,8 @@ SRC_URI = "git://git.kernel.dk/fio.git;branch=master"
 
 S = "${WORKDIR}/git"
 
+SRC_URI += "file://CVE-2025-10823.patch"
+
 # avoids build breaks when using no-static-libs.inc
 DISABLE_STATIC = ""
 
@@ -43,3 +45,5 @@ do_install() {
     install -d ${D}/${docdir}/${PN}
     cp -R --no-dereference --preserve=mode,links -v ${S}/examples ${D}/${docdir}/${PN}/
 }
+
+CVE_STATUS[CVE-2025-10824] = "disputed: Maintainer could not reproduce the issue, issue is closed without change."

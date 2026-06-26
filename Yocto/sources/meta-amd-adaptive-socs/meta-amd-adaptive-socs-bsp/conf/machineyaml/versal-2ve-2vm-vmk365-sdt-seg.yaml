@@ -1,0 +1,26 @@
+args:
+    - --hw-description https://edf.amd.com/sswreleases/rel-v2026.1/sdt/2026.1/2026.1_0609_1_06092108/external/versal-2ve-2vm-vmk365-sdt-seg/versal-2ve-2vm-vmk365-sdt-seg_2026.1_0609_1_06092108.tar.gz
+    - --machine-name versal-2ve-2vm-vmk365-sdt-seg
+    - -g full
+
+kconfig:
+    CONFIG_YOCTO_BBMC_MICROBLAZE_RISCV_ASU: n
+    CONFIG_SUBSYSTEM_TF-A_MEMORY_SETTINGS: y
+    CONFIG_SUBSYSTEM_TF-A_MEM_BASE: '0x1600000'
+    CONFIG_SUBSYSTEM_TF-A_MEM_SIZE: '0x200000'
+    CONFIG_SUBSYSTEM_BOOTMODE_3: y
+
+machine:
+    description: >-
+        Segmented SDT machine for the AMD Versal Gen 2 VMK365 evaluation
+        kit: Cortex-A78 Linux plus MicroBlaze PMC firmware sub-machine.
+    post:
+        QEMU_HW_DTB_PS:
+            op: '='
+            val: "${QEMU_HW_DTB_PATH}/board-versal2-psxc-vmk365.dtb"
+        QB_NETWORK_DEVICE:
+            op: '='
+            val: "-net nic -net nic,netdev=net0,macaddr=@MAC@"
+        QEMU_HW_SERIAL:
+            op: '='
+            val: "-serial null -serial null -serial null -serial mon:stdio -serial null"

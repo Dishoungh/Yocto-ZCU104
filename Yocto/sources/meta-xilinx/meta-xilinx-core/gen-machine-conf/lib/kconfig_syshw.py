@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Copyright (C) 2023, Advanced Micro Devices, Inc.  All rights reserved.
+# Copyright (C) 2023-2026, Advanced Micro Devices, Inc.  All rights reserved.
 #
 # Author:
 #       Raju Kumar Pothuraju <rajukumar.pothuraju@amd.com>
@@ -11,6 +11,8 @@ import sys
 import re
 import logging
 import common_utils
+import yaml_utils
+import project_config
 
 logger = logging.getLogger('Gen-Machineconf')
 
@@ -62,6 +64,7 @@ def GenConf_memory(IpsToAdd, slavesdict, proc_ipname, arch):
     ''' Generate Memory Info as Kconfig'''
     confstr = ''
     memoryconfstr = ''
+    memoryconfdefaultstr = ''
     confstr += '\nmenu "Memory Settings"\n'
     confstr += 'choice\n'
     confstr += '\tprompt "Primary Memory"\n'
@@ -136,10 +139,11 @@ def GenConf_memory(IpsToAdd, slavesdict, proc_ipname, arch):
         memoryconfstr += '\tu-boot load address = bank base address + offset. And same value will\n'
         memoryconfstr += '\tpass to TF-A also. Minimum suggested is 1MB.\n'
 
-        memoryconfstr += '\nconfig %s_IP_NAME\n' % KconfPrefix
-        memoryconfstr += '\tstring\n'
-        memoryconfstr += '\tdefault %s\n' % slave
-        memoryconfstr += '\tdepends on %s_SELECT\n' % memKconf
+        memoryconfdefaultstr += f'\tdefault {slave} if {memKconf}_SELECT\n'
+
+    memoryconfstr += '\nconfig %s_IP_NAME\n' % KconfPrefix
+    memoryconfstr += '\tstring\n'
+    memoryconfstr += memoryconfdefaultstr
 
     confstr += '\nconfig %s_MANUAL_SELECT\n' % KconfPrefix
     confstr += '\tbool "manual"\n'
@@ -193,6 +197,7 @@ def GenConf_serial(IpsToAdd, slavesdict, proc_ipname, arch):
     serialconfstr = ''
     serial_Kconf = 'SUBSYSTEM_SERIAL'
     serialdict = {'microblaze': ['FSBOOT', 'DTG'],
+                  'microblaze_riscv': ['DTG'],
                   'ps7_cortexa9': ['FSBL', 'DTG'],
                   'psu_cortexa53': ['PMUFW', 'FSBL', 'TF-A', 'DTG'],
                   'psv_cortexa72': ['PLM', 'TF-A', 'DTG'],
@@ -305,7 +310,7 @@ def GenConf_ethernet(IpsToAdd, slavesdict, proc_ipname, arch):
         serialconfstr += '\tbool "Randomise MAC address"\n'
         serialconfstr += '\tdefault y if SUBSYSTEM_ARCH_MICROBLAZE\n'
         serialconfstr += '\tdefault n\n'
-        serialconfstr += '\tdepends on %s_%s_SELECT\n' % (
+        serialconfstr += '\tdepends on %s_%s_SELECT && SUBSYSTEM_DISTRO_PETALINUX\n' % (
             eth_Kconf, slave.upper())
         serialconfstr += '\thelp\n'
         serialconfstr += '\trandomise MAC address for the primary ethernet.\n'
@@ -314,7 +319,7 @@ def GenConf_ethernet(IpsToAdd, slavesdict, proc_ipname, arch):
             eth_Kconf, slave.upper())
         serialconfstr += '\tstring "Template for randomised MAC address"\n'
         serialconfstr += '\tdefault "00:0a:35:00:??:??"\n'
-        serialconfstr += '\tdepends on %s_%s_SELECT && %s_%s_MAC_AUTO\n' % (
+        serialconfstr += '\tdepends on %s_%s_SELECT && %s_%s_MAC_AUTO && SUBSYSTEM_DISTRO_PETALINUX\n' % (
             eth_Kconf, slave.upper(), eth_Kconf, slave.upper())
         serialconfstr += '\thelp\n'
         serialconfstr += '\tPattern for generating random MAC addresses - question mark\n'
@@ -322,7 +327,7 @@ def GenConf_ethernet(IpsToAdd, slavesdict, proc_ipname, arch):
 
         serialconfstr += '\nconfig %s_%s_MAC\n' % (eth_Kconf, slave.upper())
         serialconfstr += '\tstring "Ethernet MAC address"\n'
-        serialconfstr += '\tdepends on %s_%s_SELECT && !%s_%s_MAC_AUTO\n' % (
+        serialconfstr += '\tdepends on %s_%s_SELECT && !%s_%s_MAC_AUTO && SUBSYSTEM_DISTRO_PETALINUX\n' % (
             eth_Kconf, slave.upper(), eth_Kconf, slave.upper())
         serialconfstr += '\thelp\n'
         serialconfstr += '\tDefault mac address will set from eeprom fru data\n'
@@ -332,7 +337,7 @@ def GenConf_ethernet(IpsToAdd, slavesdict, proc_ipname, arch):
             eth_Kconf, slave.upper())
         serialconfstr += '\tbool "Obtain IP address automatically"\n'
         serialconfstr += '\tdefault y\n'
-        serialconfstr += '\tdepends on %s_%s_SELECT\n' % (
+        serialconfstr += '\tdepends on %s_%s_SELECT && SUBSYSTEM_DISTRO_PETALINUX\n' % (
             eth_Kconf, slave.upper())
         serialconfstr += '\thelp\n'
         serialconfstr += '\tSet this option if you would like your SUBSYSTEM to use DHCP for\n'
@@ -342,7 +347,7 @@ def GenConf_ethernet(IpsToAdd, slavesdict, proc_ipname, arch):
             eth_Kconf, slave.upper())
         serialconfstr += '\tstring "Static IP address"\n'
         serialconfstr += '\tdefault "192.168.0.10"\n'
-        serialconfstr += '\tdepends on %s_%s_SELECT && !%s_%s_USE_DHCP\n' % (
+        serialconfstr += '\tdepends on %s_%s_SELECT && !%s_%s_USE_DHCP && SUBSYSTEM_DISTRO_PETALINUX\n' % (
             eth_Kconf, slave.upper(), eth_Kconf, slave.upper())
         serialconfstr += '\thelp\n'
         serialconfstr += '\tThe IP address of your main network interface when static network\n'
@@ -352,7 +357,7 @@ def GenConf_ethernet(IpsToAdd, slavesdict, proc_ipname, arch):
             eth_Kconf, slave.upper())
         serialconfstr += '\tstring "Static IP netmask"\n'
         serialconfstr += '\tdefault "255.255.255.0"\n'
-        serialconfstr += '\tdepends on %s_%s_SELECT && !%s_%s_USE_DHCP\n' % (
+        serialconfstr += '\tdepends on %s_%s_SELECT && !%s_%s_USE_DHCP && SUBSYSTEM_DISTRO_PETALINUX\n' % (
             eth_Kconf, slave.upper(), eth_Kconf, slave.upper())
         serialconfstr += '\thelp\n'
         serialconfstr += '\tDefault netmask when static network address assignment is used.\n'
@@ -363,7 +368,7 @@ def GenConf_ethernet(IpsToAdd, slavesdict, proc_ipname, arch):
             eth_Kconf, slave.upper())
         serialconfstr += '\tstring "Static IP gateway"\n'
         serialconfstr += '\tdefault "192.168.0.1"\n'
-        serialconfstr += '\tdepends on %s_%s_SELECT && !%s_%s_USE_DHCP\n' % (
+        serialconfstr += '\tdepends on %s_%s_SELECT && !%s_%s_USE_DHCP && SUBSYSTEM_DISTRO_PETALINUX\n' % (
             eth_Kconf, slave.upper(), eth_Kconf, slave.upper())
         serialconfstr += '\thelp\n'
         serialconfstr += '\tDefault gateway when static network address assignment is used.\n'
@@ -490,6 +495,75 @@ def GenConf_sd(IpsToAdd, slavesdict, proc_ipname, arch):
     return confstr
 
 
+BootModes_dict = {
+    'zynq': {
+        'bootmodes': {
+            'JTAG': '0', 'QSPI': 1, 'NOR': 2, 'NAND': 4, 'SD': 5
+        },
+        'def_bootmode': '5'
+    },
+    'zynqmp': {
+        'bootmodes': {
+            'JTAG': '0', 'QSPI (24b)': 1, 'QSPI (32b)': 2,
+            'SD0 (2.0)': 3, 'NAND': 4, 'SD1 (2.0)': 5,
+            'eMMC (1.8V)': 6, 'SD1 LS (3.0)': 14
+        },
+        'def_bootmode': '3'
+    },
+    'versal': {
+        'bootmodes': {
+            'JTAG': '0','QSPI24': 1, 'QSPI32': 2, 'SD0 (v3.0)': 3,
+            'SD1 (v2.0)': 5, 'eMMC1 (v4.51)': 6,
+            'OSPI': 8, 'SD1 (v3.0)': 14
+        },
+        'def_bootmode': '8'
+    },
+    'versal-2ve-2vm': {
+        'bootmodes': {
+            'JTAG': '0','QSPI24': 1, 'QSPI32': 2, 'SD0 (v3.0)': 3,
+            'SD0 (v2.0)': 5, 'eMMC (v5.1)': 6, 'OSPI': 8,
+            'UFS': 11, 'SD1 (v3.0)': 14
+        },
+        'def_bootmode': '8'
+    }
+}
+
+
+def GenConf_bootmodes(proc):
+    soc_family = project_config.DetectSocFamily(proc)
+    bootmode_info = BootModes_dict.get(soc_family, {})
+    bootmodes = bootmode_info.get('bootmodes', {})
+    default_bootmode = bootmode_info.get('def_bootmode', '')
+    if not bootmodes:
+        return ''
+    confstr = '\nif !SUBSYSTEM_DISTRO_PETALINUX && SUBSYSTEM_SDT_FLOW\n'
+    confstr += '\nmenu "Boot Mode Settings"\n'
+    confstr += '\nchoice\n'
+    confstr += '\tprompt "Primary Boot Mode"\n'
+    if default_bootmode:
+        confstr += f'\tdefault SUBSYSTEM_BOOTMODE_{default_bootmode}\n'
+    confstr += '\thelp\n'
+    help_text = (
+        f'\tSelect the primary boot mode for the processor {proc}.\n'
+        '\tThis selection is used to package Boot.BIN and set runqemu\n'
+        '\tboot arguments.\n'
+        '\tFor details, see:\n'
+        '\t Zynq: UG585, "Flash-Devices-Master-Mode-Boot" section\n'
+        '\t ZynqMP: UG1085, "Boot Modes" section\n'
+        '\t Versal Gen1: AM011, "Boot Modes and Interfaces" section\n'
+        '\t Versal Gen2: AM026, "Boot Mode and Interfaces" section\n'
+    )
+    confstr += help_text
+    # The boot mode configs
+    for bootmode, value in bootmodes.items():
+        confstr += f'\nconfig SUBSYSTEM_BOOTMODE_{value}\n'
+        confstr += f'\tbool "{value} - {bootmode}"\n'
+    confstr += '\nendchoice\n'
+    confstr += '\nendmenu\n'
+    confstr += '\nendif\n'
+    return confstr
+
+
 # Supported Device Types to create Kconfig file
 devicetypes = {
     'memory': {'exclude': ['psu_ocm']},
@@ -501,8 +575,8 @@ def GenKconfigSysHW(hwyamlinfile, ipinfofile, outfile):
     ''' Read Input Yaml(plnx sys HW data) and convert into
     Kconfig for described device types'''
     global hwyamldata, ipinfodata
-    hwyamldata = common_utils.ReadYaml(hwyamlinfile)
-    ipinfodata = common_utils.ReadYaml(ipinfofile)
+    hwyamldata = yaml_utils.ReadYaml(hwyamlinfile)
+    ipinfodata = yaml_utils.ReadYaml(ipinfofile)
     procdata = hwyamldata.get('processor')
     KconfStr = 'menu "Subsystem Hardware Settings"\n'
     KconfStr += GenConf_processor(procdata)
@@ -524,6 +598,7 @@ def GenKconfigSysHW(hwyamlinfile, ipinfofile, outfile):
 
             KconfStr += eval('GenConf_%s(IpsToAdd, slavesdict, \
                                     proc_ipname, arch)' % (devtype))
+        KconfStr += GenConf_bootmodes(proc)
         KconfStr += '\nendif\n'
     KconfStr += '\nendmenu\n'
     common_utils.AddStrToFile(outfile, KconfStr)

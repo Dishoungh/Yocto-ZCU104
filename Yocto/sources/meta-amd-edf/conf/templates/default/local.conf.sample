@@ -318,7 +318,7 @@ CONF_VERSION = "2"
 SDK_CLASSES += "amd-qemu-xilinx-sdk-tools amd-misc-sdk-tools"
 
 # Source and Sstate mirror settings
-AMD-EDF_VERSION = "25.11"
+AMD-EDF_VERSION = "26.06"
 
 INHERIT += "own-mirrors"
 SOURCE_MIRROR_URL = "https://edf.amd.com/sswreleases/amd-edf/${AMD-EDF_VERSION}/downloads"
@@ -332,10 +332,15 @@ SKIP_META_XILINX_STANDALONE_SANITY_CHECK = "1"
 SKIP_META_XILINX_STANDALONE_SDT_SANITY_CHECK = "1"
 SKIP_META_VIRT_SANITY_CHECK = "1"
 SKIP_META_TPM_SANITY_CHECK = "1"
-SKIP_META_RAUC_FEATURE_CHECK = "1"
 SKIP_META_XILINX_MALI400_SANITY_CHECK = "1"
 SKIP_META_XILINX_MALIG78AE_SANITY_CHECK = "1"
 
 # Use Zephyr SDK toolchain to build application for cortex-r and microblaze-v
 # processor.
 ZEPHYR_TOOLCHAIN_VARIANT = "zephyr"
+
+# Disable Fortran support - no ROS packages in our configuration
+# require it and gfortran is not available on all build hosts.
+# This must be in local.conf (not distro conf) because HOSTTOOLS
+# is global across all multiconfigs.
+ROS_WORLD_SKIP_GROUPS:append = " fortran"
