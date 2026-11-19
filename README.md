@@ -482,13 +482,13 @@ I will do the same thing for U-Boot, but I will not only configure U-Boot, but I
     - CONFIG_SD_BOOT=y
     - CONFIG_SD_BOOT_QSPI=y
     - CONFIG_BOOTDELAY=0
-    - # CONFIG_CMD_IMLS is not set
+    - \# CONFIG_CMD_IMLS is not set
     - CONFIG_CMD_FLASH=y
     - CONFIG_ENV_IS_DEFAULT=y
-    - # CONFIG_ENV_IS_IN_FAT is not set
-    - # CONFIG_ENV_IS_IN_NAND is not set
-    - # CONFIG_ENV_IS_IN_SPI_FLASH is not set
-    - # CONFIG_NET_RANDOM_ETHADDR is not set
+    - \# CONFIG_ENV_IS_IN_FAT is not set
+    - \# CONFIG_ENV_IS_IN_NAND is not set
+    - \# CONFIG_ENV_IS_IN_SPI_FLASH is not set
+    - \# CONFIG_NET_RANDOM_ETHADDR is not set
 
 - `$ bitbake virtual/bootloader -c diffconfig`
     - After this command, you will be given a path for a .cfg file. Merge the differences from that .cfg and place them into: *../sources/meta-custom/recipes-bsp/u-boot/files/u-boot.cfg*
