@@ -1,20 +1,13 @@
 inherit cmake ccmake deploy
 
-S:xilinx-standalone = "${WORKDIR}/git"
-B:xilinx-standalone = "${WORKDIR}/build"
-
 OECMAKE_SOURCEPATH:xilinx-standalone = "${S}/"
 PROVIDES:xilinx-standalone = "libmetal"
-
-S:xilinx-freertos = "${WORKDIR}/git"
-B:xilinx-freertos = "${WORKDIR}/build"
 
 OECMAKE_SOURCEPATH:xilinx-freertos = "${S}/"
 PROVIDES:xilinx-freertos = "libmetal libmetal-xlnx"
 
-PM_DEPENDS ?= " xilpm "
-PM_DEPENDS:versal-2ve-2vm = " xilpm-ng "
-RPU_DEPENDS = " doxygen-native xilstandalone scugic xiltimer  nativesdk-xilinx-lops ${PM_DEPENDS} "
+RPU_DEPENDS:append = " doxygen-native device-tree xiltimer ttcps libxil xilstandalone xiltimer ipipsu scugic xilpm "
+DEPENDS:append:xilinx-standalone = " ${RPU_DEPENDS} "
 DEPENDS:append:xilinx-freertos = " freertos10-xilinx "
 
 DEPENDS:remove:microblaze = " scugic xiltimer "
@@ -35,8 +28,8 @@ LIBMETAL_SYSTEM_NAME:xilinx-standalone = "generic"
 LIBMETAL_SYSTEM_NAME:xilinx-freertos = "freertos"
 LIBMETAL_SYSTEM_NAME:linux = "linux"
 
-LIBMETAL_CMAKE_SYSTEM_PROCESSOR:xilinx-standalone = "${TRANSLATED_TARGET_ARCH}"
-LIBMETAL_CMAKE_SYSTEM_PROCESSOR:xilinx-freertos = "${TRANSLATED_TARGET_ARCH}"
+LIBMETAL_CMAKE_SYSTEM_PROCESSOR:xilinx-standalone = "${TARGET_ARCH}"
+LIBMETAL_CMAKE_SYSTEM_PROCESSOR:xilinx-freertos = "${TARGET_ARCH}"
 LIBMETAL_CMAKE_SYSTEM_PROCESSOR:xilinx-standalone:microblaze = "microblaze"
 
 LIBMETAL_DEMO ?= "OFF"
@@ -45,7 +38,9 @@ EXTRA_OECMAKE = "\
     -DWITH_EXAMPLES=${LIBMETAL_DEMO} \
     "
 
-CFLAGS:append = " -DSDT -DXLNX_PLATFORM "
+CFLAGS:append:xilinx-standalone = " -DSDT ${DEBUG_PREFIX_MAP} -fno-pie -specs=${STAGING_INCDIR}/Xilinx.spec ${ESW_CFLAGS} "
+LDFLAGS:append:xilinx-standalone = " -no-pie "
+OECMAKE_C_LINK_FLAGS:append:xilinx-standalone = " --sysroot=${STAGING_DIR_HOST} -lxil -lxilstandalone -lxiltimer "
 
 cmake_do_generate_toolchain_file:append:xilinx-standalone() {
     cat >> ${WORKDIR}/toolchain.cmake <<EOF

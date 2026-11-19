@@ -1,5 +1,5 @@
 args:
-    - --hw-description https://edf.amd.com/sswreleases/rel-v2026.1/sdt/2026.1/2026.1_0609_1_06092108/external/versal-vpk180-sdt-seg/versal-vpk180-sdt-seg_2026.1_0609_1_06092108.tar.gz
+    - --hw-description https://edf.amd.com/sswreleases/rel-v2026.2/sdt/2026.2/2026.2_1107_1_11071152/external/versal-vpk180-sdt-seg/versal-vpk180-sdt-seg_2026.2_1107_1_11071152.tar.gz
     - --machine-name versal-vpk180-sdt-seg
     - -g full
     - --domain-file ${LAYER_PATH_xilinx-standalone-sdt}/conf/domainyaml/versal-linux-only-base.yaml \
@@ -20,3 +20,7 @@ machine:
         QEMU_HW_DTB_PMC:
             op: '='
             val: "${QEMU_HW_DTB_PATH}/board-versal-pmc-virt.dtb"
+        QEMU_FLASH_TYPE:
+            op: '='
+            val: 'qspi'
+

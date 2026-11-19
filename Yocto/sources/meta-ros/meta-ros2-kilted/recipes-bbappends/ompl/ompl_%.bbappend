@@ -29,12 +29,16 @@ do_install:append() {
     chrpath --delete ${D}${ros_libdir}/*${SOLIBS}
     # QA Issue: File /opt/ros/rolling/share/ompl/cmake/omplConfig.cmake in package ompl-dev contains reference to TMPDIR [buildpaths]
     # QA Issue: File /opt/ros/rolling/lib/pkgconfig/ompl.pc in package ompl-dev contains reference to TMPDIR [buildpaths]
-    sed -i -e "s#${RECEIPE_SYSROOT}/usr/lib/##g" ${D}${ros_prefix}/share/ompl/cmake/omplConfig.cmake
-    sed -i -e "s#${RECIPE_SYSROOT}##g" ${D}${ros_prefix}/share/ompl/cmake/omplConfig.cmake
-    sed -i -e "s#${RECIPE_SYSROOT}##g" ${D}${ros_prefix}/lib/pkgconfig/ompl.pc
+    sed -i -e "s#${RECIPE_SYSROOT}${includedir}/eigen3##g" ${D}${ros_prefix}/share/ompl/cmake/omplConfig.cmake
+    sed -i -e "s#${RECIPE_SYSROOT}${includedir}##g" ${D}${ros_prefix}/share/ompl/cmake/omplConfig.cmake
+    sed -i -e "s#${RECIPE_SYSROOT}${libdir}##g" ${D}${ros_prefix}/share/ompl/cmake/omplConfig.cmake
+    sed -i -e "s#${RECIPE_SYSROOT}${libdir}##g" ${D}${ros_prefix}/share/ompl/cmake/omplConfig.cmake
+    sed -i -e "s#${RECIPE_SYSROOT}${libdir}##g" ${D}${ros_prefix}/lib/pkgconfig/ompl.pc
+    sed -i -e "s#-I${RECIPE_SYSROOT}${includedir}##g" ${D}${ros_prefix}/lib/pkgconfig/ompl.pc
 }
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/${BPN}:"
-SRC_URI += "file://0001-FindPython.cmake-install_python-Allow-to-set-differe.patch"
+SRC_URI += "file://0001-FindPython.cmake-install_python-Allow-to-set-differe.patch \
+            file://remove-boost-system.patch"
 
 EXTRA_OECMAKE += "-DINSTALL_PYTHON_SHEBANG='/usr/bin/env python3'"

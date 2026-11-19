@@ -1,5 +1,5 @@
 SUMMARY = "fscrypt is a high-level tool for the management of Linux filesystem encryption"
-DESCIPTION = "fscrypt manages metadata, key generation, key wrapping, PAM integration, \
+DESCRIPTION = "fscrypt manages metadata, key generation, key wrapping, PAM integration, \
 and provides a uniform interface for creating and modifying encrypted directories. For \
 a small, low-level tool that directly sets policies, see fscryptctl \
 (https://github.com/google/fscryptcl)."
@@ -20,12 +20,10 @@ inherit go goarch features_check
 
 REQUIRED_DISTRO_FEATURES = "pam"
 
-S = "${WORKDIR}/git"
-
 do_compile() {
 	export GOARCH=${TARGET_GOARCH}
 	export GOROOT="${STAGING_LIBDIR_NATIVE}/${TARGET_SYS}/go"
-	export GOPATH="${WORKDIR}/git"
+	export GOPATH="${UNPACKDIR}/git"
 
 	# Pass the needed cflags/ldflags so that cgo
 	# can find the needed headers files and libraries

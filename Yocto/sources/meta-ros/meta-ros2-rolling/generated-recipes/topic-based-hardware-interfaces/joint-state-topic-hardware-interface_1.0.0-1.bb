@@ -77,7 +77,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/joint_state_topic_hardware_interface"
 SRC_URI = "git://github.com/ros2-gbp/topic_based_hardware-release;${ROS_BRANCH};protocol=https"
 SRCREV = "c404adeb05771c8718745daf754add52feb71e55"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

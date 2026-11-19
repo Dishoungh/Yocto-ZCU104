@@ -59,7 +59,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/cx_plugin"
 SRC_URI = "git://github.com/ros2-gbp/clips_executive-release;${ROS_BRANCH};protocol=https"
 SRCREV = "f00ea43687535cb913f014461ded446d9279522f"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

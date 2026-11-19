@@ -17,18 +17,18 @@ LIC_FILES_CHKSUM = "file://package.xml;beginline=8;endline=8;md5=79773b05553c027
 ROS_CN = "metro_nav"
 ROS_BPN = "base2d_kinematics"
 
-ROS_BUILD_DEPENDS = " \
+ROS_BUILD_DEPENDS = "\
     base2d-kinematics-msgs \
     geometry-msgs \
     nav-2d-msgs \
     rclcpp \
 "
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     ament-cmake-native \
 "
 
-ROS_EXPORT_DEPENDS = " \
+ROS_EXPORT_DEPENDS = "\
     base2d-kinematics-msgs \
     geometry-msgs \
     nav-2d-msgs \
@@ -37,7 +37,7 @@ ROS_EXPORT_DEPENDS = " \
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     base2d-kinematics-msgs \
     geometry-msgs \
     nav-2d-msgs \
@@ -58,7 +58,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/humble/base2d_kinematics"
 SRC_URI = "git://github.com/ros2-gbp/metro_nav-release;${ROS_BRANCH};protocol=https"
 SRCREV = "596fe0db3224aae00523fd21607a9ea171f5a6b7"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

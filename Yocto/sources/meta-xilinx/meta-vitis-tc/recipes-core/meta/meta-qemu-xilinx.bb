@@ -20,7 +20,7 @@ QEMU_HOST_TASK += "nativesdk-bootgen"
 QEMU_HOST_TASK += "nativesdk-qemu-devicetrees"
 
 # Tool to work on qemuboot.conf files
-QEMU_HOST_TASK += "nativesdk-qemuboot-tool"
+QEMU_HOST_TASK += "nativesdk-qemuboot-tool nativesdk-qemu-serial-port-tool"
 
 # Add wic to allow for image manipulation
 QEMU_HOST_TASK += "nativesdk-wic"
@@ -31,7 +31,7 @@ QEMU_HOST_TASK:sdkmingw32 = "nativesdk-qemu-xilinx nativesdk-qemu-xilinx-common"
 TOOLCHAIN_HOST_TASK += "${QEMU_HOST_TASK}"
 
 MULTIMACH_TARGET_SYS = "${SDK_ARCH}-nativesdk${SDK_VENDOR}-${SDK_OS}"
-PACKAGE_ARCH = "${SDK_ARCH}_${SDK_OS}"
+PACKAGE_ARCH = "${SDK_ARCH}-${SDKPKGSUFFIX}"
 PACKAGE_ARCHS = ""
 TARGET_ARCH = "none"
 TARGET_OS = "none"
@@ -58,6 +58,7 @@ do_populate_sdk[stamp-extra-info] = "${PACKAGE_ARCH}"
 REAL_MULTIMACH_TARGET_SYS = "none"
 
 create_sdk_files:append () {
+        rm -rf ${SDK_OUTPUT}/${SDKPATH}/sysroots/none
         rm -f ${SDK_OUTPUT}/${SDKPATH}/site-config-*
         rm -f ${SDK_OUTPUT}/${SDKPATH}/environment-setup-*
         rm -f ${SDK_OUTPUT}/${SDKPATH}/version-*

@@ -14,7 +14,9 @@ BRANCH ?= "main"
 
 # Sources, by default allow for the use of SRCREV pointing to orphaned tags/commits
 BRANCHARG = "${@['nobranch=1', 'branch=${BRANCH}'][d.getVar('BRANCH', True) != '']}"
-SRC_URI = "${REPO};${BRANCHARG}"
+
+# force scarthgap to use a wrynose like "git" dir
+SRC_URI = "${REPO};${BRANCHARG};destsuffix=${BP}"
 
 # Skip processing of this recipe if it is not explicitly specified as the
 # PREFERRED_PROVIDER for libmetal. This avoids network access required by
@@ -26,7 +28,9 @@ python () {
         raise bb.parse.SkipRecipe("Set PREFERRED_PROVIDER_libmetal to %s to enable it" % (d.getVar("PN")))
 }
 
-S = "${WORKDIR}/git"
+# force scrathgap to be similar to wrynose and later
+inherit openamp-unpack-compat
+S = "${UNPACKDIR}/${BP}"
 
 # if user want to enable hugetlbfs support, please
 # add "DEPENDS:append:pn-libmetal = " libhugetlbfs "" to your local.conf
@@ -46,7 +50,10 @@ EXTRA_OECMAKE = " \
 	-DLIBEXEC_INSTALL_DIR=${libexecdir} \
 	-DMACHINE=${LIBMETAL_MACHINE} \
 	-DWITH_EXAMPLES=ON \
+	-DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
 	"
+
+CFLAGS += " -DATOMIC_VAR_INIT="
 
 ALLOW_EMPTY:${PN}-demos = "1"
 

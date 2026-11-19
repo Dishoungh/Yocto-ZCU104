@@ -1,7 +1,7 @@
 # Copyright (c) 2019-2021 LG Electronics, Inc.
 # Copyright (c) 2023 Wind River Systems, Inc.
 
-DESCRIPTION = "Drivers for various Phidgets devices"
+DESCRIPTION = "This package wraps the libphidget22 to use it as a ROS dependency"
 AUTHOR = "Martin Günther <martin.guenther@dfki.de>"
 HOMEPAGE = "https://www.phidgets.com/"
 SECTION = "devel"
@@ -13,7 +13,7 @@ DEPENDS = "libusb1"
 SRCNAME = "libphidget22"
 
 SRC_URI = "https://www.phidgets.com/downloads/phidget22/libraries/linux/${SRCNAME}/${SRCNAME}-${PV}.tar.gz"
-S = "${WORKDIR}/${SRCNAME}-${PV}"
+S = "${UNPACKDIR}/${SRCNAME}-${PV}"
 
 SRC_URI[sha256sum] = "1a9cc6329434dacfd7fd711c1a8a33ccc8e282b6eabc0bbcd5b71bed01bedfa1"
 

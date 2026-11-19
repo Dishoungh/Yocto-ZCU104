@@ -15,9 +15,6 @@ RDEPENDS:${PN} = "librfdc"
 
 PACKAGES = "${PN}-dbg ${PN}"
 
-S = "${WORKDIR}/git"
-B = "${WORKDIR}/build"
-
 FLAG = ""
 FLAG:zcu111-zynqmp = "-DXPS_BOARD_ZCU111"
 

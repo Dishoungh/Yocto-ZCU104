@@ -86,7 +86,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/event_image_reconstruction_fibar"
 SRC_URI = "git://github.com/ros2-gbp/event_image_reconstruction_fibar-release;${ROS_BRANCH};protocol=https"
 SRCREV = "0029b46188b7fc98c763dd3e1a480bcac8d3e18b"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

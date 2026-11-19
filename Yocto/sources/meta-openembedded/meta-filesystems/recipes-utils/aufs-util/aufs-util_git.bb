@@ -21,7 +21,8 @@ UPSTREAM_CHECK_COMMITS = "1"
 
 PV = "4.9+git"
 
-S = "${WORKDIR}/git"
+#i686-yoe-linux-ld.bfd: /usr/src/debug/glibc/2.41+git/stdio-common/../stdio-common/printf_fphex.c:123:(.text+0xdf): undefined reference to `__letf2'
+LDFLAGS:append:libc-glibc:toolchain-clang:x86 = " --rtlib=libgcc --unwindlib=libgcc"
 
 export HOSTCC = "${BUILD_CC}"
 do_configure:prepend() {
@@ -33,7 +34,7 @@ do_configure:prepend() {
 
 do_configure:append () {
     install -d ${S}/include/linux/
-    cp ${WORKDIR}/aufs_type.h ${S}/include/linux/
+    cp ${UNPACKDIR}/aufs_type.h ${S}/include/linux/
     sed -i -e 's;__user;;' ${S}/include/linux/aufs_type.h
 }
 
@@ -62,6 +63,6 @@ do_install:class-native () {
     done
 }
 
-RRECOMMENDS:${PN}:class-target += "kernel-module-aufs"
+RRECOMMENDS:${PN}:append:class-target = " kernel-module-aufs"
 
 BBCLASSEXTEND = "native"

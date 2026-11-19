@@ -55,7 +55,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/mola_input_lidar_bin_dataset"
 SRC_URI = "git://github.com/ros2-gbp/mola-release;${ROS_BRANCH};protocol=https"
 SRCREV = "b559532adb3264c339c9a8df288aa2447e313ab5"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "cmake"
 

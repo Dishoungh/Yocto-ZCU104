@@ -56,7 +56,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/human_description"
 SRC_URI = "git://github.com/ros2-gbp/human_description-release;${ROS_BRANCH};protocol=https"
 SRCREV = "f8aeb8342031398f40efbb6407ab8e6adb068809"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

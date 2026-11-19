@@ -15,6 +15,9 @@ UBOOT_MACHINE := "${@'${UBOOT_MACHINE_IMGRCVRY}' if d.getVar('UBOOT_MACHINE_IMGR
 PREBOOT_CFG_FILE ?= "file://preboot_cmd.cfg"
 PREBOOT_CFG_FILE:versal-2ve-2vm ?= "file://preboot_cmd_versal_2ve_2vm.cfg"
 
+# Recovery u-boot selects its own preboot above; ignore the u-boot-xlnx one.
+UBOOT_PREBOOT_CFG = ""
+
 SRC_URI:append = " ${@'file://${UBOOT_MACHINE_IMGRCVRY}' if d.getVar('UBOOT_MACHINE_IMGRCVRY') else ''}"
 SRC_URI:append = " ${PREBOOT_CFG_FILE}"
 
@@ -24,6 +27,6 @@ do_unpack:append () {
 
 do_copy_defconfig () {
 	if [ -n "${UBOOT_MACHINE_IMGRCVRY}" ]; then
-		cp ${WORKDIR}/${UBOOT_MACHINE_IMGRCVRY} ${S}/configs/
+		cp ${UNPACKDIR}/${UBOOT_MACHINE_IMGRCVRY} ${S}/configs/
 	fi
 }

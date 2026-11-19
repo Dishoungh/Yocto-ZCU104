@@ -17,17 +17,17 @@ LIC_FILES_CHKSUM = "file://package.xml;beginline=7;endline=7;md5=e8978a5103d2326
 ROS_CN = "NavMap"
 ROS_BPN = "navmap_ros_interfaces"
 
-ROS_BUILD_DEPENDS = " \
+ROS_BUILD_DEPENDS = "\
     builtin-interfaces \
     rosidl-default-generators \
     std-msgs \
 "
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     ament-cmake-native \
 "
 
-ROS_EXPORT_DEPENDS = " \
+ROS_EXPORT_DEPENDS = "\
     builtin-interfaces \
     rosidl-default-generators \
     std-msgs \
@@ -35,7 +35,7 @@ ROS_EXPORT_DEPENDS = " \
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     builtin-interfaces \
     rosidl-default-generators \
     std-msgs \
@@ -55,7 +55,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/jazzy/navmap_ros_interfaces"
 SRC_URI = "git://github.com/EasyNavigation/NavMap-release;${ROS_BRANCH};protocol=https"
 SRCREV = "746fdc6db18fd813c60710e2cacd0660115740df"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

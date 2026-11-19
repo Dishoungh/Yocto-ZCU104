@@ -18,17 +18,17 @@ LIC_FILES_CHKSUM = "file://package.xml;beginline=10;endline=10;md5=3dce4ba60d7e5
 ROS_CN = "turtlebot3_home_service_challenge"
 ROS_BPN = "turtlebot3_home_service_challenge_manipulator"
 
-ROS_BUILD_DEPENDS = " \
+ROS_BUILD_DEPENDS = "\
     moveit-ros-planning-interface \
     rclcpp \
     std-msgs \
 "
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     ament-cmake-native \
 "
 
-ROS_EXPORT_DEPENDS = " \
+ROS_EXPORT_DEPENDS = "\
     moveit-ros-planning-interface \
     rclcpp \
     std-msgs \
@@ -36,7 +36,7 @@ ROS_EXPORT_DEPENDS = " \
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     moveit-ros-planning-interface \
     rclcpp \
     std-msgs \
@@ -57,7 +57,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/jazzy/turtlebot3_home_service_challenge_manipulator"
 SRC_URI = "git://github.com/ros2-gbp/turtlebot3_home_service_challenge-release;${ROS_BRANCH};protocol=https"
 SRCREV = "f68b70351045ed5df89a184f75bff9073c2b733b"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

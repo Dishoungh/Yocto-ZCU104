@@ -19,7 +19,7 @@ DESCRIPTION = "\
 "
 HOMEPAGE = "http://www.postgresql.com"
 LICENSE = "0BSD"
-DEPENDS = "libnsl2 readline tzcode-native perl"
+DEPENDS = "libnsl2 tzcode-native perl bison-native"
 
 ARM_INSTRUCTION_SET = "arm"
 
@@ -29,6 +29,7 @@ SRC_URI = "https://ftp.postgresql.org/pub/source/v${PV}/${BP}.tar.bz2 \
     file://postgresql.pam \
     file://postgresql-setup \
     file://postgresql.service \
+    file://run-ptest \
 "
 
 LEAD_SONAME = "libpq.so"
@@ -37,9 +38,9 @@ LEAD_SONAME = "libpq.so"
 export LDFLAGS_SL = "${LDFLAGS}"
 export LDFLAGS_EX_BE = "-Wl,--export-dynamic"
 
-inherit autotools pkgconfig perlnative python3native python3targetconfig useradd update-rc.d systemd gettext perl-version multilib_header
+inherit autotools pkgconfig perlnative python3native python3targetconfig useradd update-rc.d systemd gettext perl-version multilib_header ptest
 
-CFLAGS += "-I${STAGING_INCDIR}/${PYTHON_DIR} -I${STAGING_INCDIR}/tcl8.6"
+CFLAGS += "-I${STAGING_INCDIR}/${PYTHON_DIR}"
 
 SYSTEMD_SERVICE:${PN} = "postgresql.service"
 SYSTEMD_AUTO_ENABLE:${PN} = "disable"
@@ -55,7 +56,7 @@ pkg_postinst:${PN} () {
 
 PACKAGECONFIG ??= " \
     ${@bb.utils.filter('DISTRO_FEATURES', 'pam systemd', d)} \
-    openssl python uuid libxml tcl perl zlib icu \
+    openssl python uuid libxml perl zlib icu readline \
 "
 PACKAGECONFIG[tcl] = "--with-tcl --with-tclconfig=${STAGING_BINDIR_CROSS},--without-tcl,tcl tcl-native,"
 PACKAGECONFIG[perl] = "--with-perl,--without-perl,perl,perl"
@@ -71,12 +72,13 @@ PACKAGECONFIG[zlib] = "--with-zlib,--without-zlib,zlib"
 PACKAGECONFIG[lz4] = "--with-lz4,--without-lz4,lz4"
 PACKAGECONFIG[openssl] = "--with-ssl=openssl,ac_cv_file__dev_urandom=yes,openssl"
 PACKAGECONFIG[icu] = "--with-icu,--without-icu,icu,icu"
+PACKAGECONFIG[readline] = "--with-readline,--without-readline,readline"
 
-EXTRA_OECONF += "--enable-thread-safety --disable-rpath \
+EXTRA_OECONF += "--disable-rpath \
     --datadir=${datadir}/${BPN} \
     --sysconfdir=${sysconfdir}/${BPN} \
 "
-EXTRA_OECONF:sh4 += "--disable-spinlocks"
+EXTRA_OECONF:append:sh4 = " --disable-spinlocks"
 
 DEBUG_OPTIMIZATION:remove:mips = " -Og"
 DEBUG_OPTIMIZATION:append:mips = " -O"
@@ -132,6 +134,8 @@ def is_target(d):
 export PERLCONFIGTARGET = "${@is_target(d)}"
 export PERL_ARCHLIB = "${STAGING_LIBDIR}${PERL_OWN_DIR}/perl5/${@get_perl_version(d)}/${@get_perl_arch(d)}"
 
+EXTRA_AUTORECONF += "-I config"
+
 do_configure() {
     # do_configure
     autotools_do_configure
@@ -174,7 +178,51 @@ do_configure() {
 
 do_compile:append() {
     oe_runmake -C contrib all
+
+    for f in `find ${B} -name "*.[c|h]"`;
+    do
+        sed -i -e 's,${B}/../,,' $f
+    done
 }
+
+do_compile_ptest() {
+    oe_runmake -C src/test/regress all
+}
+
+do_install_ptest() {
+    mkdir -p ${D}${PTEST_PATH}/test
+
+    # Install pg_regress binary
+    install -m 0755 ${B}/src/test/regress/pg_regress ${D}${PTEST_PATH}/test/
+
+    # Install test schedules and resultmap
+    for f in parallel_schedule serial_schedule resultmap; do
+        [ -f ${S}/src/test/regress/$f ] && install -m 0644 ${S}/src/test/regress/$f ${D}${PTEST_PATH}/test/
+    done
+
+    # Install SQL, expected, input, output, and data files
+    for d in sql expected input output data; do
+        if [ -d ${S}/src/test/regress/$d ]; then
+            cp -r ${S}/src/test/regress/$d ${D}${PTEST_PATH}/test/
+        fi
+    done
+
+    # Install the regress test shared library into the standard PostgreSQL
+    # package library directory (PKGLIBDIR) alongside contrib modules such
+    # as autoinc.so and refint.so. This allows pg_regress --dlpath to
+    # resolve all required shared libraries from a single location.
+    install -d ${D}${libdir}/${BPN}
+    install -m 0755 ${B}/src/test/regress/regress.so ${D}${libdir}/${BPN}/
+
+    # Install run-ptest
+    install -m 0755 ${UNPACKDIR}/run-ptest ${D}${PTEST_PATH}/
+
+    # Set ownership to postgres user for running tests
+    chown -R postgres:postgres ${D}${PTEST_PATH}
+}
+
+RDEPENDS:${PN}-ptest += "${PN}-client ${PN}-contrib perl"
+FILES:${PN}-ptest += "${libdir}/${BPN}/regress.so"
 
 # server needs to configure user and group
 usernum = "28"
@@ -204,24 +252,24 @@ do_install:append() {
 
     # install dirs and server init
     install -d ${D}${sysconfdir}/init.d
-    install -m 0755 ${WORKDIR}/${BPN}.init ${D}${sysconfdir}/init.d/${BPN}-server
+    install -m 0755 ${UNPACKDIR}/${BPN}.init ${D}${sysconfdir}/init.d/${BPN}-server
     sed -i -e "s/^PGVERSION=.*$/PGVERSION=${PV}/g" ${D}${sysconfdir}/init.d/${BPN}-server
-    install -m 0755 ${WORKDIR}/${BPN}-setup ${D}${bindir}/${BPN}-setup
+    install -m 0755 ${UNPACKDIR}/${BPN}-setup ${D}${bindir}/${BPN}-setup
     install -d -m 700 ${D}${localstatedir}/lib/${BPN}/data
     install -d -m 700 ${D}${localstatedir}/lib/${BPN}/backups
-    install -m 644 ${WORKDIR}/${BPN}-profile ${D}${localstatedir}/lib/${BPN}/.profile
+    install -m 644 ${UNPACKDIR}/${BPN}-profile ${D}${localstatedir}/lib/${BPN}/.profile
     chown -R postgres:postgres ${D}${localstatedir}/lib/${BPN}
     # multiple server config directory
     install -d -m 700 ${D}${sysconfdir}/default/${BPN}
 
     if ${@bb.utils.contains('DISTRO_FEATURES', 'pam', 'true', 'false', d)}; then
         install -d ${D}${sysconfdir}/pam.d
-        install -m 644 ${WORKDIR}/postgresql.pam ${D}${sysconfdir}/pam.d/postgresql
+        install -m 644 ${UNPACKDIR}/postgresql.pam ${D}${sysconfdir}/pam.d/postgresql
     fi
 
     # Install systemd unit files
     install -d ${D}${systemd_unitdir}/system
-    install -m 0644 ${WORKDIR}/postgresql.service ${D}${systemd_unitdir}/system
+    install -m 0644 ${UNPACKDIR}/postgresql.service ${D}${systemd_unitdir}/system
     sed -i -e 's,@BINDIR@,${bindir},g' \
         ${D}${systemd_unitdir}/system/postgresql.service
     # Remove the build path
@@ -241,7 +289,7 @@ postgresql_fix_sources () {
 	for f in ${PKGD}${TARGET_DBGSRC_DIR}/src/pl/plperl/Util.c \
 			${PKGD}${TARGET_DBGSRC_DIR}/src/pl/plperl/SPI.c; do
 		if [ -e $f ]; then
-			sed -i -e 's#${B}/../${P}#${TARGET_DBGSRC_DIR}#g' $f
+			sed -i -e 's#${B}/../${BP}#${TARGET_DBGSRC_DIR}#g' $f
 		fi
 	done
 }

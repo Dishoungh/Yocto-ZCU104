@@ -4,9 +4,8 @@ LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=94d55d512a9ba36caa9b7df079bae19f"
 
 SRC_URI = "git://github.com/nicupavel/emlog.git;protocol=https;branch=master"
-SRCREV = "a9bbf324fde131ff4cf064e32674086c4ced4dca"
+SRCREV = "a50aae487f689c1abb46b151abc68d6635b9b2fe"
 PV = "0.70+git"
-S = "${WORKDIR}/git"
 
 CVE_PRODUCT = "nicupavel:emlog"
 

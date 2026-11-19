@@ -1,3 +1,6 @@
+Master-next: [pipeline status](https://gitlab.com/ygreky/meta-security/-/pipelines)
+Master: [pipeline status](https://gitlab.com/ygreky/meta-security/-/pipelines)
+
 Meta-security
 =============
 
@@ -76,7 +79,7 @@ When sending single patches, please using something like:
 
 These values can be set as defaults for this repository:
 
-$ git config sendemail.to yocto@lists.yoctoproject.org
+$ git config sendemail.to yocto-patches@lists.yoctoproject.org
 $ git config format.subjectPrefix meta-security][PATCH
 
 Now you can just do 'git send-email origin/master' to send all local patches.

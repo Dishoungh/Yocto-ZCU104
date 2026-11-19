@@ -4,14 +4,18 @@ inherit:
 args:
     - --machine-name versal-vek280-multidomain
     - --domain-file ${LAYER_PATH_xilinx-standalone-sdt}/conf/domainyaml/versal-multidomain-base.yaml \
-                    ${BSPLAYERDIR_amd-adaptive-socs-bsp}/conf/domainyaml/vek280-linux-overlay.yaml \
-                    ${LAYER_PATH_xilinx-standalone-sdt}/conf/domainyaml/versal-openamp-overlay.yaml \
+                    ${BSPLAYERDIR_amd-adaptive-socs-bsp}/conf/domainyaml/versal-domain-access-overlay.yaml \
+                    ${BSPLAYERDIR_amd-adaptive-socs-bsp}/conf/domainyaml/vek280-vdu-overlay.yaml \
+                    ${BSPLAYERDIR_amd-adaptive-socs-bsp}/conf/domainyaml/vek280-aie-overlay.yaml \
+                    ${LAYER_PATH_xilinx-standalone-sdt}/conf/domainyaml/versal-openamp-zephyr-common-overlay.yaml \
+                    ${LAYER_PATH_xilinx-standalone-sdt}/conf/domainyaml/versal-openamp-zephyr-cips-overlay.yaml \
                     ${LAYER_PATH_xilinx-standalone-sdt}/conf/domainyaml/versal-libmetal-overlay.yaml
 
 kconfig:
+    CONFIG_SUBSYSTEM_DT_DOMAIN_ACCESS: y
     CONFIG_YOCTO_BBMC_CORTEXR5_1_BAREMETAL: y
     CONFIG_YOCTO_BBMC_LINUX_DTSI: \
-        ${LAYER_PATH_xilinx-standalone-sdt}/recipes-bsp/device-tree/files/ospi-2g-memory-map.dtsi \
+        ${BSPLAYERDIR_amd-adaptive-socs-bsp}/recipes-bsp/device-tree/files/ospi-2g-memory-map.dtsi \
         ${LAYER_PATH_xilinx-virtualization}/recipes-bsp/device-tree/files/versal-xen.dtsi \
         ${BSPLAYERDIR_amd-adaptive-socs-bsp}/recipes-bsp/device-tree/files/platform-misc.dtsi
 
@@ -25,10 +29,10 @@ machine:
         include:
             comment: "Enable meta-xilinx-imgrcvry if available"
             op: 'conf/enable-xilinx-imgrcvry.conf'
-        XLNX_CMAKE_BSP_VARS:pn-xilplmi:append:
+        EXTRA_OECMAKE:append:pn-xilplmi:
             comment: 'Enables the restoration of the multi-boot register for A/B firmware platforms'
             op: '='
-            val: ' -DPLM_ENABLE_RESTORE_MULTIBOOT'
+            val: ' -DXILPLMI_pm_restore_multiboot=ON'
         PRODUCT_NAME:
             comment: 'UEFI Capsule Update / LVFS Configuration'
             op: '='

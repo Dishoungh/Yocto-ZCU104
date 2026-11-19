@@ -85,7 +85,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/mrpt_libros_bridge"
 SRC_URI = "git://github.com/ros2-gbp/mrpt_ros_bridge-release;${ROS_BRANCH};protocol=https"
 SRCREV = "f2e2816c8f96699ab0000c077c597a4feff74dea"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "cmake"
 

@@ -9,10 +9,10 @@ Upstream-Status: Pending
 
 Signed-off-by: Rob Woolley <rob.woolley@windriver.com>
 
-Index: git/gz-msgs-extras.cmake.in
+Index: gz-msgs11-11.0.2/gz-msgs-extras.cmake.in
 ===================================================================
---- git.orig/gz-msgs-extras.cmake.in
-+++ git/gz-msgs-extras.cmake.in
+--- gz-msgs11-11.0.2.orig/gz-msgs-extras.cmake.in
++++ gz-msgs11-11.0.2/gz-msgs-extras.cmake.in
 @@ -41,8 +41,12 @@ endif()
  if(NOT DEFINED @PROJECT_NAME@_PYTHON_INTERPRETER)
    set(@PROJECT_NAME@_PYTHON_INTERPRETER Python3::Interpreter)

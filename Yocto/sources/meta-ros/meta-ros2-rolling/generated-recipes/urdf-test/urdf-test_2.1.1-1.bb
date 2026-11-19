@@ -56,7 +56,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/urdf_test"
 SRC_URI = "git://github.com/ros2-gbp/urdf_test-release;${ROS_BRANCH};protocol=https"
 SRCREV = "beb8cc634556a9eaa9223c4dec1046cce1b1b31a"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

@@ -53,7 +53,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/mp_units_vendor"
 SRC_URI = "git://github.com/ros2-gbp/mp_units_vendor-release;${ROS_BRANCH};protocol=https"
 SRCREV = "2c927771c571385b8bc5c86a15605d06655a1066"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

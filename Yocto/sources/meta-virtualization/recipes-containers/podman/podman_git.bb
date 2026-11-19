@@ -10,20 +10,17 @@ inherit features_check
 REQUIRED_DISTRO_FEATURES ?= "seccomp ipv6"
 
 DEPENDS = " \
-    go-metalinter-native \
     gpgme \
     libseccomp \
     ${@bb.utils.filter('DISTRO_FEATURES', 'systemd', d)} \
     gettext-native \
 "
 
-SRCREV = "bb81e85a430fa95d23a15b77c717fd68bf06ebf2"
+SRCREV = "88c5aaeec667af94c4fe3a5c2c7a42f8cf308b93"
 SRC_URI = " \
-    git://github.com/containers/libpod.git;branch=v5.0;protocol=https \
+    git://github.com/containers/podman.git;branch=v5.8;protocol=https;destsuffix=${GO_SRCURI_DESTSUFFIX} \
     ${@bb.utils.contains('PACKAGECONFIG', 'rootless', 'file://50-podman-rootless.conf', '', d)} \
-    file://0001-Use-securejoin.SecureJoin-when-forming-userns-paths.patch;patchdir=src/import/vendor/github.com/containers/storage \
-    file://CVE-2025-6032.patch;patchdir=src/import \
-    file://CVE-2024-9341.patch;patchdir=src/import \
+    file://CVE-2026-57231.patch;patchdir=src/import \
 "
 
 LICENSE = "Apache-2.0"
@@ -31,30 +28,36 @@ LIC_FILES_CHKSUM = "file://src/import/LICENSE;md5=3d9b931fa23ab1cacd0087f9e2ee12
 
 GO_IMPORT = "import"
 
-S = "${WORKDIR}/git"
+PV = "5.8.3-dev"
 
-PV = "5.0.1+git"
-
+CVE_STATUS[CVE-2019-10152] = "fixed-version: fixed since v1.4.0"
+CVE_STATUS[CVE-2020-1726] = "fixed-version: fixed since v1.8.1"
 CVE_STATUS[CVE-2022-2989] = "fixed-version: fixed since v4.3.0"
 CVE_STATUS[CVE-2023-0778] = "fixed-version: fixed since v4.5.0"
 
 PACKAGES =+ "${PN}-contrib"
 
-PODMAN_PKG = "github.com/containers/libpod"
+PODMAN_PKG = "github.com/containers/podman"
 
-BUILDTAGS_EXTRA ?= "${@bb.utils.contains('VIRTUAL-RUNTIME_container_networking','cni','cni','',d)}"
+# Include the cni build tag unless the distro explicitly selects netavark-only.
+# The runtime backend is selected via containers.conf (network_backend),
+# but podman must be compiled with the cni tag to support it at all.
+# Previously this was gated on VIRTUAL-RUNTIME_container_networking == "cni",
+# which excluded cni in vruntime builds where that variable is intentionally
+# blank (vpdmn-rootfs-image installs cni packages directly in IMAGE_INSTALL).
+BUILDTAGS_EXTRA ?= "${@'' if d.getVar('VIRTUAL-RUNTIME_container_networking') == 'netavark' else 'cni'}"
 BUILDTAGS ?= "seccomp varlink \
 ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'systemd', '', d)} \
 exclude_graphdriver_btrfs exclude_graphdriver_devicemapper ${BUILDTAGS_EXTRA}"
 
 # overide LDFLAGS to allow podman to build without: "flag provided but not # defined: -Wl,-O1
-export LDFLAGS=""
+export LDFLAGS = ""
 
 # https://github.com/llvm/llvm-project/issues/53999
 TOOLCHAIN = "gcc"
 
 # podmans Makefile expects BUILDFLAGS to be set but go.bbclass defines them in GOBUILDFLAGS
-export BUILDFLAGS="${GOBUILDFLAGS}"
+export BUILDFLAGS = "${GOBUILDFLAGS} -buildvcs=false"
 
 inherit go goarch
 inherit container-host
@@ -68,10 +71,13 @@ EXTRA_OEMAKE = " \
      SYSTEMDDIR=${systemd_unitdir}/system USERSYSTEMDDIR=${systemd_user_unitdir} \
 "
 
-# remove 'docker' from the packageconfig if you don't want podman to
+# remove 'docker' from the features if you don't want podman to
 # build and install the docker wrapper. If docker is enabled in the
-# packageconfig, the podman package will rconfict with docker.
-PACKAGECONFIG ?= "docker"
+# variable, the podman package will rconfict with docker.
+PODMAN_FEATURES ?= "docker"
+
+PACKAGECONFIG ?= ""
+PACKAGECONFIG[rootless] = ",,,fuse-overlayfs slirp4netns,,"
 
 do_compile() {
 	cd ${S}/src
@@ -91,8 +97,8 @@ do_compile() {
 	# can find the needed headers files and libraries
 	export GOARCH=${TARGET_GOARCH}
 	export CGO_ENABLED="1"
-	export CGO_CFLAGS="${CFLAGS} --sysroot=${STAGING_DIR_TARGET}"
-	export CGO_LDFLAGS="${LDFLAGS} --sysroot=${STAGING_DIR_TARGET}"
+	export CGO_CFLAGS="${CFLAGS}"
+	export CGO_LDFLAGS="${LDFLAGS}"
 
 	# podman now builds go-md2man and requires the host/build details
 	export NATIVE_GOOS=${BUILD_GOOS}
@@ -109,7 +115,7 @@ do_install() {
 	export GOROOT="${STAGING_DIR_NATIVE}/${nonarch_libdir}/${HOST_SYS}/go"
 
 	oe_runmake install DESTDIR="${D}"
-	if ${@bb.utils.contains('PACKAGECONFIG', 'docker', 'true', 'false', d)}; then
+	if ${@bb.utils.contains('PODMAN_FEATURES', 'docker', 'true', 'false', d)}; then
 		oe_runmake install.docker DESTDIR="${D}"
 	fi
 
@@ -119,7 +125,7 @@ do_install() {
 
 	if ${@bb.utils.contains('PACKAGECONFIG', 'rootless', 'true', 'false', d)}; then
 		install -d "${D}${sysconfdir}/sysctl.d"
-		install -m 0644 "${WORKDIR}/50-podman-rootless.conf" "${D}${sysconfdir}/sysctl.d"
+		install -m 0644 "${UNPACKDIR}/50-podman-rootless.conf" "${D}${sysconfdir}/sysctl.d"
 		install -d "${D}${sysconfdir}/containers"
 		cat <<-EOF >> "${D}${sysconfdir}/containers/containers.conf"
 		[NETWORK]
@@ -146,8 +152,8 @@ VIRTUAL-RUNTIME_base-utils-nsenter ?= "util-linux-nsenter"
 COMPATIBLE_HOST = "^(?!mips).*"
 
 RDEPENDS:${PN} += "\
-	catatonit conmon ${VIRTUAL-RUNTIME_container_runtime} iptables libdevmapper ${VIRTUAL-RUNTIME_container_networking} ${VIRTUAL-RUNTIME_base-utils-nsenter} \
-	${@bb.utils.contains('PACKAGECONFIG', 'rootless', 'fuse-overlayfs slirp4netns', '', d)} \
+	catatonit conmon ${VIRTUAL-RUNTIME_container_runtime} gpgme iptables libdevmapper \
+	${VIRTUAL-RUNTIME_container_dns} ${VIRTUAL-RUNTIME_container_networking} ${VIRTUAL-RUNTIME_base-utils-nsenter} \
 "
 RRECOMMENDS:${PN} += "slirp4netns \
                       kernel-module-xt-masquerade \

@@ -17,7 +17,7 @@ ROS_BPN = "ament_download"
 
 ROS_BUILD_DEPENDS = ""
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     ament-cmake-native \
 "
 
@@ -41,7 +41,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/kilted/ament_download"
 SRC_URI = "git://github.com/ros2-gbp/ament_download-release;${ROS_BRANCH};protocol=https"
 SRCREV = "9edff4c438d590ec17bf47e4155c0d1bd8072836"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

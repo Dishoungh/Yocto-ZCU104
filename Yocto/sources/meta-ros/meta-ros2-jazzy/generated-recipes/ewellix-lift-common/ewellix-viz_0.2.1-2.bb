@@ -18,7 +18,7 @@ ROS_BPN = "ewellix_viz"
 
 ROS_BUILD_DEPENDS = ""
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     ament-cmake-native \
 "
 
@@ -26,7 +26,7 @@ ROS_EXPORT_DEPENDS = ""
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     ewellix-description \
     rviz2 \
 "
@@ -45,7 +45,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/jazzy/ewellix_viz"
 SRC_URI = "git://github.com/clearpath-gbp/ewellix_lift_common-release;${ROS_BRANCH};protocol=https"
 SRCREV = "7979a8d8f397d3c7dacd9e2a98b6770551f4420c"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

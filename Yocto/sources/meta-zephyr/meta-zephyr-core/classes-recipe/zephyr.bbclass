@@ -1,7 +1,7 @@
 inherit terminal
 inherit python3native
 
-PYTHONPATH="${STAGING_DIR_HOST}${libdir}/${PYTHON_DIR}/site-packages"
+PYTHONPATH = "${STAGING_DIR_HOST}${libdir}/${PYTHON_DIR}/site-packages"
 DEPENDS += "python3-pyelftools-native python3-pyyaml-native python3-pykwalify-native ninja-native"
 
 OE_TERMINAL_EXPORTS += "HOST_EXTRACFLAGS HOSTLDFLAGS TERMINFO CROSS_CURSES_LIB CROSS_CURSES_INC"
@@ -14,6 +14,11 @@ TERMINFO = "${STAGING_DATADIR_NATIVE}/terminfo"
 KCONFIG_CONFIG_COMMAND ??= "menuconfig"
 KCONFIG_CONFIG_ROOTDIR ??= "${B}"
 ZEPHYR_BOARD ?= "${MACHINE}"
+ZEPHYR_SNIPPETS ?= ""
+
+def zephyr_snippet_args(d):
+    snippets = (d.getVar('ZEPHYR_SNIPPETS') or '').split()
+    return (' -DSNIPPET=' + '\\;'.join(snippets)) if snippets else ''
 
 # qemuboot writes into IMGDEPLOYDIR, force to write to DEPLOY_DIR_IMAGE
 IMGDEPLOYDIR = "${DEPLOY_DIR_IMAGE}"
@@ -27,6 +32,7 @@ python () {
 }
 
 EXTRA_OECMAKE:append = " -DZEPHYR_MODULES=${ZEPHYR_MODULES}"
+EXTRA_OECMAKE:append = "${@zephyr_snippet_args(d)}"
 
 python do_menuconfig() {
     import shutil

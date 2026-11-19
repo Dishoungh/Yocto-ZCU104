@@ -14,15 +14,12 @@ SRC_URI = "git://git.kernel.org/pub/scm/linux/kernel/git/will/kvmtool.git;branch
            file://0001-kvmtool-9p-fixed-compilation-error.patch \
            file://0002-kvmtool-add-EXTRA_CFLAGS-variable.patch \
            file://0003-kvmtool-Werror-disabled.patch \
-           file://0004-remove-wordsize.h-inclusion-for-musl-compatibility.patch \
            "
 
-SRCREV = "4d2c017f41533b0e51e00f689050c26190a15318"
+SRCREV = "7ad32e5514aca2b6d19398fd3ae5a7c5e0e1ce24"
 PV = "5.10.0+git"
 
-S = "${WORKDIR}/git"
-
-EXTRA_OEMAKE='V=1 EXTRA_CFLAGS="-I${STAGING_KERNEL_BUILDDIR}/include/generated -I${STAGING_KERNEL_BUILDDIR}/arch/${ARCH}/include/generated"'
+EXTRA_OEMAKE = 'V=1 EXTRA_CFLAGS="-I${STAGING_KERNEL_BUILDDIR}/include/generated -I${STAGING_KERNEL_BUILDDIR}/arch/${ARCH}/include/generated"'
 
 do_install() {
     install -d ${D}${bindir}

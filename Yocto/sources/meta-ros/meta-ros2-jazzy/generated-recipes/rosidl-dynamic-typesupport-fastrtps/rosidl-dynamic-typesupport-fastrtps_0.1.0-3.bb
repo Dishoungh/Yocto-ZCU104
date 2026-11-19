@@ -18,19 +18,19 @@ LIC_FILES_CHKSUM = "file://package.xml;beginline=9;endline=9;md5=12c26a18c7f493f
 ROS_CN = "rosidl_dynamic_typesupport_fastrtps"
 ROS_BPN = "rosidl_dynamic_typesupport_fastrtps"
 
-ROS_BUILD_DEPENDS = " \
+ROS_BUILD_DEPENDS = "\
     fastcdr \
     fastrtps \
     rcutils \
     rosidl-dynamic-typesupport \
 "
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     ament-cmake-ros-native \
     fastrtps-cmake-module-native \
 "
 
-ROS_EXPORT_DEPENDS = " \
+ROS_EXPORT_DEPENDS = "\
     fastcdr \
     fastrtps \
     rcutils \
@@ -39,7 +39,7 @@ ROS_EXPORT_DEPENDS = " \
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     fastcdr \
     fastrtps \
     rcutils \
@@ -60,7 +60,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/jazzy/rosidl_dynamic_typesupport_fastrtps"
 SRC_URI = "git://github.com/ros2-gbp/rosidl_dynamic_typesupport_fastrtps-release;${ROS_BRANCH};protocol=https"
 SRCREV = "700363b667895d30d6670e3e097623462f34cc41"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

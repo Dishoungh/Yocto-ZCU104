@@ -6,7 +6,6 @@ SRC_URI = "git://github.com/gazebosim/gz-transport.git;protocol=https;branch=gz-
 
 SRCREV = "73757e716dcf21e395e1884fbfb4afc6bac10d85"
 
-S = "${WORKDIR}/git"
 
 inherit cmake pkgconfig python3targetconfig
 
@@ -34,7 +33,7 @@ EXTRA_OECMAKE += " \
 
 do_install:append() {
     # Remove references to the build directory in the Doxygen tagfile
-    sed -i -e "s:${S}::g" ${D}${datadir}/gz/gz-transport13/gz-transport13.tag.xml
+    sed -i -e "s:${UNPACKDIR}::g" ${D}${datadir}/gz/gz-transport13/gz-transport13.tag.xml
 }
 
 FILES:${PN} += " \

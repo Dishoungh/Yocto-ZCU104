@@ -16,25 +16,25 @@ LIC_FILES_CHKSUM = "file://package.xml;beginline=15;endline=15;md5=8c794bf9bb044
 ROS_CN = "mp_units_vendor"
 ROS_BPN = "mp_units_vendor"
 
-ROS_BUILD_DEPENDS = " \
+ROS_BUILD_DEPENDS = "\
     fmt \
     gsl \
 "
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     ament-cmake-native \
     ament-cmake-vendor-package-native \
     git-native \
 "
 
-ROS_EXPORT_DEPENDS = " \
+ROS_EXPORT_DEPENDS = "\
     fmt \
     gsl \
 "
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     fmt \
     gsl \
 "
@@ -53,7 +53,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/kilted/mp_units_vendor"
 SRC_URI = "git://github.com/ros2-gbp/mp_units_vendor-release;${ROS_BRANCH};protocol=https"
 SRCREV = "f6230c36d989cbed4e107a4373eb719df318a68d"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

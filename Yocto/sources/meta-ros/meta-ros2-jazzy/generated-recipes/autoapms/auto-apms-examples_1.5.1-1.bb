@@ -15,7 +15,7 @@ LIC_FILES_CHKSUM = "file://package.xml;beginline=8;endline=8;md5=5bb539404d0b40b
 ROS_CN = "autoapms"
 ROS_BPN = "auto_apms_examples"
 
-ROS_BUILD_DEPENDS = " \
+ROS_BUILD_DEPENDS = "\
     auto-apms-behavior-tree \
     auto-apms-interfaces \
     auto-apms-mission \
@@ -24,11 +24,11 @@ ROS_BUILD_DEPENDS = " \
     rclcpp-components \
 "
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     ament-cmake-native \
 "
 
-ROS_EXPORT_DEPENDS = " \
+ROS_EXPORT_DEPENDS = "\
     auto-apms-behavior-tree \
     auto-apms-interfaces \
     auto-apms-mission \
@@ -39,7 +39,7 @@ ROS_EXPORT_DEPENDS = " \
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     auto-apms-behavior-tree \
     auto-apms-interfaces \
     auto-apms-mission \
@@ -49,7 +49,7 @@ ROS_EXEC_DEPENDS = " \
 "
 
 # Currently informational only -- see http://www.ros.org/reps/rep-0149.html#dependency-tags.
-ROS_TEST_DEPENDS = " \
+ROS_TEST_DEPENDS = "\
     ament-cmake-copyright \
 "
 
@@ -64,7 +64,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/jazzy/auto_apms_examples"
 SRC_URI = "git://github.com/ros2-gbp/autoapms-release;${ROS_BRANCH};protocol=https"
 SRCREV = "d0c343da295e4413e1fff33c1544400a7503152d"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

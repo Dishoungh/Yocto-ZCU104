@@ -65,7 +65,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/rsl"
 SRC_URI = "git://github.com/ros2-gbp/RSL-release;${ROS_BRANCH};protocol=https"
 SRCREV = "2f641b62bfa83285da5c8b88a342e4b2d0620547"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "cmake"
 

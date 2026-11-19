@@ -68,7 +68,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/mola_georeferencing"
 SRC_URI = "git://github.com/ros2-gbp/mola_state_estimation-release;${ROS_BRANCH};protocol=https"
 SRCREV = "712141d44167ab324348defea5139a6eb0349966"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "cmake"
 

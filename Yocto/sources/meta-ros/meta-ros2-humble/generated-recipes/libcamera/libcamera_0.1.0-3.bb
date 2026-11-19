@@ -18,8 +18,7 @@ LIC_FILES_CHKSUM = "file://package.xml;beginline=12;endline=12;md5=184dd1523b9a1
 ROS_CN = "libcamera"
 ROS_BPN = "libcamera"
 
-ROS_BUILD_DEPENDS = " \
-    gcc-runtime \
+ROS_BUILD_DEPENDS = "\
     libyaml \
     openssl \
     pkgconfig \
@@ -30,12 +29,11 @@ ROS_BUILD_DEPENDS = " \
     udev \
 "
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     ${ROS_UNRESOLVED_DEP-meson-native} \
 "
 
-ROS_EXPORT_DEPENDS = " \
-    gcc-runtime \
+ROS_EXPORT_DEPENDS = "\
     libyaml \
     openssl \
     python3 \
@@ -44,8 +42,7 @@ ROS_EXPORT_DEPENDS = " \
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
-    gcc-runtime \
+ROS_EXEC_DEPENDS = "\
     libyaml \
     openssl \
     python3 \
@@ -66,7 +63,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/humble/libcamera"
 SRC_URI = "git://github.com/ros2-gbp/libcamera-release;${ROS_BRANCH};protocol=https"
 SRCREV = "d6373e2bf92e9e0a615d134cd087dde4633a1ebc"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "meson"
 

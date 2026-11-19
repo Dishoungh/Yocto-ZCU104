@@ -13,18 +13,15 @@ SRC_URI = " \
 
 PV = "1.3.1"
 
-CVE_STATUS[CVE-2014-0363] = "cpe-incorrect: Affects Ignite Realtime Smack XMPP API"
-CVE_STATUS[CVE-2014-0364] = "cpe-incorrect: Affects Ignite Realtime Smack XMPP API"
-CVE_STATUS[CVE-2016-10027] = "cpe-incorrect: Affects Ignite Realtime Smack XMPP API"
+CVE_STATUS[CVE-2014-0363] = "cpe-incorrect: different product"
+CVE_STATUS[CVE-2014-0364] = "cpe-incorrect: different product"
+CVE_STATUS[CVE-2016-10027] = "cpe-incorrect: different product"
 
 inherit autotools update-rc.d pkgconfig ptest
 inherit ${@bb.utils.contains('VIRTUAL-RUNTIME_init_manager','systemd','systemd','', d)}
 inherit features_check
 
 REQUIRED_DISTRO_FEATURES = "smack"
-
-
-S = "${WORKDIR}/git"
 
 PACKAGECONFIG ??= ""
 PACKAGECONFIG:append = " ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'systemd', '', d)}"

@@ -17,29 +17,29 @@ LIC_FILES_CHKSUM = "file://package.xml;beginline=9;endline=9;md5=e8978a5103d2326
 ROS_CN = "NavMap"
 ROS_BPN = "navmap_core"
 
-ROS_BUILD_DEPENDS = " \
+ROS_BUILD_DEPENDS = "\
     eigen3-cmake-module \
     libeigen \
 "
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     ament-cmake-native \
 "
 
-ROS_EXPORT_DEPENDS = " \
+ROS_EXPORT_DEPENDS = "\
     eigen3-cmake-module \
     libeigen \
 "
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     eigen3-cmake-module \
     libeigen \
 "
 
 # Currently informational only -- see http://www.ros.org/reps/rep-0149.html#dependency-tags.
-ROS_TEST_DEPENDS = " \
+ROS_TEST_DEPENDS = "\
     ament-cmake-gtest \
     ament-lint-auto \
     ament-lint-common \
@@ -57,7 +57,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/kilted/navmap_core"
 SRC_URI = "git://github.com/EasyNavigation/NavMap-release;${ROS_BRANCH};protocol=https"
 SRCREV = "b74b04dd8c75d76fee911b30cff50603824e7e21"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

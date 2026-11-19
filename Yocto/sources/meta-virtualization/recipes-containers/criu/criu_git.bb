@@ -13,8 +13,8 @@ EXCLUDE_FROM_WORLD = "1"
 
 LIC_FILES_CHKSUM = "file://COPYING;md5=412de458544c1cb6a2b512cd399286e2"
 
-SRCREV = "f8b14286b092853a4485813e1efd564109df9123"
-PV = "3.19.0+git"
+SRCREV = "3c7d4fa013297b431da48eff821db7f2e8b90c27"
+PV = "4.2+git"
 
 SRC_URI = "git://github.com/checkpoint-restore/criu.git;branch=master;protocol=https \
            file://0001-criu-Skip-documentation-install.patch \
@@ -22,15 +22,15 @@ SRC_URI = "git://github.com/checkpoint-restore/criu.git;branch=master;protocol=h
            file://0003-crit-pycriu-build-and-install-wheels.patch \
            file://0004-pycriu-attr-pycriu.version.__version__.patch \
            file://0005-pycriu-skip-dependency-check-during-build.patch \
-           file://0006-criu-Adjust-to-glibc-__rseq_size-semantic-change.patch \
+           file://0001-crit-explicity-set-PEP517_SOURCE_PATH.patch \
+           file://0001-plugins-cuda-pass-DEBUG_PREFIX_MAP.patch \
+           file://0006-images-Makefile-fix-cross-compilation-protobuf-paths.patch \
            "
 
 COMPATIBLE_HOST = "(x86_64|arm|aarch64).*-linux"
 
 DEPENDS += "libnl libcap protobuf-c-native protobuf-c util-linux-native libbsd libnet python3-protobuf-native"
 RDEPENDS:${PN} = "bash cgroup-lite python3-ctypes python3-fcntl python3-protobuf"
-
-S = "${WORKDIR}/git"
 
 #
 # CRIU just can be built on ARMv7 and ARMv6, so the Makefile check
@@ -41,17 +41,17 @@ EXTRA_OEMAKE:arm += "ARCH=arm UNAME-M=${CRIU_BUILD_ARCH} WERROR=0"
 EXTRA_OEMAKE:x86-64 += "ARCH=x86 WERROR=0"
 EXTRA_OEMAKE:aarch64 += "ARCH=aarch64 WERROR=0"
 
-EXTRA_OEMAKE:append = " SBINDIR=${sbindir} LIBDIR=${libdir} INCLUDEDIR=${includedir} PIEGEN=no"
+EXTRA_OEMAKE:append = " SBINDIR=${sbindir} LIBDIR=${libdir} INCLUDEDIR=${includedir} PIEGEN=no PROTOBUF_INCLUDEDIR=${PKG_CONFIG_SYSROOT_DIR}/usr/include"
 EXTRA_OEMAKE:append = " LOGROTATEDIR=${sysconfdir} SYSTEMDUNITDIR=${systemd_unitdir}"
 
 CFLAGS += "-D__USE_GNU -D_GNU_SOURCE "
 
 CFLAGS += " -I${STAGING_INCDIR} -I${STAGING_INCDIR}/libnl3"
-CFLAGS:arm += "-D__WORDSIZE"
+CFLAGS:append:arm = " -D__WORDSIZE"
 
 # overide LDFLAGS to allow criu to build without: "x86_64-poky-linux-ld: unrecognized option '-Wl,-O1'"
-export LDFLAGS=""
-export C_INCLUDE_PATH="${STAGING_INCDIR}/libnl3"
+export LDFLAGS = ""
+export C_INCLUDE_PATH = "${STAGING_INCDIR}/libnl3"
 
 export BUILD_SYS
 export HOST_SYS
@@ -70,12 +70,8 @@ CLEANBROKEN = "1"
 # WARNING: criu-3.17.1 do_package_qa: QA Issue: criu: ELF binary /usr/sbin/criu has relocations in .text [textrel]
 INSANE_SKIP:${PN} += "textrel"
 
-do_compile:prepend() {
-    rm -rf ${S}/images/google/protobuf/descriptor.proto
-    ln -s  ${PKG_CONFIG_SYSROOT_DIR}/usr/include/google/protobuf/descriptor.proto ${S}/images/google/protobuf/descriptor.proto
-}
-
 do_compile () {
+	export DEBUG_PREFIX_MAP="${DEBUG_PREFIX_MAP}"
 	oe_runmake FULL_PYTHON=${PYTHON} PYTHON=nativepython3
 }
 
@@ -84,6 +80,7 @@ do_install () {
     export PEP517_WHEEL_PATH="${PEP517_WHEEL_PATH}"
     export USRBINPATH="${USRBINPATH}"
     export PEP517_INSTALL_PYTHON="${PEP517_INSTALL_PYTHON}"
+
     oe_runmake PREFIX=${exec_prefix} LIBDIR=${libdir} DESTDIR="${D}" PLUGINDIR="${localstatedir}/lib" FULL_PYTHON=${PYTHON} PYTHON=nativepython3 install
 
     # python3's distutils has a feature of rewriting the interpeter on setup installed
@@ -111,3 +108,5 @@ FILES:${PN}-staticdev += " \
             ${libexecdir}/compel/std.lib.a \
             ${libexecdir}/compel/fds.lib.a \
             "
+
+CVE_PRODUCT = "criu:checkpoint\/restore_in_userspace"

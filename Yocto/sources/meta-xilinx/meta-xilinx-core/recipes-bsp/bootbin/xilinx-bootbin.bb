@@ -19,20 +19,26 @@ BOOTBIN_INCLUDE ?= ""
 inherit deploy bootgen-bif shared-manifest-aggregate
 
 
-MANIFEST_AGGREGATE_COMPONENTS:zynq = "device-tree u-boot fsbl"
-MANIFEST_AGGREGATE_COMPONENTS:zynqmp = "device-tree u-boot fsbl trusted-firmware-a pmu-firmware"
-MANIFEST_AGGREGATE_COMPONENTS:versal = "device-tree u-boot trusted-firmware-a plm psm-firmware"
-MANIFEST_AGGREGATE_COMPONENTS:versal-net = "device-tree u-boot trusted-firmware-a plm psm-firmware"
-MANIFEST_AGGREGATE_COMPONENTS:versal-2ve-2vm = "device-tree u-boot trusted-firmware-a plm"
+# Auto-derive the component list from BIF_PARTITION_ATTR (remapped below) so any
+# partition is tracked without a per-SOC static list. Separate from
+# MANIFEST_AGGREGATE_COMPONENTS so layers can add non-partition components.
+MANIFEST_COMPONENT_MAP = "\
+    u-boot-xlnx:u-boot \
+    plmfw:plm \
+    pmufw:pmu-firmware \
+    psmfw:psm-firmware \
+"
+MANIFEST_AGGREGATE_DERIVED = "${@bif_partition_attr_to_manifest_components(d)}"
 
 MANIFEST_AGGREGATE_DEPLOY_NAME = "${BOOTBIN_BASE_NAME}.manifest.json"
 MANIFEST_AGGREGATE_LINK_NAME = "boot.bin.manifest.json"
 
 MANIFEST_AGGREGATE_DEPENDS:zynq = "device-tree virtual/bootloader fsbl"
-MANIFEST_AGGREGATE_DEPENDS:zynqmp = "device-tree virtual/bootloader fsbl pmufw virtual/arm-trusted-firmware"
-MANIFEST_AGGREGATE_DEPENDS:versal = "device-tree virtual/bootloader plmfw psmfw virtual/arm-trusted-firmware virtual/base-pdi"
-MANIFEST_AGGREGATE_DEPENDS:versal-net = "device-tree virtual/bootloader plmfw psmfw virtual/arm-trusted-firmware virtual/base-pdi"
-MANIFEST_AGGREGATE_DEPENDS:versal-2ve-2vm = "device-tree virtual/bootloader plmfw virtual/arm-trusted-firmware virtual/base-pdi"
+MANIFEST_AGGREGATE_DEPENDS:zynqmp = "device-tree virtual/bootloader fsbl pmufw trusted-firmware-a"
+MANIFEST_AGGREGATE_DEPENDS:versal = "device-tree virtual/bootloader plmfw psmfw trusted-firmware-a virtual/base-pdi"
+MANIFEST_AGGREGATE_DEPENDS:versal-net = "device-tree virtual/bootloader plmfw psmfw trusted-firmware-a virtual/base-pdi"
+MANIFEST_AGGREGATE_DEPENDS:versal-2ve-2vm = "device-tree virtual/bootloader plmfw trusted-firmware-a virtual/base-pdi"
+MANIFEST_AGGREGATE_DEPENDS:versal-2vp = "device-tree virtual/bootloader plmfw psmfw trusted-firmware-a virtual/base-pdi"
 
 # Don't allow building for microblaze MACHINE
 COMPATIBLE_MACHINE ?= "^$"
@@ -41,6 +47,7 @@ COMPATIBLE_MACHINE:zynqmp = ".*"
 COMPATIBLE_MACHINE:versal = ".*"
 COMPATIBLE_MACHINE:versal-net = ".*"
 COMPATIBLE_MACHINE:versal-2ve-2vm = ".*"
+COMPATIBLE_MACHINE:versal-2vp = ".*"
 
 PROVIDES = "virtual/boot-bin"
 
@@ -56,12 +63,6 @@ def bif_partition_attr_to_depends(d):
     except ValueError:
         pass
 
-    # Convert arm-trusted-firmware to virtual/arm-trusted-firmware
-    try:
-        depends[depends.index("arm-trusted-firmware")] = "virtual/arm-trusted-firmware"
-    except ValueError:
-        pass
-
     # Convert u-boot-xlnx to virtual/bootloader
     try:
         depends[depends.index("u-boot-xlnx")] = "virtual/bootloader"
@@ -71,6 +72,40 @@ def bif_partition_attr_to_depends(d):
     return ' '.join(depends)
 
 DEPENDS += "${@bif_partition_attr_to_depends(d)}"
+
+# Map BIF partition names to component names for the aggregate list.
+def bif_partition_attr_to_manifest_components(d):
+    remap = {}
+    for pair in (d.getVar('MANIFEST_COMPONENT_MAP') or "").split():
+        if ':' in pair:
+            src, dst = pair.split(':', 1)
+            remap[src] = dst
+    seen = []
+    for name in (d.getVar('BIF_PARTITION_ATTR') or "").split():
+        comp = remap.get(name, name)
+        if comp not in seen:
+            seen.append(comp)
+    return ' '.join(seen)
+
+# Component -> image bootgen embeds, so the aggregator can hash it for content
+# identity. "comp=path" tokens; component name is post-remap, path is the
+# partition's BIF_PARTITION_IMAGE (the exact bytes placed in BOOT.BIN).
+def bif_partition_attr_to_manifest_images(d):
+    remap = {}
+    for pair in (d.getVar('MANIFEST_COMPONENT_MAP') or "").split():
+        if ':' in pair:
+            src, dst = pair.split(':', 1)
+            remap[src] = dst
+    out = []
+    for part in (d.getVar('BIF_PARTITION_ATTR') or "").split():
+        img = d.getVarFlag('BIF_PARTITION_IMAGE', part, True)
+        if img:
+            out.append("%s=%s" % (remap.get(part, part), img))
+    return ' '.join(out)
+
+MANIFEST_COMPONENT_IMAGES = "${@bif_partition_attr_to_manifest_images(d)}"
+# Changing an image path (e.g. AMR overlay swap) must invalidate the aggregate.
+do_manifest_aggregate[vardeps] += "MANIFEST_COMPONENT_IMAGES"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
@@ -84,6 +119,8 @@ BIF_BITSTREAM_ATTR ?= "${@bb.utils.contains('MACHINE_FEATURES', 'fpga-overlay', 
 
 do_patch[noexec] = "1"
 
+S = "${UNPACKDIR}"
+
 python do_configure() {
     fp = d.getVar("BIF_FILE_PATH")
     
@@ -95,13 +132,18 @@ python do_configure() {
 }
 
 do_configure[vardeps] += "BIF_PARTITION_ATTR BIF_PARTITION_IMAGE BIF_COMMON_ATTR"
-do_configure[vardeps] += "BIF_FSBL_ATTR BIF_BITSTREAM_ATTR BIF_ATF_ATTR BIF_DEVICETREE_ATTR BIF_SSBL_ATTR BIF_OPTIONAL_DATA"
+# Track per-name BIF_COMMON_ATTR flag values so changing a value (without
+# changing the list) still invalidates the configure signature.
+do_configure[vardeps] += "${@' '.join('BIF_COMMON_ATTR[%s]' % n for n in (d.getVar('BIF_COMMON_ATTR') or '').split())}"
+do_configure[vardeps] += "BIF_FSBL_ATTR BIF_BITSTREAM_ATTR BIF_TFA_ATTR BIF_DEVICETREE_ATTR BIF_SSBL_ATTR BIF_OPTIONAL_DATA BIF_IMAGESTORE_ATTR"
 do_configure[vardeps] += "BIF_PARTITION_ID BIF_PARTITION_NAME"
+do_configure[vardeps] += "${@' '.join('BIF_OPTIONAL_DATA_VAL[%s]' % n for n in (d.getVarFlags('BIF_OPTIONAL_DATA_VAL') or ''))}"
+do_configure[vardeps] += "${@' '.join('BIF_OPTIONAL_DATA_FILE[%s]' % n for n in (d.getVarFlags('BIF_OPTIONAL_DATA_FILE') or ''))}"
 
 do_compile() {
     rm -f ${B}/BOOT.bin
     if [ "${BIF_FILE_PATH}" != "${B}/bootgen.bif" ];then
-        BIF_FILE_PATH="${WORKDIR}${BIF_FILE_PATH}"
+        BIF_FILE_PATH="${UNPACKDIR}${BIF_FILE_PATH}"
     fi
     bootgen -image ${BIF_FILE_PATH} -arch ${BOOTGEN_ARCH} ${BOOTGEN_EXTRA_ARGS} -w -o ${B}/BOOT.bin
     if [ ! -e ${B}/BOOT.bin ]; then
@@ -132,6 +174,10 @@ do_deploy() {
 
 FILES:${PN} += "/boot/BOOT.bin"
 SYSROOT_DIRS += "/boot"
+
+# Debug firmware payloads, such as TF-A built with TFA_DEBUG=1, may retain
+# absolute build paths. BOOT.bin packages these payloads without modifying them.
+INSANE_SKIP:${PN} += "buildpaths"
 
 addtask deploy before do_build after do_compile
 

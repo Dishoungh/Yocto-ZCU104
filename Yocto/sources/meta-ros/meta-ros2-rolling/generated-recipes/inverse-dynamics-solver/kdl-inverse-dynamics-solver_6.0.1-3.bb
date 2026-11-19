@@ -66,7 +66,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/kdl_inverse_dynamics_solver"
 SRC_URI = "git://github.com/ros2-gbp/inverse_dynamics_solver-release;${ROS_BRANCH};protocol=https"
 SRCREV = "fdb1a1143a6a08bdad36adf4c5e324442a01afd1"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

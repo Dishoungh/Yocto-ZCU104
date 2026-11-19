@@ -17,7 +17,7 @@ LIC_FILES_CHKSUM = "file://package.xml;beginline=10;endline=10;md5=94addb714900a
 ROS_CN = "clips_executive"
 ROS_BPN = "cx_executive_plugin"
 
-ROS_BUILD_DEPENDS = " \
+ROS_BUILD_DEPENDS = "\
     clips-vendor \
     cx-plugin \
     cx-utils \
@@ -26,11 +26,11 @@ ROS_BUILD_DEPENDS = " \
     std-msgs \
 "
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     ament-cmake-native \
 "
 
-ROS_EXPORT_DEPENDS = " \
+ROS_EXPORT_DEPENDS = "\
     clips-vendor \
     cx-plugin \
     cx-utils \
@@ -41,7 +41,7 @@ ROS_EXPORT_DEPENDS = " \
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     clips-vendor \
     cx-plugin \
     cx-utils \
@@ -64,7 +64,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/jazzy/cx_executive_plugin"
 SRC_URI = "git://github.com/ros2-gbp/clips_executive-release;${ROS_BRANCH};protocol=https"
 SRCREV = "ac23228158312e6fe0889d7a3509fc16604a468e"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

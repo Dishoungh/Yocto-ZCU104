@@ -15,7 +15,7 @@ LIC_FILES_CHKSUM = "file://package.xml;beginline=10;endline=10;md5=82f0323c08605
 ROS_CN = "clips_executive"
 ROS_BPN = "cx_ros_msgs_plugin"
 
-ROS_BUILD_DEPENDS = " \
+ROS_BUILD_DEPENDS = "\
     ${ROS_UNRESOLVED_DEP-libicu-dev} \
     clips-vendor \
     cx-plugin \
@@ -27,11 +27,11 @@ ROS_BUILD_DEPENDS = " \
     rosidl-typesupport-introspection-cpp \
 "
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     ament-cmake-native \
 "
 
-ROS_EXPORT_DEPENDS = " \
+ROS_EXPORT_DEPENDS = "\
     ${ROS_UNRESOLVED_DEP-libicu-dev} \
     clips-vendor \
     cx-plugin \
@@ -45,7 +45,7 @@ ROS_EXPORT_DEPENDS = " \
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     ${ROS_UNRESOLVED_DEP-libicu-dev} \
     clips-vendor \
     cx-plugin \
@@ -71,7 +71,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/kilted/cx_ros_msgs_plugin"
 SRC_URI = "git://github.com/ros2-gbp/clips_executive-release;${ROS_BRANCH};protocol=https"
 SRCREV = "1defc58414abfa8feb9111a11fdbd0a52636d957"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

@@ -18,7 +18,7 @@ ROS_BPN = "raspimouse_slam_navigation"
 
 ROS_BUILD_DEPENDS = ""
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     ament-cmake-native \
 "
 
@@ -26,7 +26,7 @@ ROS_EXPORT_DEPENDS = ""
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     raspimouse-navigation \
     raspimouse-slam \
 "
@@ -45,7 +45,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/jazzy/raspimouse_slam_navigation"
 SRC_URI = "git://github.com/ros2-gbp/raspimouse_slam_navigation_ros2-release;${ROS_BRANCH};protocol=https"
 SRCREV = "acc1c15fa47b95abd9f0a987650fd6825065eea2"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

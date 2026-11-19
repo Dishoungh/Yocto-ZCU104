@@ -77,7 +77,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/hri_rviz"
 SRC_URI = "git://github.com/ros2-gbp/hri_rviz-release;${ROS_BRANCH};protocol=https"
 SRCREV = "51d98a7bd902b6ff13fb167700751dfaaf570559"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

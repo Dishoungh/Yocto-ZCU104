@@ -16,17 +16,17 @@ LIC_FILES_CHKSUM = "file://package.xml;beginline=33;endline=33;md5=58e54c03ca7f8
 ROS_CN = "sophus"
 ROS_BPN = "sophus"
 
-ROS_BUILD_DEPENDS = " \
+ROS_BUILD_DEPENDS = "\
     ceres-solver \
     fmt \
     libeigen \
 "
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     cmake-native \
 "
 
-ROS_EXPORT_DEPENDS = " \
+ROS_EXPORT_DEPENDS = "\
     ceres-solver \
     fmt \
     libeigen \
@@ -50,7 +50,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/kilted/sophus"
 SRC_URI = "git://github.com/ros2-gbp/sophus-release;${ROS_BRANCH};protocol=https"
 SRCREV = "7a6c73b3f895cc2e9ccca68c315795a4b9a77e54"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "cmake"
 

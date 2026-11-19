@@ -1,11 +1,15 @@
 HOMEPAGE = "https://github.com/lf-edge/runx"
-SUMMARY = "runx stuff"
-DESCRIPTION = "Xen Runtime for OCI"
+SUMMARY = "runx stuff (DEPRECATED - use vxn instead)"
+DESCRIPTION = "Xen Runtime for OCI. \
+    DEPRECATED: runx is unmaintained (upstream dormant since 2022). \
+    Use 'vxn' instead, which provides the same Xen DomU container \
+    functionality using the modern vcontainer infrastructure with \
+    pluggable hypervisor backends, daemon mode, and vexpose API exposure."
 
 SRCREV_runx = "edc9350a79ede0365066c9743080e3dc6430d602"
 
-KERNEL_SRC_VER="linux-5.4"
-KERNEL_URL_VER="v5.x"
+KERNEL_SRC_VER = "linux-5.4"
+KERNEL_URL_VER = "v5.x"
 
 SRC_URI = "\
 	  git://github.com/lf-edge/runx;nobranch=1;name=runx;protocol=https \
@@ -21,7 +25,6 @@ SRC_URI[sha256sum] = "bf338980b1670bca287f9994b7441c2361907635879169c64ae78364ef
 LICENSE = "Apache-2.0"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=945fc9aa694796a6337395cc291ddd8c"
 
-S = "${WORKDIR}/git"
 PV = "v1.0-git${SRCREV_runx}"
 
 inherit features_check

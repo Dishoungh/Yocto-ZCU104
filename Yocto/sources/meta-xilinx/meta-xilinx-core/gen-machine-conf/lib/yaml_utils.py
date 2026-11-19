@@ -125,6 +125,18 @@ def ReadYaml(yamlfile):
             raise Exception(exc)
 
 
+def WriteYaml(yamlfile, data):
+    '''Write the given data as YAML to yamlfile. Key insertion order is
+    preserved (sort_keys=False) so round-tripped data such as the CPU info
+    dictionary keeps its original SDT ordering.'''
+    with open(yamlfile, 'w') as yaml_fd:
+        try:
+            yaml.safe_dump(data, yaml_fd, default_flow_style=False,
+                           sort_keys=False)
+        except yaml.YAMLError as exc:
+            raise Exception(exc)
+
+
 def CleanupEscapes(obj):
     '''Recursively removes backslash escape sequences followed by any
     whitespace, tab, or newline characters from strings within the given object.
@@ -200,36 +212,44 @@ def GenCPUNames(cluster: str, cpu: str, cpumask_hex: str):
         list[str]: A list of CPU names for each core enabled in the mask.
         Returns an empty list if the cluster name does not match or is incompatible with the cpu string.
     """
-    match = re.match(r'cpus_(\w+?)(?:_\d+)?$', cluster)
+    match = re.fullmatch(r'cpus_(\w+?)(?:_([0-9]+))?', cluster)
     if not match:
         return []
+    cpu_type, cluster_index = match.groups()
     cpu_split = cpu.split(',')
-    cpu_type = match.group(1)
     if len(cpu_split) > 1:
         cpu_prefix = cpu_split[1].split('-')[0]
+        label_prefix = f'{cpu_prefix}{cpu_type}'
+        if label_prefix != cpu_split[1].replace('-', ''):
+            return []
     else:
-        # For non-comma CPUs (e.g. pmc-microblaze), validate that the
-        # cluster cpu_type is part of the cpu string to avoid matching
-        # unrelated clusters (e.g. cpus_a78 for pmc-microblaze)
         cpu_parts = cpu_split[0].split('-')
         if cpu_type not in cpu_parts:
             return []
-        cpu_prefix = cpu_parts[0]
-    if not cpumask_hex and cpumask_hex != 0:
+        label_prefix = cpu_parts[0]
+    if cpumask_hex is None or cpumask_hex == '':
         return []
-    if isinstance(cpumask_hex, int):
-        cpumask = cpumask_hex
-    else:
-        cpumask = int(str(cpumask_hex), 16)
-    bit_positions = [i for i in range(cpumask.bit_length()) if cpumask & (1 << i)]
-    # For comma-separated CPUs (e.g. arm,cortex-a78): cortexa78_0
-    # For non-comma CPUs (e.g. pmc-microblaze): pmc_0
-    if len(cpu_split) > 1:
-        cpunames = [f"{cpu_prefix}{cpu_type}_{i}" for i in bit_positions]
-    else:
-        cpunames = [f"{cpu_prefix}_{i}" for i in bit_positions]
+    try:
+        cpumask = (cpumask_hex if isinstance(cpumask_hex, int)
+                   else int(str(cpumask_hex), 16))
+    except (TypeError, ValueError):
+        raise ValueError(f'Invalid cpumask {cpumask_hex!r} for {cluster}') from None
+    if cpumask < 0:
+        raise ValueError(f'Negative cpumask for {cluster}')
+    if cpumask == 0:
+        return []
 
-    return cpunames
+    if cluster_index is not None:
+        if cpumask != 0x1:
+            raise ValueError(
+                f'cpumask {cpumask:#x} is invalid for '
+                f'single-CPU cluster {cluster}; use 0x1'
+            )
+        core_indices = [int(cluster_index)]
+    else:
+        core_indices = [i for i in range(cpumask.bit_length()) if cpumask & (1 << i)]
+    return [f'{label_prefix}_{i}' for i in core_indices]
+
 
 
 def _FindMatchingDomainInSchema(proc_name: str, cpu: str, os_hint: str, domains_schema: dict):
@@ -357,6 +377,95 @@ def MergeDomainConfigs(domain_files):
             continue
 
     return merged_domains
+
+
+def MergeYamlConfigs(domain_files):
+    """Read and merge complete domain YAML documents."""
+    if not domain_files or not domain_files.strip():
+        return {}
+
+    merged_config = {}
+    for yaml_file in domain_files.split():
+        yaml_content = ReadYaml(yaml_file) or {}
+        if not isinstance(yaml_content, dict):
+            continue
+        _MergeTwoDomainDicts(merged_config, yaml_content)
+    return merged_config
+
+
+def GetMergedDomainConfig(cpuname, cpu, os_hint, domain_files):
+    """Return the matching domain and complete merged YAML document."""
+    merged_config = MergeYamlConfigs(domain_files)
+    merged_domains = merged_config.get('domains', {})
+    domain_name = _FindMatchingDomainInSchema(
+        cpuname, cpu, os_hint, merged_domains)
+    if not domain_name:
+        return '', {}, merged_config
+    return domain_name, merged_domains[domain_name], merged_config
+
+
+def _HasZephyrMpuPolicy(memory):
+    """Return whether a memory has an effective Zephyr MPU policy."""
+    if not isinstance(memory, dict):
+        return False
+    for key in memory:
+        if key.split('!', 1)[0] != 'mpu-policy':
+            continue
+        if '!' not in key or '!zephyr!' in key:
+            return True
+    return False
+
+
+def _MemoryReferenceName(reference):
+    """Return the node name from a domain memory reference."""
+    if isinstance(reference, dict):
+        reference = reference.get('dev')
+    if not isinstance(reference, str):
+        return ''
+    return reference.rsplit('/', 1)[-1]
+
+
+def _MemoryMatchesReference(node_name, memory, reference):
+    """Return whether a physical memory matches a domain reference."""
+    reference_name = _MemoryReferenceName(reference)
+    if not reference_name:
+        return False
+
+    candidates = [node_name]
+    if isinstance(memory, dict) and isinstance(memory.get('label'), str):
+        candidates.append(memory['label'])
+    reference_base = reference_name.split('@', 1)[0]
+    for candidate in candidates:
+        if reference_name == candidate:
+            return True
+        if ('@' not in reference_name or '@' not in candidate) and \
+                reference_base == candidate.split('@', 1)[0]:
+            return True
+    return False
+
+
+def DomainHasZephyrMpuPolicy(domain_config, merged_config):
+    """Return whether a domain owns a memory with Zephyr MPU policy."""
+    if not isinstance(domain_config, dict) or \
+            not isinstance(merged_config, dict):
+        return False
+
+    references = []
+    for property_name in ('sram', 'reserved-memory'):
+        value = domain_config.get(property_name, [])
+        references.extend(value if isinstance(value, list) else [value])
+
+    for container_name in ('axi', 'reserved-memory'):
+        container = merged_config.get(container_name, {})
+        if not isinstance(container, dict):
+            continue
+        for node_name, memory in container.items():
+            if _HasZephyrMpuPolicy(memory) and any(
+                    _MemoryMatchesReference(
+                        node_name, memory, reference)
+                    for reference in references):
+                return True
+    return False
 
 
 def IsOpenampEnabledInDomains(cpuname, cpu, os_hint, domain_files):

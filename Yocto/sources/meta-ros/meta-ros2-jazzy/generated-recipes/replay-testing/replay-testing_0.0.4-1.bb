@@ -20,7 +20,7 @@ ROS_BPN = "replay_testing"
 
 ROS_BUILD_DEPENDS = ""
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     ament-cmake-native \
 "
 
@@ -28,7 +28,7 @@ ROS_EXPORT_DEPENDS = ""
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     launch \
     python3-boto3 \
     python3-pydantic \
@@ -41,10 +41,10 @@ ROS_EXEC_DEPENDS = " \
 "
 
 # Currently informational only -- see http://www.ros.org/reps/rep-0149.html#dependency-tags.
-ROS_TEST_DEPENDS = " \
-    ${ROS_UNRESOLVED_DEP-python3-junitparser} \
+ROS_TEST_DEPENDS = "\
     ament-cmake-pytest \
     geometry-msgs \
+    python3-junitparser \
     python3-pytest \
     ros2run \
     ros2topic \
@@ -61,7 +61,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/jazzy/replay_testing"
 SRC_URI = "git://github.com/ros2-gbp/replay_testing-release;${ROS_BRANCH};protocol=https"
 SRCREV = "a95e4c2f428d23553b7205c256b5bf204716b5c7"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

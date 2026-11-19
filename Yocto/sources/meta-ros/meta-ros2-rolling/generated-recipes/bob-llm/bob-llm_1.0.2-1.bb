@@ -54,7 +54,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/bob_llm"
 SRC_URI = "git://github.com/bob-ros2/bob_llm-release;${ROS_BRANCH};protocol=https"
 SRCREV = "ce236aa032182df1a598222e342d63c788ac8f4f"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

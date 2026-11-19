@@ -1,7 +1,14 @@
-# Copyright (c) 2025 Wind River Systems, Inc.
+# Copyright (c) 2024-2026 Wind River Systems, Inc.
+
+FILESEXTRAPATHS:prepend := "${THISDIR}/${BPN}:"
+SRC_URI += "file://remove-ament-target-dependencies.patch \
+            file://add-bullet-dependency.patch"
 
 ROS_BUILDTOOL_DEPENDS += " \
-    ament-cmake-ros-native \
+    ament-cmake-ros \
+    ament-cmake-gmock \
+    ament-cmake-gtest \
+    ament-cmake-pytest \
 "
 
 # CMake Warning at moveit-setup-srdf-plugins/2.9.0-2/recipe-sysroot/usr/lib/cmake/Qt5/Qt5Config.cmake:7 (message):

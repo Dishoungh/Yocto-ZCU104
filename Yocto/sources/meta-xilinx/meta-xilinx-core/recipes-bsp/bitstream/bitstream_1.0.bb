@@ -29,7 +29,6 @@ BITSTREAM_PATH ?= ""
 inherit deploy
 
 BITSTREAM_NAME ?= "download"
-BITSTREAM_NAME:microblaze ?= "system"
 
 BITSTREAM_BASE_NAME ?= "${BITSTREAM_NAME}-${MACHINE}${IMAGE_VERSION_SUFFIX}"
 
@@ -74,4 +73,3 @@ python() {
     # Need to allow bbappends to change the check
     check_bitstream_vars(d)
 }
-

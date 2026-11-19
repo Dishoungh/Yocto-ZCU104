@@ -17,7 +17,7 @@ ROS_BPN = "small_gicp_vendor"
 
 ROS_BUILD_DEPENDS = ""
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     ament-cmake-native \
     ament-cmake-vendor-package-native \
 "
@@ -42,7 +42,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/kilted/small_gicp_vendor"
 SRC_URI = "git://github.com/ros2-gbp/multisensor_calibration-release;${ROS_BRANCH};protocol=https"
 SRCREV = "259ebca204f69a62e3640e71e3a9f9c9839c3710"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

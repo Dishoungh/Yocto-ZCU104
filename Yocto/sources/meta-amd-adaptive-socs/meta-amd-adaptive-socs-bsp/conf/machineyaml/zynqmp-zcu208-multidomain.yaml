@@ -3,6 +3,9 @@ inherit:
 
 args:
     - --machine-name zynqmp-zcu208-multidomain
+    - --domain-file ${LAYER_PATH_xilinx-standalone-sdt}/conf/domainyaml/zynqmp-multidomain-base.yaml \
+                    ${LAYER_PATH_xilinx-standalone-sdt}/conf/domainyaml/zynqmp-openamp-overlay.yaml \
+                    ${LAYER_PATH_xilinx-standalone-sdt}/conf/domainyaml/zynqmp-libmetal-overlay.yaml
 
 kconfig:
     CONFIG_YOCTO_BBMC_LINUX_DTSI: \
@@ -13,3 +16,8 @@ machine:
         AMP/multidomain machine for the AMD Zynq UltraScale+ RFSoC
         ZCU208 evaluation kit: Cortex-A53 Linux plus Cortex-A53 FSBL and
         MicroBlaze PMU sub-machines built from system device tree.
+    post:
+        BOOTBIN_INC:
+            comment: 'Enable libmetal application'
+            op: '='
+            val: 'libmetal-demo-rpu1.inc'

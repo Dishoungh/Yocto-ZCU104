@@ -18,18 +18,18 @@ LIC_FILES_CHKSUM = "file://package.xml;beginline=11;endline=11;md5=cd41bc1177072
 ROS_CN = "ld08_driver"
 ROS_BPN = "ld08_driver"
 
-ROS_BUILD_DEPENDS = " \
+ROS_BUILD_DEPENDS = "\
     boost \
     rclcpp \
     sensor-msgs \
     udev \
 "
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     ament-cmake-native \
 "
 
-ROS_EXPORT_DEPENDS = " \
+ROS_EXPORT_DEPENDS = "\
     boost \
     rclcpp \
     sensor-msgs \
@@ -38,7 +38,7 @@ ROS_EXPORT_DEPENDS = " \
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     boost \
     rclcpp \
     sensor-msgs \
@@ -59,7 +59,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/kilted/ld08_driver"
 SRC_URI = "git://github.com/ros2-gbp/ld08_driver-release;${ROS_BRANCH};protocol=https"
 SRCREV = "c16dfccff0bfb079d572e470be126e1106650509"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

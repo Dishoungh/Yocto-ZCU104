@@ -10,14 +10,15 @@ IMAGE_NO_MANIFEST = "1"
 ZEPHYR_TOOLCHAIN_VARIANT ?= "cross-compile"
 require recipes-kernel/zephyr-kernel/zephyr-toolchain-${ZEPHYR_TOOLCHAIN_VARIANT}.inc
 
-ZEPHYR_MAKE_OUTPUT = "zephyr.elf"
-ZEPHYR_MAKE_BIN_OUTPUT = "zephyr.bin"
-ZEPHYR_MAKE_EFI_OUTPUT = "zephyr.efi"
+ZEPHYR_MAKE_OUTPUT ?= "\
+    zephyr.elf \
+    zephyr.bin \
+    zephyr.efi \
+    "
 
 EXTRA_OECMAKE = "\
     -DZEPHYR_BASE=${ZEPHYR_BASE} \
     -DBOARD=${BOARD} \
-    -DARCH=${ARCH} \
     -DBOARD_DIR=${BOARD_DIR} \
     -DARCH_DIR=${ARCH_DIR} \
     -DBOARD_ROOT=${BOARD_ROOT} \
@@ -25,13 +26,14 @@ EXTRA_OECMAKE = "\
     -DSOC_ROOT=${SOC_ROOT} \
     -DZEPHYR_TOOLCHAIN_VARIANT=${ZEPHYR_TOOLCHAIN_VARIANT} \
     -DZEPHYR_MODULES=${ZEPHYR_MODULES} \
+    ${@bb.utils.contains('ZEPHYR_TOOLCHAIN_VARIANT', 'cross-compile', '-DCONFIG_STATIC_INIT_GNU=y', '', d)} \
     "
 
 ZEPHYR_EXTRA_MODULES = ""
 
 EXTRA_OECMAKE:append = "  -DZEPHYR_EXTRA_MODULES=${ZEPHYR_EXTRA_MODULES}"
 
-export ZEPHYR_BASE="${S}/zephyr"
+export ZEPHYR_BASE = "${S}/zephyr"
 
 DEPENDS += "gperf-native"
 

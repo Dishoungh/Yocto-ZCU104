@@ -18,8 +18,7 @@ SRC_URI = "git://salsa.debian.org/science-team/ann.git;protocol=https;branch=mas
     file://autotools-fixup.patch \
 "
 
-S = "${WORKDIR}/git"
-
+PV = "1.1.2"
 SRCREV = "c571ae9f9830a380074fe1c03fc30bf31c440ed7"
 
 inherit python3native autotools-brokensep

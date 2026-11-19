@@ -87,7 +87,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/rosbag2rawlog"
 SRC_URI = "git://github.com/ros2-gbp/mrpt_ros_bridge-release;${ROS_BRANCH};protocol=https"
 SRCREV = "fd701e0d6df82d5a85ae35588aafb96adcf2b859"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

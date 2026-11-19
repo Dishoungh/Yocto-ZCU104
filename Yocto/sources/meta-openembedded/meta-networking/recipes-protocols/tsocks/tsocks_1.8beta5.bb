@@ -21,11 +21,13 @@ inherit autotools-brokensep
 LIBS:append:libc-musl = " -lssp_nonshared"
 LIBS:append:libc-glibc = " -lc_nonshared"
 
-S = "${WORKDIR}/tsocks-1.8"
+# i686-yoe-linux-ld.lld: error: undefined symbol: __unordtf2
+LDFLAGS:append:libc-glibc:toolchain-clang:x86 = " --rtlib=libgcc --unwindlib=libgcc"
+
+S = "${UNPACKDIR}/tsocks-1.8"
 
 FILES:${PN} = "${libdir}/* ${bindir}/tsocks"
 FILES:${PN}-dev = ""
 INSANE_SKIP:${PN} = "dev-so"
 
 EXTRA_OEMAKE = "SHCC='${CC} -fPIC ${LDFLAGS}' LIBS='${LIBS}'"
-

@@ -41,7 +41,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/foxglove_sdk_vendor"
 SRC_URI = "git://github.com/ros2-gbp/foxglove_sdk_vendor-release;${ROS_BRANCH};protocol=https"
 SRCREV = "cee2c29f6dc9eeec8643f2cbf64e58c7bd9e71a5"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

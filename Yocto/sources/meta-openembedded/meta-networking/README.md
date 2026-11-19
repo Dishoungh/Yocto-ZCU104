@@ -3,7 +3,7 @@ meta-networking
 
 This layer is intended to be a central point for networking-related
 packages and configuration.  It should be useful directly on top of
-oe-core and compliments meta-openembedded.  It should be primarily useful
+oe-core and complements meta-openembedded.  It should be primarily useful
 to the following groups:
 
       - Anyone building a small networking device (eg. a home router /
@@ -18,17 +18,17 @@ Dependencies
 This layer depends on:
 
 URI: git://git.openembedded.org/openembedded-core
-branch: Scarthgap
+branch: master
 
 For some recipes, the meta-oe layer is required:
 
 URI: git://git.openembedded.org/meta-openembedded
 subdirectory: meta-oe
-branch: Scarthgap
+branch: master
 
 URI: git://git.openembedded.org/meta-openembedded
 subdirectory: meta-python
-branch: Scarthgap
+branch: master
 
 Maintenance
 -----------

@@ -17,7 +17,7 @@ LIC_FILES_CHKSUM = "file://package.xml;beginline=8;endline=8;md5=e093dbacd8b861c
 ROS_CN = "tf_tree_terminal"
 ROS_BPN = "tf_tree_terminal"
 
-ROS_BUILD_DEPENDS = " \
+ROS_BUILD_DEPENDS = "\
     geometry-msgs \
     rclpy \
     tf2-ros \
@@ -25,7 +25,7 @@ ROS_BUILD_DEPENDS = " \
 
 ROS_BUILDTOOL_DEPENDS = ""
 
-ROS_EXPORT_DEPENDS = " \
+ROS_EXPORT_DEPENDS = "\
     geometry-msgs \
     rclpy \
     tf2-ros \
@@ -33,7 +33,7 @@ ROS_EXPORT_DEPENDS = " \
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     geometry-msgs \
     python3-pyyaml \
     rclpy \
@@ -41,7 +41,7 @@ ROS_EXEC_DEPENDS = " \
 "
 
 # Currently informational only -- see http://www.ros.org/reps/rep-0149.html#dependency-tags.
-ROS_TEST_DEPENDS = " \
+ROS_TEST_DEPENDS = "\
     ament-copyright \
     ament-flake8 \
     ament-pep257 \
@@ -59,7 +59,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/humble/tf_tree_terminal"
 SRC_URI = "git://github.com/ros2-gbp/tf_tree_terminal-release;${ROS_BRANCH};protocol=https"
 SRCREV = "0f22e024242f74e22f2acea3a2e25dc4317f3405"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_python"
 

@@ -20,7 +20,7 @@ ROS_BPN = "pal_hey5_controller_configuration"
 
 ROS_BUILD_DEPENDS = ""
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     ament-cmake-auto-native \
 "
 
@@ -31,7 +31,7 @@ ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 ROS_EXEC_DEPENDS = ""
 
 # Currently informational only -- see http://www.ros.org/reps/rep-0149.html#dependency-tags.
-ROS_TEST_DEPENDS = " \
+ROS_TEST_DEPENDS = "\
     ament-lint-auto \
     ament-lint-common \
 "
@@ -43,11 +43,10 @@ DEPENDS += "${ROS_EXPORT_DEPENDS} ${ROS_BUILDTOOL_EXPORT_DEPENDS}"
 
 RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 
-# matches with: https://github.com/pal-gbp/pal_hey5-release/archive/release/humble/pal_hey5_controller_configuration/4.2.0-1.tar.gz
+# matches with: https://github.com/ros2-gbp/pal_hey5-release/archive/release/humble/pal_hey5_controller_configuration/4.2.0-1.tar.gz
 ROS_BRANCH ?= "branch=release/humble/pal_hey5_controller_configuration"
-SRC_URI = "git://github.com/pal-gbp/pal_hey5-release;${ROS_BRANCH};protocol=https"
+SRC_URI = "git://github.com/ros2-gbp/pal_hey5-release;${ROS_BRANCH};protocol=https"
 SRCREV = "43ae6e0ac173b6da525a43b8514c47ab6a59b810"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

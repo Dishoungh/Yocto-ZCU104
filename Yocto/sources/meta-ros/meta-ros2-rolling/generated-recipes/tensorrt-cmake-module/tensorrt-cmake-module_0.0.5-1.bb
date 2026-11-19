@@ -48,7 +48,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/tensorrt_cmake_module"
 SRC_URI = "git://github.com/ros2-gbp/tensorrt_cmake_module-release;${ROS_BRANCH};protocol=https"
 SRCREV = "13f23cb11cc6cf29958ef1edb5c9c1011f8f13e9"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

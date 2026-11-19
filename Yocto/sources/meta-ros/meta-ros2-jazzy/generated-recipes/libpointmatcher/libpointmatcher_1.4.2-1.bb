@@ -15,14 +15,14 @@ LIC_FILES_CHKSUM = "file://package.xml;beginline=8;endline=8;md5=75730354549103a
 ROS_CN = "libpointmatcher"
 ROS_BPN = "libpointmatcher"
 
-ROS_BUILD_DEPENDS = " \
+ROS_BUILD_DEPENDS = "\
     boost \
     libeigen \
     libnabo \
     yaml-cpp \
 "
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     cmake-native \
 "
 
@@ -30,7 +30,7 @@ ROS_EXPORT_DEPENDS = ""
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     boost \
     libeigen \
     libnabo \
@@ -51,7 +51,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/jazzy/libpointmatcher"
 SRC_URI = "git://github.com/ros2-gbp/libpointmatcher-release;${ROS_BRANCH};protocol=https"
 SRCREV = "42d41781f7dcc4dc8151c3985cb5825bdeaf8978"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "cmake"
 

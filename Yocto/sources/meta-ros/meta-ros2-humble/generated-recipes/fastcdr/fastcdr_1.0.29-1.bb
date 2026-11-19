@@ -19,7 +19,7 @@ ROS_BPN = "fastcdr"
 
 ROS_BUILD_DEPENDS = ""
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     cmake-native \
 "
 
@@ -43,7 +43,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/humble/fastcdr"
 SRC_URI = "git://github.com/ros2-gbp/fastcdr-release;${ROS_BRANCH};protocol=https"
 SRCREV = "69edde74b48eeb95f8a20501a1f34258099b43e8"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "cmake"
 

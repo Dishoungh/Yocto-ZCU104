@@ -16,34 +16,34 @@ LIC_FILES_CHKSUM = "file://package.xml;beginline=9;endline=9;md5=4633480cdd27d79
 ROS_CN = "nanoeigenpy"
 ROS_BPN = "nanoeigenpy"
 
-ROS_BUILD_DEPENDS = " \
-    ${ROS_UNRESOLVED_DEP-nanobind-dev} \
+ROS_BUILD_DEPENDS = "\
     doxygen \
     git \
     libeigen \
     python3 \
+    python3-nanobind \
     python3-numpy \
     python3-scipy \
 "
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     cmake-native \
 "
 
-ROS_EXPORT_DEPENDS = " \
-    ${ROS_UNRESOLVED_DEP-nanobind-dev} \
+ROS_EXPORT_DEPENDS = "\
     libeigen \
     python3 \
+    python3-nanobind \
     python3-numpy \
     python3-scipy \
 "
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
-    ${ROS_UNRESOLVED_DEP-nanobind-dev} \
+ROS_EXEC_DEPENDS = "\
     libeigen \
     python3 \
+    python3-nanobind \
     python3-numpy \
     python3-scipy \
 "
@@ -62,7 +62,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/jazzy/nanoeigenpy"
 SRC_URI = "git://github.com/ros2-gbp/nanoeigenpy-release;${ROS_BRANCH};protocol=https"
 SRCREV = "3bce60ca496944d5a16af2c6d32a1ddf4a16f68e"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "cmake"
 

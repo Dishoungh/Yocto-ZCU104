@@ -49,7 +49,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/angles"
 SRC_URI = "git://github.com/ros2-gbp/angles-release;${ROS_BRANCH};protocol=https"
 SRCREV = "e217160b46e7216b04f21951e49f91ea2b4334cd"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

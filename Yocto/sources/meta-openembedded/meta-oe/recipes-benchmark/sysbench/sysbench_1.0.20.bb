@@ -13,10 +13,9 @@ inherit autotools-brokensep pkgconfig
 SRC_URI = "git://github.com/akopytov/sysbench.git;protocol=https;branch=master"
 SRCREV = "ebf1c90da05dea94648165e4f149abc20c979557"
 
-S = "${WORKDIR}/git"
 
 COMPATIBLE_HOST = "(arm|aarch64|i.86|x86_64).*-linux*"
-
+CACHED_CONFIGUREVARS += "ac_cv_prog_cc_c23=no"
 EXTRA_OECONF += "--enable-largefile --with-system-luajit --with-system-ck --without-gcc-arch --with-lib-prefix=no"
 PACKAGECONFIG ??= ""
 PACKAGECONFIG[aio] = "--enable-aio,--disable-aio,libaio,"

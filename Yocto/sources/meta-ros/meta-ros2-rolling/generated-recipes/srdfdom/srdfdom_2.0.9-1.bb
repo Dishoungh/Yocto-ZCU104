@@ -63,7 +63,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/srdfdom"
 SRC_URI = "git://github.com/ros2-gbp/srdfdom-release;${ROS_BRANCH};protocol=https"
 SRCREV = "1d9690926eaeeb2905b64585edbd4a40087708f4"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

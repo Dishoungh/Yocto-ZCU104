@@ -75,7 +75,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/warehouse_ros"
 SRC_URI = "git://github.com/ros2-gbp/warehouse_ros-release;${ROS_BRANCH};protocol=https"
 SRCREV = "99cc0263c9c2eb7456aadae452d4931bb342a4aa"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

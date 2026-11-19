@@ -18,32 +18,32 @@ LIC_FILES_CHKSUM = "file://package.xml;beginline=8;endline=8;md5=331e6f1fd514155
 ROS_CN = "ignition_math6_vendor"
 ROS_BPN = "ignition_math6_vendor"
 
-ROS_BUILD_DEPENDS = " \
+ROS_BUILD_DEPENDS = "\
     ${ROS_UNRESOLVED_DEP-ignition-math6} \
     ignition-cmake2-vendor \
     libeigen \
 "
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     ament-cmake-test-native \
     cmake-native \
     git-native \
 "
 
-ROS_EXPORT_DEPENDS = " \
+ROS_EXPORT_DEPENDS = "\
     ${ROS_UNRESOLVED_DEP-ignition-math6} \
     ignition-cmake2-vendor \
 "
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     ${ROS_UNRESOLVED_DEP-ignition-math6} \
     ignition-cmake2-vendor \
 "
 
 # Currently informational only -- see http://www.ros.org/reps/rep-0149.html#dependency-tags.
-ROS_TEST_DEPENDS = " \
+ROS_TEST_DEPENDS = "\
     ament-cmake-copyright \
     ament-cmake-lint-cmake \
     ament-cmake-xmllint \
@@ -60,7 +60,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/humble/ignition_math6_vendor"
 SRC_URI = "git://github.com/ros2-gbp/ignition_math6_vendor-release;${ROS_BRANCH};protocol=https"
 SRCREV = "b5212d1728b71644c7c817796bb37ec7fa33b46b"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "cmake"
 

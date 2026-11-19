@@ -18,7 +18,7 @@ LIC_FILES_CHKSUM = "file://package.xml;beginline=10;endline=10;md5=3dce4ba60d7e5
 ROS_CN = "libfranka"
 ROS_BPN = "libfranka"
 
-ROS_BUILD_DEPENDS = " \
+ROS_BUILD_DEPENDS = "\
     fmt \
     libeigen \
     libtinyxml2 \
@@ -26,7 +26,7 @@ ROS_BUILD_DEPENDS = " \
     poco \
 "
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     cmake-native \
 "
 
@@ -34,7 +34,7 @@ ROS_EXPORT_DEPENDS = ""
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     fmt \
     libtinyxml2 \
     pinocchio \
@@ -55,7 +55,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/humble/libfranka"
 SRC_URI = "git://github.com/frankaemika/libfranka-release;${ROS_BRANCH};protocol=https"
 SRCREV = "419a3409e60b7150fbbdf095d1b65921ab971a28"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "cmake"
 

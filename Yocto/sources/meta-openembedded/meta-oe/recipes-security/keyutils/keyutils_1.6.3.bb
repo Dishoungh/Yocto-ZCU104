@@ -26,7 +26,6 @@ SRC_URI = "git://git.kernel.org/pub/scm/linux/kernel/git/dhowells/keyutils.git;p
            "
 SRCREV = "cb3bb194cca88211cbfcdde2f10c0f43c3fb8ec3"
 
-S = "${WORKDIR}/git"
 
 PACKAGECONFIG ?= ""
 PACKAGECONFIG[manpages] = ""
@@ -44,6 +43,8 @@ EXTRA_OEMAKE = "'CFLAGS=${CFLAGS} -Wall' \
     BUILDFOR=${SITEINFO_BITS}-bit \
     NO_GLIBC_KEYERR=1 \
     "
+
+LDFLAGS += "${@bb.utils.contains('DISTRO_FEATURES', 'ld-is-lld', ' -Wl,--undefined-version', '', d)}"
 
 do_install () {
     oe_runmake DESTDIR=${D} install

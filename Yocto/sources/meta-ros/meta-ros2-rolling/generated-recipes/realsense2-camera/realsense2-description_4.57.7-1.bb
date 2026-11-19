@@ -58,7 +58,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/realsense2_description"
 SRC_URI = "git://github.com/ros2-gbp/realsense-ros-release;${ROS_BRANCH};protocol=https"
 SRCREV = "88eca4759ca0041dce1ebf92ccfa23d6673307b7"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

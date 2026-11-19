@@ -55,7 +55,7 @@
 		cpu-frequency = <1200000000>;
 	};
 	&amba {
-		psu_r5_tcm_ram_global: psu_r5_tcm_ram@ffe00000 {
+		psu_r5_tcm_ram_global: psu-r5-tcm-ram@ffe00000 {
 			compatible = "xlnx,psu-r5-tcm-ram-1.0" , "mmio-sram";
 			status = "okay";
 			power-domains = <&zynqmp_firmware 15>;
@@ -63,7 +63,7 @@
 			reg = <0x0 0xffe00000 0x0 0x40000>;
 			xlnx,name = "psu_r5_tcm_ram_global";
 		};
-		psu_r5_tcm_ram_0: psu_r5_tcm_ram@0 {
+		psu_r5_tcm_ram_0: psu-r5-tcm-ram@0 {
 			compatible = "xlnx,psu-r5-tcm-ram-1.0";
 			status = "okay";
 			power-domains = <&zynqmp_firmware 15>;
@@ -71,7 +71,7 @@
 			reg = <0x0 0x0 0x0 0x40000>;
 			xlnx,name = "psu_r5_tcm_ram_0";
 		};
-		psu_ocm_ram_0: psu_ocm_ram_0@fffc0000 {
+		psu_ocm_ram_0: psu-ocm-ram-0@fffc0000 {
 			compatible = "xlnx,psu-ocm-ram-0-1.0";
 			status = "okay";
 			power-domains = <&zynqmp_firmware 11>;
@@ -79,7 +79,7 @@
 			reg = <0x0 0xfffc0000 0x0 0x40000>;
 			xlnx,name = "psu_ocm_ram_0";
 		};
-		psu_r5_1_btcm: psu_r5_1_btcm@20000 {
+		psu_r5_1_btcm: psu-r5-1-btcm@20000 {
 			xlnx,power-domain = <16>;
 			compatible = "xlnx,psu-r5-1-btcm-1.0";
 			status = "okay";
@@ -89,7 +89,7 @@
 			reg = <0x0 0x20000 0x0 0x10000>;
 			xlnx,name = "psu_r5_1_btcm";
 		};
-		psu_r5_1_btcm_global: psu_r5_1_btcm_global@ffeb0000 {
+		psu_r5_1_btcm_global: psu-r5-1-btcm-global@ffeb0000 {
 			compatible = "xlnx,psu-r5-1-btcm-global-1.0" , "mmio-sram";
 			status = "okay";
 			power-domains = <&zynqmp_firmware 18>;
@@ -97,7 +97,7 @@
 			reg = <0x0 0xffeb0000 0x0 0x10000>;
 			xlnx,name = "psu_r5_1_btcm_global";
 		};
-		psu_r5_1_atcm: psu_r5_1_atcm@0 {
+		psu_r5_1_atcm: psu-r5-1-atcm@0 {
 			xlnx,power-domain = <15>;
 			compatible = "xlnx,psu-r5-1-atcm-1.0";
 			status = "okay";
@@ -107,7 +107,7 @@
 			reg = <0x0 0x0 0x0 0x10000>;
 			xlnx,name = "psu_r5_1_atcm";
 		};
-		psu_r5_1_atcm_global: psu_r5_1_atcm_global@ffe90000 {
+		psu_r5_1_atcm_global: psu-r5-1-atcm-global@ffe90000 {
 			compatible = "xlnx,psu-r5-1-atcm-global-1.0" , "mmio-sram";
 			status = "okay";
 			power-domains = <&zynqmp_firmware 17>;
@@ -115,7 +115,7 @@
 			reg = <0x0 0xffe90000 0x0 0x10000>;
 			xlnx,name = "psu_r5_1_atcm_global";
 		};
-		psu_r5_0_btcm_lockstep: psu_r5_0_btcm_lockstep@ffe30000 {
+		psu_r5_0_btcm_lockstep: psu-r5-0-btcm-lockstep@ffe30000 {
 			compatible = "xlnx,psu-r5-0-btcm-lockstep-1.0" , "mmio-sram";
 			status = "okay";
 			power-domains = <&zynqmp_firmware 16>;
@@ -123,7 +123,7 @@
 			reg = <0x0 0xffe30000 0x0 0x10000>;
 			xlnx,name = "psu_r5_0_btcm_lockstep";
 		};
-		psu_r5_0_btcm: psu_r5_0_btcm@20000 {
+		psu_r5_0_btcm: psu-r5-0-btcm@20000 {
 			xlnx,power-domain = <18>;
 			compatible = "xlnx,psu-r5-0-btcm-1.0";
 			status = "okay";
@@ -133,7 +133,7 @@
 			reg = <0x0 0x20000 0x0 0x10000>;
 			xlnx,name = "psu_r5_0_btcm";
 		};
-		psu_r5_0_btcm_global: psu_r5_0_btcm_global@ffe20000 {
+		psu_r5_0_btcm_global: psu-r5-0-btcm-global@ffe20000 {
 			compatible = "xlnx,psu-r5-0-btcm-global-1.0" , "mmio-sram";
 			status = "okay";
 			power-domains = <&zynqmp_firmware 16>;
@@ -141,7 +141,7 @@
 			reg = <0x0 0xffe20000 0x0 0x10000>;
 			xlnx,name = "psu_r5_0_btcm_global";
 		};
-		psu_r5_0_atcm_lockstep: psu_r5_0_atcm_lockstep@ffe10000 {
+		psu_r5_0_atcm_lockstep: psu-r5-0-atcm-lockstep@ffe10000 {
 			compatible = "xlnx,psu-r5-0-atcm-lockstep-1.0" , "mmio-sram";
 			status = "okay";
 			power-domains = <&zynqmp_firmware 15>;
@@ -149,7 +149,7 @@
 			reg = <0x0 0xffe10000 0x0 0x10000>;
 			xlnx,name = "psu_r5_0_atcm_lockstep";
 		};
-		psu_r5_0_atcm: psu_r5_0_atcm@0 {
+		psu_r5_0_atcm: psu-r5-0-atcm@0 {
 			xlnx,power-domain = <17>;
 			compatible = "xlnx,psu-r5-0-atcm-1.0";
 			status = "okay";
@@ -159,7 +159,7 @@
 			reg = <0x0 0x0 0x0 0x10000>;
 			xlnx,name = "psu_r5_0_atcm";
 		};
-		psu_r5_0_atcm_global: psu_r5_0_atcm_global@ffe00000 {
+		psu_r5_0_atcm_global: psu-r5-0-atcm-global@ffe00000 {
 			compatible = "xlnx,psu-r5-0-atcm-global-1.0" , "mmio-sram";
 			status = "okay";
 			power-domains = <&zynqmp_firmware 15>;
@@ -167,56 +167,56 @@
 			reg = <0x0 0xffe00000 0x0 0x10000>;
 			xlnx,name = "psu_r5_0_atcm_global";
 		};
-		psu_bbram_0: psu_bbram_0@ffcd0000 {
+		psu_bbram_0: psu-bbram-0@ffcd0000 {
 			compatible = "xlnx,psu-bbram-0-1.0";
 			status = "okay";
 			xlnx,ip-name = "psu_bbram_0";
 			reg = <0x0 0xffcd0000 0x0 0x10000>;
 			xlnx,name = "psu_bbram_0";
 		};
-		psu_pmu_ram: psu_pmu_ram@ffdc0000 {
+		psu_pmu_ram: psu-pmu-ram@ffdc0000 {
 			compatible = "xlnx,psu-pmu-ram-1.0";
 			status = "okay";
 			xlnx,ip-name = "psu_pmu_ram";
 			reg = <0x0 0xffdc0000 0x0 0x20000>;
 			xlnx,name = "psu_pmu_ram";
 		};
-		psu_pmu_iomodule: psu_pmu_iomodule@ffd40000 {
+		psu_pmu_iomodule: psu-pmu-iomodule@ffd40000 {
 			compatible = "xlnx,psu-pmu-iomodule-1.0";
 			status = "okay";
 			xlnx,ip-name = "psu_pmu_iomodule";
 			reg = <0x0 0xffd40000 0x0 0x20000>;
 			xlnx,name = "psu_pmu_iomodule";
 		};
-		psu_pmu_global_0: psu_pmu_global_0@ffd80000 {
+		psu_pmu_global_0: psu-pmu-global-0@ffd80000 {
 			compatible = "xlnx,psu-pmu-global-0-1.0";
 			status = "okay";
 			xlnx,ip-name = "psu_pmu_global_0";
 			reg = <0x0 0xffd80000 0x0 0x40000>;
 			xlnx,name = "psu_pmu_global_0";
 		};
-		psu_mbistjtag: psu_mbistjtag@ffcf0000 {
+		psu_mbistjtag: psu-mbistjtag@ffcf0000 {
 			compatible = "xlnx,psu-mbistjtag-1.0";
 			status = "okay";
 			xlnx,ip-name = "psu_mbistjtag";
 			reg = <0x0 0xffcf0000 0x0 0x10000>;
 			xlnx,name = "psu_mbistjtag";
 		};
-		psu_rsa: psu_rsa@ffce0000 {
+		psu_rsa: psu-rsa@ffce0000 {
 			compatible = "xlnx,psu-rsa-1.0";
 			status = "okay";
 			xlnx,ip-name = "psu_rsa";
 			reg = <0x0 0xffce0000 0x0 0x10000>;
 			xlnx,name = "psu_rsa";
 		};
-		psu_efuse: psu_efuse@ffcc0000 {
+		psu_efuse: psu-efuse@ffcc0000 {
 			compatible = "xlnx,psu-efuse-1.0";
 			status = "okay";
 			xlnx,ip-name = "psu_efuse";
 			reg = <0x0 0xffcc0000 0x0 0x10000>;
 			xlnx,name = "psu_efuse";
 		};
-		psu_csu_0: psu_csu@ffca0000 {
+		psu_csu_0: psu-csu@ffca0000 {
 			xlnx,csu-board-interface = "custom";
 			compatible = "xlnx,psu-csu-1.0";
 			status = "okay";
@@ -225,203 +225,203 @@
 			reg = <0x0 0xffca0000 0x0 0x10000>;
 			xlnx,name = "psu_csu_0";
 		};
-		psu_fpd_gpv: psu_fpd_gpv@fd700000 {
+		psu_fpd_gpv: psu-fpd-gpv@fd700000 {
 			compatible = "xlnx,psu-fpd-gpv-1.0";
 			status = "okay";
 			xlnx,ip-name = "psu_fpd_gpv";
 			reg = <0x0 0xfd700000 0x0 0x100000>;
 			xlnx,name = "psu_fpd_gpv";
 		};
-		psu_cci_gpv: psu_cci_gpv@fd6e0000 {
+		psu_cci_gpv: psu-cci-gpv@fd6e0000 {
 			compatible = "xlnx,psu-cci-gpv-1.0";
 			status = "okay";
 			xlnx,ip-name = "psu_cci_gpv";
 			reg = <0x0 0xfd6e0000 0x0 0x10000>;
 			xlnx,name = "psu_cci_gpv";
 		};
-		psu_fpd_slcr_secure: psu_fpd_slcr_secure@fd690000 {
+		psu_fpd_slcr_secure: psu-fpd-slcr-secure@fd690000 {
 			compatible = "xlnx,psu-fpd-slcr-secure-1.0";
 			status = "okay";
 			xlnx,ip-name = "psu_fpd_slcr_secure";
 			reg = <0x0 0xfd690000 0x0 0x40000>;
 			xlnx,name = "psu_fpd_slcr_secure";
 		};
-		psu_fpd_slcr: psu_fpd_slcr@fd610000 {
+		psu_fpd_slcr: psu-fpd-slcr@fd610000 {
 			compatible = "xlnx,psu-fpd-slcr-1.0";
 			status = "okay";
 			xlnx,ip-name = "psu_fpd_slcr";
 			reg = <0x0 0xfd610000 0x0 0x80000>;
 			xlnx,name = "psu_fpd_slcr";
 		};
-		psu_smmu_reg: psu_smmu_reg@fd5f0000 {
+		psu_smmu_reg: psu-smmu-reg@fd5f0000 {
 			compatible = "xlnx,psu-smmu-reg-1.0";
 			status = "okay";
 			xlnx,ip-name = "psu_smmu_reg";
 			reg = <0x0 0xfd5f0000 0x0 0x10000>;
 			xlnx,name = "psu_smmu_reg";
 		};
-		psu_cci_reg: psu_cci_reg@fd5e0000 {
+		psu_cci_reg: psu-cci-reg@fd5e0000 {
 			compatible = "xlnx,psu-cci-reg-1.0";
 			status = "okay";
 			xlnx,ip-name = "psu_cci_reg";
 			reg = <0x0 0xfd5e0000 0x0 0x10000>;
 			xlnx,name = "psu_cci_reg";
 		};
-		psu_fpd_xmpu_cfg: psu_fpd_xmpu_cfg@fd5d0000 {
+		psu_fpd_xmpu_cfg: psu-fpd-xmpu-cfg@fd5d0000 {
 			compatible = "xlnx,psu-fpd-xmpu-cfg-1.0";
 			status = "okay";
 			xlnx,ip-name = "psu_fpd_xmpu_cfg";
 			reg = <0x0 0xfd5d0000 0x0 0x10000>;
 			xlnx,name = "psu_fpd_xmpu_cfg";
 		};
-		psu_apu: psu_apu@fd5c0000 {
+		psu_apu: psu-apu@fd5c0000 {
 			compatible = "xlnx,psu-apu-1.0";
 			status = "okay";
 			xlnx,ip-name = "psu_apu";
 			reg = <0x0 0xfd5c0000 0x0 0x10000>;
 			xlnx,name = "psu_apu";
 		};
-		psu_fpd_xmpu_sink: psu_fpd_xmpu_sink@fd4f0000 {
+		psu_fpd_xmpu_sink: psu-fpd-xmpu-sink@fd4f0000 {
 			compatible = "xlnx,psu-fpd-xmpu-sink-1.0";
 			status = "okay";
 			xlnx,ip-name = "psu_fpd_xmpu_sink";
 			reg = <0x0 0xfd4f0000 0x0 0x10000>;
 			xlnx,name = "psu_fpd_xmpu_sink";
 		};
-		psu_siou: psu_siou@fd3d0000 {
+		psu_siou: psu-siou@fd3d0000 {
 			compatible = "xlnx,psu-siou-1.0";
 			status = "okay";
 			xlnx,ip-name = "psu_siou";
 			reg = <0x0 0xfd3d0000 0x0 0x10000>;
 			xlnx,name = "psu_siou";
 		};
-		psu_afi_5: psu_afi@fd3b0000 {
+		psu_afi_5: psu-afi@fd3b0000 {
 			compatible = "xlnx,psu-afi-1.0";
 			status = "okay";
 			xlnx,ip-name = "psu_afi";
 			reg = <0x0 0xfd3b0000 0x0 0x10000>;
 			xlnx,name = "psu_afi_5";
 		};
-		psu_afi_4: psu_afi@fd3a0000 {
+		psu_afi_4: psu-afi@fd3a0000 {
 			compatible = "xlnx,psu-afi-1.0";
 			status = "okay";
 			xlnx,ip-name = "psu_afi";
 			reg = <0x0 0xfd3a0000 0x0 0x10000>;
 			xlnx,name = "psu_afi_4";
 		};
-		psu_afi_3: psu_afi@fd390000 {
+		psu_afi_3: psu-afi@fd390000 {
 			compatible = "xlnx,psu-afi-1.0";
 			status = "okay";
 			xlnx,ip-name = "psu_afi";
 			reg = <0x0 0xfd390000 0x0 0x10000>;
 			xlnx,name = "psu_afi_3";
 		};
-		psu_afi_2: psu_afi@fd380000 {
+		psu_afi_2: psu-afi@fd380000 {
 			compatible = "xlnx,psu-afi-1.0";
 			status = "okay";
 			xlnx,ip-name = "psu_afi";
 			reg = <0x0 0xfd380000 0x0 0x10000>;
 			xlnx,name = "psu_afi_2";
 		};
-		psu_afi_1: psu_afi@fd370000 {
+		psu_afi_1: psu-afi@fd370000 {
 			compatible = "xlnx,psu-afi-1.0";
 			status = "okay";
 			xlnx,ip-name = "psu_afi";
 			reg = <0x0 0xfd370000 0x0 0x10000>;
 			xlnx,name = "psu_afi_1";
 		};
-		psu_afi_0: psu_afi@fd360000 {
+		psu_afi_0: psu-afi@fd360000 {
 			compatible = "xlnx,psu-afi-1.0";
 			status = "okay";
 			xlnx,ip-name = "psu_afi";
 			reg = <0x0 0xfd360000 0x0 0x10000>;
 			xlnx,name = "psu_afi_0";
 		};
-		psu_crf_apb: psu_crf_apb@fd1a0000 {
+		psu_crf_apb: psu-crf-apb@fd1a0000 {
 			compatible = "xlnx,psu-crf-apb-1.0";
 			status = "okay";
 			xlnx,ip-name = "psu_crf_apb";
 			reg = <0x0 0xfd1a0000 0x0 0x140000>;
 			xlnx,name = "psu_crf_apb";
 		};
-		psu_ddr_qos_ctrl: psu_ddr_qos_ctrl@fd090000 {
+		psu_ddr_qos_ctrl: psu-ddr-qos-ctrl@fd090000 {
 			compatible = "xlnx,psu-ddr-qos-ctrl-1.0";
 			status = "okay";
 			xlnx,ip-name = "psu_ddr_qos_ctrl";
 			reg = <0x0 0xfd090000 0x0 0x10000>;
 			xlnx,name = "psu_ddr_qos_ctrl";
 		};
-		psu_ddr_phy: psu_ddr_phy@fd080000 {
+		psu_ddr_phy: psu-ddr-phy@fd080000 {
 			compatible = "xlnx,psu-ddr-phy-1.0";
 			status = "okay";
 			xlnx,ip-name = "psu_ddr_phy";
 			reg = <0x0 0xfd080000 0x0 0x10000>;
 			xlnx,name = "psu_ddr_phy";
 		};
-		psu_ddr_xmpu5_cfg: psu_ddr_xmpu5_cfg@fd050000 {
+		psu_ddr_xmpu5_cfg: psu-ddr-xmpu5-cfg@fd050000 {
 			compatible = "xlnx,psu-ddr-xmpu5-cfg-1.0";
 			status = "okay";
 			xlnx,ip-name = "psu_ddr_xmpu5_cfg";
 			reg = <0x0 0xfd050000 0x0 0x10000>;
 			xlnx,name = "psu_ddr_xmpu5_cfg";
 		};
-		psu_ddr_xmpu4_cfg: psu_ddr_xmpu4_cfg@fd040000 {
+		psu_ddr_xmpu4_cfg: psu-ddr-xmpu4-cfg@fd040000 {
 			compatible = "xlnx,psu-ddr-xmpu4-cfg-1.0";
 			status = "okay";
 			xlnx,ip-name = "psu_ddr_xmpu4_cfg";
 			reg = <0x0 0xfd040000 0x0 0x10000>;
 			xlnx,name = "psu_ddr_xmpu4_cfg";
 		};
-		psu_ddr_xmpu3_cfg: psu_ddr_xmpu3_cfg@fd030000 {
+		psu_ddr_xmpu3_cfg: psu-ddr-xmpu3-cfg@fd030000 {
 			compatible = "xlnx,psu-ddr-xmpu3-cfg-1.0";
 			status = "okay";
 			xlnx,ip-name = "psu_ddr_xmpu3_cfg";
 			reg = <0x0 0xfd030000 0x0 0x10000>;
 			xlnx,name = "psu_ddr_xmpu3_cfg";
 		};
-		psu_ddr_xmpu2_cfg: psu_ddr_xmpu2_cfg@fd020000 {
+		psu_ddr_xmpu2_cfg: psu-ddr-xmpu2-cfg@fd020000 {
 			compatible = "xlnx,psu-ddr-xmpu2-cfg-1.0";
 			status = "okay";
 			xlnx,ip-name = "psu_ddr_xmpu2_cfg";
 			reg = <0x0 0xfd020000 0x0 0x10000>;
 			xlnx,name = "psu_ddr_xmpu2_cfg";
 		};
-		psu_ddr_xmpu1_cfg: psu_ddr_xmpu1_cfg@fd010000 {
+		psu_ddr_xmpu1_cfg: psu-ddr-xmpu1-cfg@fd010000 {
 			compatible = "xlnx,psu-ddr-xmpu1-cfg-1.0";
 			status = "okay";
 			xlnx,ip-name = "psu_ddr_xmpu1_cfg";
 			reg = <0x0 0xfd010000 0x0 0x10000>;
 			xlnx,name = "psu_ddr_xmpu1_cfg";
 		};
-		psu_ddr_xmpu0_cfg: psu_ddr_xmpu0_cfg@fd000000 {
+		psu_ddr_xmpu0_cfg: psu-ddr-xmpu0-cfg@fd000000 {
 			compatible = "xlnx,psu-ddr-xmpu0-cfg-1.0";
 			status = "okay";
 			xlnx,ip-name = "psu_ddr_xmpu0_cfg";
 			reg = <0x0 0xfd000000 0x0 0x10000>;
 			xlnx,name = "psu_ddr_xmpu0_cfg";
 		};
-		psu_ocm_xmpu_cfg: psu_ocm_xmpu_cfg@ffa70000 {
+		psu_ocm_xmpu_cfg: psu-ocm-xmpu-cfg@ffa70000 {
 			compatible = "xlnx,psu-ocm-xmpu-cfg-1.0";
 			status = "okay";
 			xlnx,ip-name = "psu_ocm_xmpu_cfg";
 			reg = <0x0 0xffa70000 0x0 0x10000>;
 			xlnx,name = "psu_ocm_xmpu_cfg";
 		};
-		psu_lpd_xppu_sink: psu_lpd_xppu_sink@ff9c0000 {
+		psu_lpd_xppu_sink: psu-lpd-xppu-sink@ff9c0000 {
 			compatible = "xlnx,psu-lpd-xppu-sink-1.0";
 			status = "okay";
 			xlnx,ip-name = "psu_lpd_xppu_sink";
 			reg = <0x0 0xff9c0000 0x0 0x10000>;
 			xlnx,name = "psu_lpd_xppu_sink";
 		};
-		psu_afi_6: psu_afi@ff9b0000 {
+		psu_afi_6: psu-afi@ff9b0000 {
 			compatible = "xlnx,psu-afi-1.0";
 			status = "okay";
 			xlnx,ip-name = "psu_afi";
 			reg = <0x0 0xff9b0000 0x0 0x10000>;
 			xlnx,name = "psu_afi_6";
 		};
-		psu_rpu: psu_rpu@ff9a0000 {
+		psu_rpu: psu-rpu@ff9a0000 {
 			xlnx,is-cache-coherent = <0>;
 			compatible = "xlnx,psu-rpu-1.0";
 			status = "okay";
@@ -429,21 +429,21 @@
 			reg = <0x0 0xff9a0000 0x0 0x10000>;
 			xlnx,name = "psu_rpu";
 		};
-		psu_crl_apb: psu_crl_apb@ff5e0000 {
+		psu_crl_apb: psu-crl-apb@ff5e0000 {
 			compatible = "xlnx,psu-crl-apb-1.0";
 			status = "okay";
 			xlnx,ip-name = "psu_crl_apb";
 			reg = <0x0 0xff5e0000 0x0 0x280000>;
 			xlnx,name = "psu_crl_apb";
 		};
-		psu_lpd_slcr_secure: psu_lpd_slcr_secure@ff4b0000 {
+		psu_lpd_slcr_secure: psu-lpd-slcr-secure@ff4b0000 {
 			compatible = "xlnx,psu-lpd-slcr-secure-1.0";
 			status = "okay";
 			xlnx,ip-name = "psu_lpd_slcr_secure";
 			reg = <0x0 0xff4b0000 0x0 0x30000>;
 			xlnx,name = "psu_lpd_slcr_secure";
 		};
-		psu_lpd_slcr: psu_lpd_slcr@ff410000 {
+		psu_lpd_slcr: psu-lpd-slcr@ff410000 {
 			compatible = "xlnx,psu-lpd-slcr-1.0";
 			status = "okay";
 			xlnx,ip-name = "psu_lpd_slcr";
@@ -458,42 +458,42 @@
 			compatible = "xlnx,PERIPHERAL-1.0";
 			reg = <0x0 0xff990000 0x0 0x10000>;
 		};
-		psu_iou_scntrs: psu_iou_scntrs@ff260000 {
+		psu_iou_scntrs: psu-iou-scntrs@ff260000 {
 			compatible = "xlnx,psu-iou-scntrs-1.0";
 			status = "okay";
 			xlnx,ip-name = "psu_iou_scntrs";
 			reg = <0x0 0xff260000 0x0 0x10000>;
 			xlnx,name = "psu_iou_scntrs";
 		};
-		psu_iou_scntr: psu_iou_scntr@ff250000 {
+		psu_iou_scntr: psu-iou-scntr@ff250000 {
 			compatible = "xlnx,psu-iou-scntr-1.0";
 			status = "okay";
 			xlnx,ip-name = "psu_iou_scntr";
 			reg = <0x0 0xff250000 0x0 0x10000>;
 			xlnx,name = "psu_iou_scntr";
 		};
-		psu_iousecure_slcr: psu_iousecure_slcr@ff240000 {
+		psu_iousecure_slcr: psu-iousecure-slcr@ff240000 {
 			compatible = "xlnx,psu-iousecure-slcr-1.0";
 			status = "okay";
 			xlnx,ip-name = "psu_iousecure_slcr";
 			reg = <0x0 0xff240000 0x0 0x10000>;
 			xlnx,name = "psu_iousecure_slcr";
 		};
-		psu_iouslcr_0: psu_iouslcr@ff180000 {
+		psu_iouslcr_0: psu-iouslcr@ff180000 {
 			compatible = "xlnx,psu-iouslcr-1.0";
 			status = "okay";
 			xlnx,ip-name = "psu_iouslcr";
 			reg = <0x0 0xff180000 0x0 0xc0000>;
 			xlnx,name = "psu_iouslcr_0";
 		};
-		psu_r5_ddr_0: psu_ddr@100000 {
+		psu_r5_ddr_0: psu-ddr@100000 {
 			compatible = "xlnx,psu-ddr-1.0";
 			status = "okay";
 			xlnx,ip-name = "psu_ddr";
 			reg = <0x0 0x100000 0x0 0x7fe00000>;
 			xlnx,name = "psu_r5_ddr_0";
 		};
-		psu_ddr_0: psu_ddr@0 {
+		psu_ddr_0: psu-ddr@0 {
 			xlnx,ddrc-brc-mapping = <0>;
 			compatible = "xlnx,psu-ddr-1.0";
 			status = "okay";
@@ -504,7 +504,7 @@
 			xlnx,ddrc-ddr4-addr-mapping = <1>;
 			xlnx,name = "psu_ddr_0";
 		};
-		psu_qspi_linear_0: psu_qspi_linear@c0000000 {
+		psu_qspi_linear_0: psu-qspi-linear@c0000000 {
 			reg = <0x0 0xc0000000 0x0 0x20000000>;
 		};
 	};

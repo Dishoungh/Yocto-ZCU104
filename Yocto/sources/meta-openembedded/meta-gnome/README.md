@@ -3,14 +3,14 @@ Dependencies
 This layer depends on:
 
 URI: git://git.openembedded.org/openembedded-core
-branch: scarthgap
+branch: master
 
 URI: git://git.openembedded.org/meta-openembedded
-branch: scarthgap
+branch: master
 
-Send pull requests to openembedded-devel@lists.openembedded.org with '[meta-gnome][scarthgap]' in the subject'
+Send pull requests to openembedded-devel@lists.openembedded.org with '[meta-gnome]' in the subject'
 
-When sending single patches, please using something like:
-git send-email -M -1 --to openembedded-devel@lists.openembedded.org --subject-prefix='meta-gnome][scarthgap][PATCH'
+When sending single patches, please use something like:
+git send-email -M -1 --to openembedded-devel@lists.openembedded.org --subject-prefix='meta-gnome][wrynose][PATCH'
 
 Layer maintainer: Anuj Mittal <anuj.mittal@oss.qualcomm.com>

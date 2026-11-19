@@ -9,13 +9,16 @@ BIF_OPTIONAL_DATA ?= ""
 
 # Specify BIF partition attributes required for BOOT.bin
 BIF_FSBL_ATTR       ??= "base-pdi plmfw"
-BIF_ATF_ATTR        ??= "arm-trusted-firmware"
+BIF_TFA_ATTR        ??= "trusted-firmware-a"
 BIF_OPTEE_ATTR      ??= "${@bb.utils.contains('MACHINE_FEATURES', 'optee', 'optee-os', '', d)}"
 BIF_ASU_ATTR        ??= ""
+BIF_IMAGESTORE_ATTR ??= ""
 BIF_DEVICETREE_ATTR ??= "device-tree"
 BIF_SSBL_ATTR       ??= "u-boot-xlnx"
 BIF_APPS_ATTR       ??= ""
-BIF_PARTITION_ATTR  ??= "${BIF_FSBL_ATTR} ${BIF_ASU_ATTR} ${BIF_DEVICETREE_ATTR} ${BIF_ATF_ATTR} ${BIF_OPTEE_ATTR} ${BIF_SSBL_ATTR} ${BIF_APPS_ATTR}"
+# Token order is partition order, and PLM loads partitions in order, so keep
+# the Image Store slot ahead of the device tree and handoff slots.
+BIF_PARTITION_ATTR  ??= "${BIF_FSBL_ATTR} ${BIF_ASU_ATTR} ${BIF_IMAGESTORE_ATTR} ${BIF_DEVICETREE_ATTR} ${BIF_TFA_ATTR} ${BIF_OPTEE_ATTR} ${BIF_SSBL_ATTR} ${BIF_APPS_ATTR}"
 
 # Specify BIF partition attributes for base-pdi
 BIF_PARTITION_ATTR[base-pdi] ?= "type=bootimage"
@@ -38,10 +41,10 @@ BIF_PARTITION_ATTR[u-boot-xlnx] ?= "core=a78-0, cluster=0, exception_level = el-
 BIF_PARTITION_IMAGE[u-boot-xlnx] ?= "${RECIPE_SYSROOT}/boot/u-boot.elf"
 BIF_PARTITION_ID[u-boot-xlnx] ?= "0x1c000000"
 
-# Specify BIF partition attributes for arm-trusted-firmware
-BIF_PARTITION_ATTR[arm-trusted-firmware] ?= "core=a78-0, cluster=0, exception_level = el-3, trustzone"
-BIF_PARTITION_IMAGE[arm-trusted-firmware] ?= "${RECIPE_SYSROOT}/boot/arm-trusted-firmware.elf"
-BIF_PARTITION_ID[arm-trusted-firmware] ?= "0x1c000000"
+# Specify BIF partition attributes for trusted-firmware-a
+BIF_PARTITION_ATTR[trusted-firmware-a] ?= "core=a78-0, cluster=0, exception_level = el-3, trustzone"
+BIF_PARTITION_IMAGE[trusted-firmware-a] ?= "${RECIPE_SYSROOT}/firmware/trusted-firmware-a/bl31.elf"
+BIF_PARTITION_ID[trusted-firmware-a] ?= "0x1c000000"
 
 # Specify BIF partition attributes for optee
 BIF_PARTITION_ATTR[optee-os] ?= "core=a78-0, cluster=0, exception_level = el-1, trustzone, load=0x1800000"
@@ -51,6 +54,14 @@ BIF_PARTITION_ID[optee-os] ?= "0x1c000000"
 # Specify BIF partition attributes for asufw
 BIF_PARTITION_ATTR[asufw] ?= "core=asu"
 BIF_PARTITION_IMAGE[asufw] ?= "${RECIPE_SYSROOT}/boot/asufw.elf"
+
+# Image Store, holding the FPD CDO so PLM can reload it on resume without
+# touching the boot device. Inert until BIF_IMAGESTORE_ATTR names it, and named
+# for the recipe because that name becomes a DEPENDS entry.
+BIF_PARTITION_ATTR[fpd-image-store] ?= "imagestore = 0xFFFF0000"
+BIF_PARTITION_IMAGE[fpd-image-store] ?= "${RECIPE_SYSROOT}/firmware/fpd-image-store.pdi"
+# In the APU image, so the subsystem keeps one ID and one ImageInfoTbl entry
+BIF_PARTITION_ID[fpd-image-store] ?= "0x1c000000"
 
 # Force the newly created CDO file to be made available in the deploy directory
 do_extract_cdo() {

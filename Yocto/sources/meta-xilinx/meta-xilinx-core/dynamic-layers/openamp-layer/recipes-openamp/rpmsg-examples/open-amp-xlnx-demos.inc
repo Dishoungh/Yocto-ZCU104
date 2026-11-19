@@ -18,13 +18,15 @@ DEPENDS_FREERTOS:xilinx-freertos = "freertos10-xilinx"
 DEPENDS += "${DEPENDS_FREERTOS}"
 
 B = "${WORKDIR}/build"
-S = "${WORKDIR}/git/examples/legacy_apps"
+S = "${UNPACKDIR}/${BP}/examples/legacy_apps"
 OECMAKE_SOURCEPATH = "${S}"
 
 OECMAKE_C_LINK_FLAGS:append = " --sysroot=${STAGING_DIR_HOST} -lxil -lxilstandalone -lxiltimer -lopen_amp "
-CFLAGS:append = " -DSDT -D_AMD_GENERATED_ ${DEBUG_PREFIX_MAP} "
+CFLAGS:append = " -DSDT -D_AMD_GENERATED_ ${DEBUG_PREFIX_MAP} -fno-pie "
+LDFLAGS:append = " -no-pie "
+SECURITY_LDFLAGS = ""
 CFLAGS:append:arm = " -O3  -DXLNX_PLATFORM \
- -specs=${PKG_CONFIG_SYSROOT_DIR}/usr/include/Xilinx.spec \
+ -specs=${STAGING_INCDIR}/Xilinx.spec \
  "
 
 CFLAGS:append = " ${ESW_CFLAGS} "
@@ -43,8 +45,9 @@ OPENAMP_CMAKE_SOC = "unknown"
 OPENAMP_CMAKE_SOC:zynqmp = "ZYNQMP"
 OPENAMP_CMAKE_SOC:versal = "VERSAL"
 OPENAMP_CMAKE_SOC:versal-net = "VERSAL_NET"
+OPENAMP_CMAKE_SOC:versal-2vp = "VERSAL"
 
-LINKER_METADATA_FILE="OpenAMP_Lopper_Linker_Cfg.cmake"
+LINKER_METADATA_FILE = "OpenAMP_Lopper_Linker_Cfg.cmake"
 
 TOOLCHAIN_FILE_MACHINE:armv7r = "zynqmp_r5"
 TOOLCHAIN_FILE_MACHINE:armv8r = "zynqmp_r5"
@@ -61,11 +64,13 @@ DEMO_LINK_FLAGS:append:xilinx-freertos = " -lfreertos"
 OPENAMP_CMAKE_MACHINE ?= ""
 OPENAMP_CMAKE_MACHINE:zynqmp = "ZYNQMP"
 OPENAMP_CMAKE_MACHINE:versal = "VERSAL"
+OPENAMP_CMAKE_MACHINE:versal-2vp = "VERSAL"
 
 OPENAMP_APP_NAME ?= "echo"
 
+EXTRA_OECMAKE:append = " -DCMAKE_INCLUDE_PATH:PATH=${STAGING_INCDIR}"
 EXTRA_OECMAKE:append:xilinx-standalone = " \
-	-DCMAKE_LIBRARY_PATH=${PKG_CONFIG_SYSROOT_DIR}/usr/lib/ \
+	-DCMAKE_LIBRARY_PATH=${STAGING_LIBDIR}/ \
 	-DPROJECT_VENDOR=\"xlnx\" -DWITH_VENDOR_CMAKE_SCRIPT=ON \
 	-DOPENAMP_APP_NAME=${OPENAMP_APP_NAME} -DMACHINE=${TOOLCHAIN_FILE_MACHINE} "
 
@@ -78,20 +83,20 @@ cmake_do_generate_toolchain_file:append:arm() {
 	set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ")
 	set (CMAKE_SYSTEM_NAME      "${OPENAMP_CMAKE_SYSTEM_NAME}")
 	set (MACHINE                "${TOOLCHAIN_FILE_MACHINE}" )
-	list(APPEND CMAKE_LIBRARY_PATH "${PKG_CONFIG_SYSROOT_DIR}/usr/lib")
-	set (CMAKE_INCLUDE_PATH     "${CMAKE_INCLUDE_PATH} ${PKG_CONFIG_SYSROOT_DIR}/usr/include/" CACHE STRING "")
+	list(APPEND CMAKE_LIBRARY_PATH "${STAGING_LIBDIR}")
+	set (CMAKE_INCLUDE_PATH     "${CMAKE_INCLUDE_PATH} ${STAGING_INCDIR}/" CACHE STRING "")
 	set (CMAKE_FIND_ROOT_PATH   "${CMAKE_FIND_ROOT_PATH} ${STAGING_LIBDIR} ${CMAKE_INCLUDE_PATH} " CACHE STRING "")
 	set (PROJECT_VENDOR         "xlnx" CACHE STRING "" FORCE)
         set (CMAKE_MACHINE "${OPENAMP_CMAKE_MACHINE}")
 
-	set (LIBMETAL_INCLUDE_DIR   " ${PKG_CONFIG_SYSROOT_DIR}/usr/include/" CACHE STRING "")
-	set (LIBMETAL_LIB_DIR       " ${PKG_CONFIG_SYSROOT_DIR}/usr/lib" CACHE STRING "")
+	set (LIBMETAL_INCLUDE_DIR   " ${STAGING_INCDIR}/" CACHE STRING "")
+	set (LIBMETAL_LIB_DIR       " ${STAGING_LIBDIR}" CACHE STRING "")
 
-	set (OPENAMP_INCLUDE_DIR    " ${PKG_CONFIG_SYSROOT_DIR}/usr/include/" CACHE STRING "")
-	set (OPENAMP_LIB_DIR        " ${PKG_CONFIG_SYSROOT_DIR}/usr/lib" CACHE STRING "")
+	set (OPENAMP_INCLUDE_DIR    " ${STAGING_INCDIR}/" CACHE STRING "")
+	set (OPENAMP_LIB_DIR        " ${STAGING_LIBDIR}" CACHE STRING "")
 
-	set (XIL_INCLUDE_DIR        " ${PKG_CONFIG_SYSROOT_DIR}/usr/include/" CACHE STRING "")
-	set (CMAKE_C_FLAGS          " ${CMAKE_C_FLAGS}  ${PKG_CONFIG_SYSROOT_DIR}/usr/include/" CACHE STRING "")
+	set (XIL_INCLUDE_DIR        " ${STAGING_INCDIR}/" CACHE STRING "")
+	set (CMAKE_C_FLAGS          " ${CMAKE_C_FLAGS}  ${STAGING_INCDIR}/" CACHE STRING "")
 
 	set_property (GLOBAL PROPERTY HAS_SYSTEM_DT ON)
 	set_property(GLOBAL PROPERTY SOC "${OPENAMP_CMAKE_SOC}")
@@ -107,6 +112,7 @@ FW_MACHINE:zynqmp = "cortexr5-0"
 FW_MACHINE:versal = "cortexr5-0"
 FW_MACHINE:versal-net = "cortexr52-0"
 FW_MACHINE:versal-2ve-2vm = "cortexr52-0"
+FW_MACHINE:versal-2vp = "cortexr5-0"
 FW_OS ?= "${MCNAME}"
 SUPPORTED_OS_LIST = "baremetal freertos"
 BBCLASSEXTEND = "${@' '.join(['mcextend:'+x for x in d.getVar('SUPPORTED_OS_LIST').split()])}"

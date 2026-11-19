@@ -51,7 +51,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/fibar_lib"
 SRC_URI = "git://github.com/ros2-gbp/fibar_lib-release;${ROS_BRANCH};protocol=https"
 SRCREV = "2e274b0bbc673f4c4a8437ce31043f01f03b985c"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "cmake"
 

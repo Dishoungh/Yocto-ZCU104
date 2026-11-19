@@ -20,7 +20,7 @@ ROS_BPN = "tiago_moveit_config"
 
 ROS_BUILD_DEPENDS = ""
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     ament-cmake-native \
 "
 
@@ -28,7 +28,7 @@ ROS_EXPORT_DEPENDS = ""
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     launch-pal \
     moveit-configs-utils \
     moveit-kinematics \
@@ -41,7 +41,7 @@ ROS_EXEC_DEPENDS = " \
 "
 
 # Currently informational only -- see http://www.ros.org/reps/rep-0149.html#dependency-tags.
-ROS_TEST_DEPENDS = " \
+ROS_TEST_DEPENDS = "\
     ament-lint-auto \
     ament-lint-common \
 "
@@ -53,11 +53,10 @@ DEPENDS += "${ROS_EXPORT_DEPENDS} ${ROS_BUILDTOOL_EXPORT_DEPENDS}"
 
 RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 
-# matches with: https://github.com/pal-gbp/tiago_moveit_config-release/archive/release/humble/tiago_moveit_config/3.1.2-1.tar.gz
+# matches with: https://github.com/ros2-gbp/tiago_moveit_config-release/archive/release/humble/tiago_moveit_config/3.1.2-1.tar.gz
 ROS_BRANCH ?= "branch=release/humble/tiago_moveit_config"
-SRC_URI = "git://github.com/pal-gbp/tiago_moveit_config-release;${ROS_BRANCH};protocol=https"
+SRC_URI = "git://github.com/ros2-gbp/tiago_moveit_config-release;${ROS_BRANCH};protocol=https"
 SRCREV = "3cb410b655a5e236bdce3e0e8b941e74e9336d5d"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

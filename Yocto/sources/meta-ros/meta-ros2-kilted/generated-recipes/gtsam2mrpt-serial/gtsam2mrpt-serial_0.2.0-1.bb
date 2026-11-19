@@ -15,7 +15,7 @@ LIC_FILES_CHKSUM = "file://package.xml;beginline=9;endline=9;md5=58e54c03ca7f821
 ROS_CN = "gtsam2mrpt_serial"
 ROS_BPN = "gtsam2mrpt_serial"
 
-ROS_BUILD_DEPENDS = " \
+ROS_BUILD_DEPENDS = "\
     gtsam \
     mola-common \
     mrpt-libbase \
@@ -23,11 +23,11 @@ ROS_BUILD_DEPENDS = " \
     mrpt-libposes \
 "
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     cmake-native \
 "
 
-ROS_EXPORT_DEPENDS = " \
+ROS_EXPORT_DEPENDS = "\
     gtsam \
     mola-common \
     mrpt-libbase \
@@ -37,7 +37,7 @@ ROS_EXPORT_DEPENDS = " \
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     gtsam \
     mola-common \
     mrpt-libbase \
@@ -59,7 +59,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/kilted/gtsam2mrpt_serial"
 SRC_URI = "git://github.com/ros2-gbp/gtsam2mrpt_serial-release;${ROS_BRANCH};protocol=https"
 SRCREV = "43642c9c72b3ba63dfd5c6cee344df4865c4759f"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "cmake"
 

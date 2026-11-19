@@ -61,7 +61,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/gz_utils_vendor"
 SRC_URI = "git://github.com/ros2-gbp/gz_utils_vendor-release;${ROS_BRANCH};protocol=https"
 SRCREV = "f3f555d2e8445c4bdac60e59a7c2831fb998e67b"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

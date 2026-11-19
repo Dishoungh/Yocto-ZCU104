@@ -51,7 +51,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/rosidl_pycommon"
 SRC_URI = "git://github.com/ros2-gbp/rosidl-release;${ROS_BRANCH};protocol=https"
 SRCREV = "78fd643b525acf3de8d14d78f819cc1a5887ba70"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_python"
 

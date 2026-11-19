@@ -20,7 +20,7 @@ ROS_BPN = "turtlebot3_home_service_challenge_tools"
 
 ROS_BUILD_DEPENDS = ""
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     ament-cmake-native \
 "
 
@@ -28,7 +28,7 @@ ROS_EXPORT_DEPENDS = ""
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     controller-manager \
     moveit-ros-move-group \
     nav2-bringup \
@@ -52,7 +52,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/humble/turtlebot3_home_service_challenge_tools"
 SRC_URI = "git://github.com/ros2-gbp/turtlebot3_home_service_challenge-release;${ROS_BRANCH};protocol=https"
 SRCREV = "373819624c8075258965779e69b5a84d0c1d5c16"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

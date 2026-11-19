@@ -15,17 +15,17 @@ LIC_FILES_CHKSUM = "file://package.xml;beginline=8;endline=8;md5=82f0323c08605e5
 ROS_CN = "neo_nav2_bringup"
 ROS_BPN = "neo_nav2_bringup"
 
-ROS_BUILD_DEPENDS = " \
+ROS_BUILD_DEPENDS = "\
     nav2-common \
     navigation2 \
     slam-toolbox \
 "
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     ament-cmake-native \
 "
 
-ROS_EXPORT_DEPENDS = " \
+ROS_EXPORT_DEPENDS = "\
     nav2-common \
     navigation2 \
     slam-toolbox \
@@ -33,7 +33,7 @@ ROS_EXPORT_DEPENDS = " \
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     nav2-common \
     navigation2 \
     slam-toolbox \
@@ -53,7 +53,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/humble/neo_nav2_bringup"
 SRC_URI = "git://github.com/ros2-gbp/neo_nav2_bringup-release;${ROS_BRANCH};protocol=https"
 SRCREV = "dc6a8b98acdbc29515b2166d3501a82da1d4fa00"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

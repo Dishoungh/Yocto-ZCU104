@@ -18,7 +18,7 @@ LIC_FILES_CHKSUM = "file://package.xml;beginline=13;endline=13;md5=3dce4ba60d7e5
 ROS_CN = "rmf_simulation"
 ROS_BPN = "rmf_robot_sim_gz_plugins"
 
-ROS_BUILD_DEPENDS = " \
+ROS_BUILD_DEPENDS = "\
     gz-gui-vendor \
     gz-msgs-vendor \
     gz-plugin-vendor \
@@ -35,11 +35,11 @@ ROS_BUILD_DEPENDS = " \
     rmf-robot-sim-common \
 "
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     ament-cmake-native \
 "
 
-ROS_EXPORT_DEPENDS = " \
+ROS_EXPORT_DEPENDS = "\
     gz-gui-vendor \
     gz-msgs-vendor \
     gz-plugin-vendor \
@@ -58,7 +58,7 @@ ROS_EXPORT_DEPENDS = " \
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     gz-gui-vendor \
     gz-msgs-vendor \
     gz-plugin-vendor \
@@ -89,7 +89,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/jazzy/rmf_robot_sim_gz_plugins"
 SRC_URI = "git://github.com/ros2-gbp/rmf_simulation-release;${ROS_BRANCH};protocol=https"
 SRCREV = "726471de590d95e4276b3ee9c11ae24a1140cbfa"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

@@ -11,15 +11,14 @@ PV .= "+git"
 
 BRANCH ?= "master"
 REPO   ?= "git://github.com/Xilinx/vdu-ctrl-sw.git;protocol=https"
-SRCREV ?= "1bbaf265b6d0a9fa25fd4d67133e55cbf0e6daa7"
+SRCREV ?= "6c41b704aaf2a08b55fce6f2fc189c7d96fb17e1"
 
-BRANCHARG = "${@['nobranch=1', 'branch=${BRANCH}'][d.getVar('BRANCH', True) != '']}"
+BRANCHARG = "${@['nobranch=1', 'branch=${BRANCH}'][d.getVar('BRANCH') != '']}"
 SRC_URI = "${REPO};${BRANCHARG}"
 
-S = "${WORKDIR}/git"
 B = "${S}"
 
-inherit autotools features_check
+inherit features_check
 
 REQUIRED_MACHINE_FEATURES = "vdu"
 
@@ -33,7 +32,11 @@ do_compile[dirs] = "${S}"
 do_install[dirs] = "${S}"
 
 EXTRA_OEMAKE = "CC='${CC}' CXX='${CXX} ${CXXFLAGS}'"
-EXTRA_OEMAKE +=" INSTALL_HDR_PATH=${D}${includedir}/vdu-ctrl-sw/include INSTALL_PATH=${D}${bindir}"
+EXTRA_OEMAKE += "INSTALL_HDR_PATH=${D}${includedir}/vdu-ctrl-sw/include INSTALL_PATH=${D}${bindir}"
+
+do_install:append() {
+    oe_runmake install
+}
 
 do_install:append() {
 

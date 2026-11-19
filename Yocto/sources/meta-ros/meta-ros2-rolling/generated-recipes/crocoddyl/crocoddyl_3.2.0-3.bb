@@ -66,7 +66,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/crocoddyl"
 SRC_URI = "git://github.com/ros2-gbp/crocoddyl-release;${ROS_BRANCH};protocol=https"
 SRCREV = "2801a2cc54bfe6dcaca1e44a6b0f0c18a707745e"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "cmake"
 

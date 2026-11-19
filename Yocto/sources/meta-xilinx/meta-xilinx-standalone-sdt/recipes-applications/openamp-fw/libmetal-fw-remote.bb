@@ -9,6 +9,7 @@ TARGET_MC:zynqmp = "cortexr5-1-${FW_OS}"
 TARGET_MC:versal = "cortexr5-1-${FW_OS}"
 TARGET_MC:versal-net = "cortexr52-1-${FW_OS}"
 TARGET_MC:versal-2ve-2vm = "cortexr52-1-${FW_OS}"
+TARGET_MC:versal-2vp = "cortexr5-1-${FW_OS}"
 
 FW_MCDEPENDS = "mc::${MACHINE}-${TARGET_MC}:libmetal-demo-remote:do_deploy"
 
@@ -18,6 +19,12 @@ OPENAMP_XLNX_RECIPE = "${OPENAMP_FW_NAME}"
 FW_FILE = "${FW_DEPLOY_DIR}/${OPENAMP_FW_NAME}"
 PROVIDES:append = " libmetal-fw-remote "
 RPROVIDES:${PN} += "libmetal-fw-remote "
+PROVIDES:append = " libmetal-fw-remote-baremetal "
+
+inherit firmware-copy-manifest
+FW_MANIFEST_SRC = "${FW_DEPLOY_DIR}/irq_shmem_demo"
+FW_MANIFEST_SRC[vardepsexclude] = "FW_DEPLOY_DIR"
+FW_MANIFEST_NAME = "libmetal-fw-remote-baremetal"
 
 DESTDIR = "/boot"
 SYSROOT_DIRS += "/boot"

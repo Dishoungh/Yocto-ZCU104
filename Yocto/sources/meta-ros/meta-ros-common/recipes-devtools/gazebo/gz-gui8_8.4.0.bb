@@ -8,7 +8,6 @@ SRC_URI = "git://github.com/gazebosim/gz-gui.git;protocol=https;branch=gz-gui8 \
 
 SRCREV = "6d6cd72cd9b7d520030c6df43e031ecbe8fa742a"
 
-S = "${WORKDIR}/git"
 
 inherit cmake
 
@@ -42,7 +41,7 @@ EXTRA_OECMAKE += " \
 
 do_install:append() {
     # Remove references to the build directory in the Doxygen tagfile
-    sed -i -e "s:${S}::g" ${D}${datadir}/gz/gz-gui8/gz-gui8.tag.xml
+    sed -i -e "s:${UNPACKDIR}::g" ${D}${datadir}/gz/gz-gui8/gz-gui8.tag.xml
 }
 
 FILES:${PN} += " \

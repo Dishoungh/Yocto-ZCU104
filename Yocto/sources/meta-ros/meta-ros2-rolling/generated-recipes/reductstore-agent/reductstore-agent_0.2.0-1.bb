@@ -57,7 +57,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/reductstore_agent"
 SRC_URI = "git://github.com/ros2-gbp/reductstore_agent-release;${ROS_BRANCH};protocol=https"
 SRCREV = "e50615f2990bd77c64abb24a8ec3e583ba464123"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_python"
 

@@ -5,15 +5,32 @@
 # Generates Boot Image Format (BIF) files for bootgen to create BOOT.bin/PDI.
 # See AMD UG1283 "Bootgen User Guide" for the complete BIF specification.
 #
-# Supported: zynq, zynqmp, versal, versal-net, versal-2ve-2vm
+# Supported: zynq, zynqmp, versal, versal-net, versal-2ve-2vm, versal-2vp
 #
 # Variables (used as defaults when not passed as parameters):
 #   BIF_FILE_PATH          - Output path for generated BIF file
 #   BIF_TOPLEVEL_ATTR      - Space-separated top-level attribute names
 #   BIF_TOPLEVEL_ATTR[a]   - Value for top-level attribute 'a' (emitted as: a = value)
 #   BIF_COMMON_ATTR        - Space-separated common attribute names
-#   BIF_COMMON_ATTR[name]  - Flags for common attribute
-#   BIF_OPTIONAL_DATA      - Semicolon-separated: "<filepath>, id=<id>;"
+#   BIF_COMMON_ATTR[name]  - Common attribute value. The emission differs by
+#                            SoC family:
+#                            * Versal/Versal-net/Versal-2ve-2vm: emitted
+#                              verbatim as "name <value>", so the value must
+#                              carry the full bootgen syntax following the name:
+#                                [boot_config] = "{ <options> }"
+#                                [boot_device] = "{ <options>, address=<addr> }"
+#                                [metaheader]  = "{ }"
+#                                [puf_file]    = "= <puf data file>"
+#                            * Zynq/ZynqMP: value is a comma-separated flag list
+#                              emitted as "[name] flag1, flag2".
+#   BIF_OPTIONAL_DATA      - Semicolon-separated: "<filepath>, id=<id>;" (versal+)
+#                            This is for manually specified values, otherwise use below
+#   BIF_OPTIONAL_DATA_VAL[id] - Value associated with id, value is written to a file
+#                               optional-data-<id>.txt, id=<id>
+#   BIF_OPTIONAL_DATA_FILE[id] - Value associated with a file for an id:
+#                                <BIF_OPTIONAL_DATA_FILE[id]>, id=<id>
+#                            Setting both BIF_OPTIONAL_DATA_VAL and FILE for the same
+#                            ID is invalid
 #   BIF_PARTITION_ATTR     - Space-separated partition names (boot order)
 #   BIF_PARTITION_ATTR[p]  - Attribute flags for partition 'p'
 #   BIF_PARTITION_IMAGE[p] - File path for partition 'p'
@@ -29,13 +46,16 @@
 #
 # Map SOC_FAMILY to bootgen -arch argument
 # Most map directly, some need hyphen adjustments for bootgen
-BOOTGEN_ARCH = ""
-BOOTGEN_ARCH:zynq = "zynq"
-BOOTGEN_ARCH:zynqmp = "zynqmp"
-BOOTGEN_ARCH:versal = "versal"
-BOOTGEN_ARCH:versal-net = "versalnet"
-BOOTGEN_ARCH:versal-2ve-2vm = "versal_2ve_2vm"
+BOOTGEN_ARCH_DEFAULT = "undefined"
+BOOTGEN_ARCH_DEFAULT:zynq = "zynq"
+BOOTGEN_ARCH_DEFAULT:zynqmp = "zynqmp"
+BOOTGEN_ARCH_DEFAULT:versal = "versal"
+BOOTGEN_ARCH_DEFAULT:versal-net = "versalnet"
+BOOTGEN_ARCH_DEFAULT:versal-2ve-2vm = "versal_2ve_2vm"
+BOOTGEN_ARCH_DEFAULT:versal-2vp = "versal_2vp"
 
+# Define so the BSP can override if necessary
+BOOTGEN_ARCH ?= "${BOOTGEN_ARCH_DEFAULT}"
 
 def bootgen_bif_write_toplevel_attrs(biffd, d, toplevel_attrs=None):
     """
@@ -99,9 +119,21 @@ def bootgen_bif_create_versal(common_attrs, partitions, local_files, biffd, d):
     for name in common_attrs:
         if name not in common_attrflags:
             bb.fatal("BIF_COMMON_ATTR[%s] not defined, but '%s' is listed in BIF_COMMON_ATTR" % (name, name))
-        flags = d.expand(common_attrflags[name])
-        flag_list = [f.strip() for f in flags.split(',') if f.strip()]
-        biffd.write("\t { %s %s }\n" % (name, ', '.join(flag_list)))
+        # The attribute value carries the full bootgen syntax that follows the
+        # name, so the emission stays open to the different common-attribute
+        # forms in UG1283, e.g.:
+        #   boot_config { <options> }
+        #   boot_device { <options>, address=<address> }
+        #   metaheader { }
+        #   puf_file = <puf data file>
+        # The value is emitted verbatim after the name; the caller supplies the
+        # braces / '=' as required by the attribute.
+        value = d.expand(common_attrflags[name]).strip()
+        if not value:
+            bb.fatal("BIF_COMMON_ATTR[%s] is empty; it must carry the full "
+                     "bootgen syntax following the name (e.g. '{ <options> }' "
+                     "or '= <file>')" % name)
+        biffd.write("\t%s %s\n" % (name, value))
 
     # Group partitions by ID, preserving order of first occurrence
     id_partitions = []  # [(id, [entries]), ...]
@@ -180,6 +212,50 @@ def bootgen_bif_write_optional_data(biffd, optional_data, workdir, seen_basename
         if filepath != dest:
             shutil.copyfile(filepath, dest)
         biffd.write("\toptionaldata { %s, %s }\n" % (basename, id_part))
+
+def bootgen_bif_write_optional_data_val(biffd, workdir, seen_basenames, d):
+    """
+    Process BIF_OPTIONAL_DATA_VAL[id] entries, write to a file, and call
+    bootgen_bif_write_optional_data to add the entries to the bif.
+
+    Format: "<filepath>, id=<id>;" (semicolon-separated)
+    """
+
+    optional_data = ""
+
+    for id in d.getVarFlags('BIF_OPTIONAL_DATA_VAL') or '':
+        val = d.getVarFlag('BIF_OPTIONAL_DATA_VAL', id)
+        if not val:
+            continue
+
+        filepath = os.path.join(workdir, f'optional-data-{id}.txt')
+        with open(filepath, 'w') as fd:
+            fd.write(val)
+
+        optional_data = optional_data + f'{filepath}, id={id}; '
+
+    if optional_data:
+        bootgen_bif_write_optional_data(biffd, optional_data, workdir, seen_basenames, d)
+
+def bootgen_bif_write_optional_data_file(biffd, workdir, seen_basenames, d):
+    """
+    Process BIF_OPTIONAL_DATA_FILE[id] entries by calling
+    bootgen_bif_write_optional_data to add the entries to the bif.
+
+    Format: "<filepath>, id=<id>;" (semicolon-separated)
+    """
+
+    optional_data = ""
+
+    for id in d.getVarFlags('BIF_OPTIONAL_DATA_FILE') or '':
+        val = d.getVarFlag('BIF_OPTIONAL_DATA_FILE', id)
+        if not val:
+            continue
+
+        optional_data = optional_data + f'{val}, id={id}; '
+
+    if optional_data:
+        bootgen_bif_write_optional_data(biffd, optional_data, workdir, seen_basenames, d)
 
 def bootgen_bif_copy_partition_files(partitions, partition_attrimage, workdir, seen_basenames, d, skip_check=None):
     """
@@ -276,10 +352,12 @@ def bootgen_bif_generate(d, bif_path=None, workdir=None, partitions=None, option
 
         bootgen_bif_write_toplevel_attrs(biffd, d)
 
-        # Optional data (Versal version strings, user data) - use parameter or variable
-        opt_data = optional_data if optional_data is not None else (d.getVar("BIF_OPTIONAL_DATA") or "")
-        if opt_data:
+        if soc_family in ('versal', 'versal-net', 'versal-2ve-2vm', 'versal-2vp'):
+            # Optional data (Versal version strings, user data) - use parameter or variable
+            opt_data = optional_data if optional_data is not None else (d.getVar("BIF_OPTIONAL_DATA") or "")
             bootgen_bif_write_optional_data(biffd, opt_data, workdir, seen_basenames, d)
+            bootgen_bif_write_optional_data_val(biffd, workdir, seen_basenames, d)
+            bootgen_bif_write_optional_data_file(biffd, workdir, seen_basenames, d)
 
         common_attrs = (d.getVar("BIF_COMMON_ATTR") or "").split()
 
@@ -296,7 +374,7 @@ def bootgen_bif_generate(d, bif_path=None, workdir=None, partitions=None, option
 
         if soc_family in ('zynq', 'zynqmp'):
             bootgen_bif_create_zynq(common_attrs, part_list, local_files, biffd, d)
-        elif soc_family in ('versal', 'versal-net', 'versal-2ve-2vm'):
+        elif soc_family in ('versal', 'versal-net', 'versal-2ve-2vm', 'versal-2vp'):
             bootgen_bif_create_versal(common_attrs, part_list, local_files, biffd, d)
         else:
             bb.fatal("bootgen_bif_generate: unsupported SOC_FAMILY '%s'" % soc_family)

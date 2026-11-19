@@ -63,7 +63,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/tsid"
 SRC_URI = "git://github.com/ros2-gbp/tsid-release;${ROS_BRANCH};protocol=https"
 SRCREV = "4015c80851c3b4e26f3a35a3426d1db1659c19f7"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "cmake"
 

@@ -16,11 +16,11 @@ LIC_FILES_CHKSUM = "file://package.xml;beginline=10;endline=10;md5=ed30c5fed1ec9
 ROS_CN = "greenwave_monitor"
 ROS_BPN = "greenwave_monitor_interfaces"
 
-ROS_BUILD_DEPENDS = " \
+ROS_BUILD_DEPENDS = "\
     rosidl-default-generators \
 "
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     ament-cmake-native \
 "
 
@@ -28,7 +28,7 @@ ROS_EXPORT_DEPENDS = ""
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     rosidl-default-runtime \
 "
 
@@ -46,7 +46,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/humble/greenwave_monitor_interfaces"
 SRC_URI = "git://github.com/ros2-gbp/greenwave_monitor-release;${ROS_BRANCH};protocol=https"
 SRCREV = "07e6d8b7738ca01d0f2a9494c75546a3659034fc"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

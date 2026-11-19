@@ -1,9 +1,10 @@
 args:
-    - --hw-description https://edf.amd.com/sswreleases/rel-v2026.1/sdt/2026.1/2026.1_0609_1_06092108/external/zynqmp-zcu104-sdt-full/zynqmp-zcu104-sdt-full_2026.1_0609_1_06092108.tar.gz
+    - --hw-description https://edf.amd.com/sswreleases/rel-v2026.2/sdt/2026.2/2026.2_1107_1_11071152/external/zynqmp-zcu104-sdt-full/zynqmp-zcu104-sdt-full_2026.2_1107_1_11071152.tar.gz
     - --machine-name zynqmp-zcu104-sdt-full
     - -g full
     - --domain-file ${LAYER_PATH_xilinx-standalone-sdt}/conf/domainyaml/zynqmp-linux-only-base.yaml \
-                    ${BSPLAYERDIR_amd-adaptive-socs-bsp}/conf/domainyaml/zcu104-linux-overlay.yaml
+                    ${BSPLAYERDIR_amd-adaptive-socs-bsp}/conf/domainyaml/zcu104-linux-overlay.yaml \
+                    ${BSPLAYERDIR_amd-adaptive-socs-bsp}/conf/domainyaml/zcu104-platform-overlay.yaml
 
 kconfig:
     CONFIG_SUBSYSTEM_BOOTMODE_5: y

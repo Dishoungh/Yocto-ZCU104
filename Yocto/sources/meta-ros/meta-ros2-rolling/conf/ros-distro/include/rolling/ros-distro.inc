@@ -89,9 +89,8 @@ ROS_SUPERFLORE_GENERATED_BUILDTOOLS += " \
     rosidl-generator-type-description-native \
     rosidl-parser-native \
     rosidl-runtime-c-native \
-    rosidl-runtime-c-native \
     rosidl-runtime-cpp-native \
-    rosidl-runtime-cpp-native \
+    rosidl-runtime-py-native \
     rosidl-typesupport-c-native \
     rosidl-typesupport-cpp-native \
     rosidl-typesupport-fastrtps-c-native \
@@ -146,8 +145,6 @@ ROS_WORLD_SKIP_GROUPS += "libspnav"
 ROS_WORLD_SKIP_GROUPS += "libopen3d"
 # recipes depends on aws
 ROS_WORLD_SKIP_GROUPS += "aws"
-# recipes depends on openblas
-ROS_WORLD_SKIP_GROUPS += "openblas"
 
 # recipes depending on 'x11' in DISTRO_FEATURES
 ROS_WORLD_SKIP_GROUPS += "${@bb.utils.contains('DISTRO_FEATURES', 'x11', '', 'x11', d)}"
@@ -201,9 +198,6 @@ ROS_WORLD_SKIP_GROUPS += "${@bb.utils.contains('BBFILE_COLLECTIONS', 'rust-layer
 # recipes depending on scipy which could be provided by python3-scipy@meta-python-ai
 ROS_WORLD_SKIP_GROUPS += "${@bb.utils.contains('BBFILE_COLLECTIONS', 'meta-python-ai', '', 'scipy', d)}"
 
-# recipes depending on zenoh-c which could be provided by zenoh-c@meta-zenoh
-ROS_WORLD_SKIP_GROUPS += "${@bb.utils.contains('BBFILE_COLLECTIONS', 'zenoh-layer', '', 'zenoh', d)}"
-
 # swri recipes depending on marti-*-msgs, currently broken after to https://github.com/ros/rosdistro/commit/e019cc8729e7ff2ba2ed51e63886734936254111
 ROS_WORLD_SKIP_GROUPS += "swri"
 
@@ -232,8 +226,6 @@ ROS_WORLD_SKIP_GROUPS += "nanobind"
 
 ROS_WORLD_SKIP_GROUPS += "gripper"
 
-ROS_WORLD_SKIP_GROUPS += "unresolved"
-
 # Must use a _pn- override in this file to override the ROS_BUILD_TYPE of a generated recipe,
 # because we need to set this variable before the "inherit" line in the recipe is parsed,
 # and having it in a .bbappend sets it too late.
@@ -247,15 +239,8 @@ ROS_BUILD_TYPE:pn-rmf-task = "ament_cmake"
 ROS_UNRESOLVED_DEP-java-native = ""
 ROS_UNRESOLVED_DEP-maven-native = ""
 
-# https://layers.openembedded.org/layerindex/recipe/45261/
-ROS_UNRESOLVED_DEP-sqlite3 = "sqlite3"
-
 # Used by generated-recipes/ros2-tracing/tracetools_7.1.0-1.bb
 ROS_UNRESOLVED_DEP-lttng-tools = "lttng-tools"
-
-# Used by generated-recipes/libyaml-vendor/libyaml-vendor_1.6.2-1.bb
-ROS_UNRESOLVED_DEP-libyaml = "libyaml"
-ROS_UNRESOLVED_DEP-libyaml-dev = "libyaml"
 
 # Used by generated-recipes/ament-cmake/ament-cmake-vendor-package_2.3.0-1.bb
 ROS_UNRESOLVED_DEP-python3-vcstool-native = "python3-vcs2l-native"
@@ -264,12 +249,6 @@ ROS_UNRESOLVED_DEP-python3-vcstool-native = "python3-vcs2l-native"
 ROS_UNRESOLVED_DEP-python3-flake8-comprehensions = "python3-flake8-comprehensions"
 
 ROS_UNRESOLVED_DEP-meson-native = "meson-native"
-
-# https://layers.openembedded.org/layerindex/recipe/4681/
-ROS_UNRESOLVED_DEP-file = "file"
-
-# https://layers.openembedded.org/layerindex/recipe/104406/
-ROS_UNRESOLVED_DEP-fmt = "fmt"
 
 # https://layers.openembedded.org/layerindex/recipe/120200/
 ROS_UNRESOLVED_DEP-libabsl-dev = "abseil-cpp"
@@ -285,11 +264,6 @@ ROS_UNRESOLVED_DEP-pybind11-dev = "python3-pybind11"
 
 ROS_UNRESOLVED_DEP-libtins-dev = "libtins"
 
-# https://layers.openembedded.org/layerindex/recipe/27305/
-ROS_UNRESOLVED_DEP-jq = "jq"
-
-ROS_UNRESOLVED_DEP-box2d = "box2d"
-
 ROS_UNRESOLVED_DEP-geos = "geos"
 
 ROS_UNRESOLVED_DEP-python3-venv = "python3"
@@ -304,14 +278,6 @@ ROS_UNRESOLVED_DEP-libbluetooth = "bluez5"
 ROS_UNRESOLVED_DEP-libbluetooth-dev = "bluez5"
 
 ROS_UNRESOLVED_DEP-libdbus-dev = "dbus"
-
-ROS_UNRESOLVED_DEP-python3-watchdog = "python3-watchdog"
-
-ROS_UNRESOLVED_DEP-socat = "socat"
-
-ROS_UNRESOLVED_DEP-python3-scipy = "python3-scipy"
-
-ROS_UNRESOLVED_DEP-libgpiod-dev = "libgpiod"
 
 ROS_UNRESOLVED_DEP-libfyaml-dev = "libfyaml"
 
@@ -345,32 +311,20 @@ ROS_UNRESOLVED_DEP-ignition-gui6-native = "ignition-gui6-native"
 # ROS_UNRESOLVED_DEP-libqt5-quick = "qtbase"
 ROS_UNRESOLVED_DEP-qml-module-qtquick-extras = "qtdeclarative"
 
-ROS_UNRESOLVED_DEP-range-v3 = "range-v3"
 ROS_UNRESOLVED_DEP-simde = "simde"
 ROS_UNRESOLVED_DEP-xsimd = "xsimd"
-ROS_UNRESOLVED_DEP-xtensor = "xtensor"
 
 ROS_UNRESOLVED_DEP-libopenni-dev = "openni"
 ROS_UNRESOLVED_DEP-libopenni2-dev = "openni2"
 
-ROS_UNRESOLVED_DEP-python3-unidiff = "python3-unidiff"
-ROS_UNRESOLVED_DEP-black = "python3-black"
-ROS_UNRESOLVED_DEP-black-native = "python3-black-native"
-
 ROS_UNRESOLVED_DEP-libdraco-dev = "draco"
 ROS_UNRESOLVED_DEP-sdformat12 = "sdformat"
 
-ROS_UNRESOLVED_DEP-hdf5-tools-native = "hdf5-native"
 ROS_UNRESOLVED_DEP-libopenscenegraph = "openscenegraph"
 ROS_UNRESOLVED_DEP-wireless-tools = "wireless-tools"
 ROS_UNRESOLVED_DEP-warehouse-ros-mongo = "warehouse-ros-mongo"
-ROS_UNRESOLVED_DEP-clang-format = "clang"
-ROS_UNRESOLVED_DEP-clang-format-native = "clang-native"
-ROS_UNRESOLVED_DEP-clang-tidy = "clang"
-ROS_UNRESOLVED_DEP-clang-tidy-native = "clang-native"
 
 ROS_UNRESOLVED_DEP-ignition-fuel-tools7 = "ignition-fuel-tools7"
-ROS_UNRESOLVED_DEP-python3-uvloop = "python3-uvloop"
 
 ROS_UNRESOLVED_DEP-libgdal-dev = "gdal"
 ROS_UNRESOLVED_DEP-libxkbcommon-dev = "libxkbcommon"
@@ -397,7 +351,6 @@ ROS_UNRESOLVED_DEP-qml-module-qtquick-layouts = "qtdeclarative"
 ROS_UNRESOLVED_DEP-qml-module-qtquick-templates2 = "qtdeclarative"
 ROS_UNRESOLVED_DEP-qml-module-qtquick-window2 = "qtdeclarative"
 ROS_UNRESOLVED_DEP-ruby = "ruby"
-ROS_UNRESOLVED_DEP-zziplib = "zziplib"
 ROS_UNRESOLVED_DEP-libnlopt-dev = "nlopt"
 ROS_UNRESOLVED_DEP-libnlopt-cxx-dev = "nlopt"
 ROS_UNRESOLVED_DEP-rapidjson-dev = "rapidjson"
@@ -433,14 +386,11 @@ ROS_UNRESOLVED_DEP-libserial-dev = "libserial"
 # ROS_UNRESOLVED_DEP-libqt5-multimedia = "qtmultimedia"
 ROS_UNRESOLVED_DEP-libboost-timer-dev = "boost"
 ROS_UNRESOLVED_DEP-gazebo-msgs = "gazebo-msgs"
-ROS_UNRESOLVED_DEP-python3-waitress = "python3-waitress"
 ROS_UNRESOLVED_DEP-network-manager = "networkmanager"
 ROS_UNRESOLVED_DEP-python3-expiringdict = "python3-expiringdict"
-ROS_UNRESOLVED_DEP-python3-fastapi = "python3-fastapi"
 ROS_UNRESOLVED_DEP-python3-msgpack-numpy = "python3-msgpack-numpy"
 ROS_UNRESOLVED_DEP-python3-transforms3d = "python3-transforms3d"
 ROS_UNRESOLVED_DEP-python3-uvicorn = "python3-uvicorn"
-ROS_UNRESOLVED_DEP-python-is-python3 = "python3"
 ROS_UNRESOLVED_DEP-stress = "stress"
 ROS_UNRESOLVED_DEP-xclip = "xclip"
 
@@ -455,7 +405,6 @@ ROS_UNRESOLVED_DEP-libgirepository = "gobject-introspection"
 ROS_UNRESOLVED_DEP-libgirepository-dev = "gobject-introspection"
 
 ROS_UNRESOLVED_DEP-gripper-controllers = "gripper-controllers"
-ROS_UNRESOLVED_DEP-python3-wheel = "python3-wheel"
 ROS_UNRESOLVED_DEP-coinor-libcgl-dev = "coinor-cgl"
 ROS_UNRESOLVED_DEP-coinor-libcbc-dev = "coinor-cbc"
 ROS_UNRESOLVED_DEP-coinor-libclp-dev = "coinor-clp"

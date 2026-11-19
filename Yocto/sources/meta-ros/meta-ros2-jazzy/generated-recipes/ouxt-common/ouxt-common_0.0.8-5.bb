@@ -19,7 +19,7 @@ ROS_BPN = "ouxt_common"
 
 ROS_BUILD_DEPENDS = ""
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     ament-cmake-native \
 "
 
@@ -27,7 +27,7 @@ ROS_EXPORT_DEPENDS = ""
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     ouxt-lint-common \
 "
 
@@ -45,7 +45,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/jazzy/ouxt_common"
 SRC_URI = "git://github.com/ros2-gbp/ouxt_common-release;${ROS_BRANCH};protocol=https"
 SRCREV = "73ece7bb9cee3dc13c28efd24b80a0804f0a7f41"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

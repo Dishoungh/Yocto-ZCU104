@@ -15,11 +15,11 @@ LIC_FILES_CHKSUM = "file://package.xml;beginline=7;endline=7;md5=2903be9d205c3f1
 ROS_CN = "live555_vendor"
 ROS_BPN = "live555_vendor"
 
-ROS_BUILD_DEPENDS = " \
+ROS_BUILD_DEPENDS = "\
     openssl \
 "
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     cmake-native \
 "
 
@@ -43,7 +43,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/jazzy/live555_vendor"
 SRC_URI = "git://github.com/ros2-gbp/live555_vendor-release;${ROS_BRANCH};protocol=https"
 SRCREV = "4eac39e4ae88fcc8acce02812a4008578f23d7a9"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "cmake"
 

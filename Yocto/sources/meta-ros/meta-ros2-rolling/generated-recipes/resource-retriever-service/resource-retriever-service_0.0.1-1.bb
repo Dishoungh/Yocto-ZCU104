@@ -55,7 +55,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/resource_retriever_service"
 SRC_URI = "git://github.com/ros2-gbp/resource_retriever_service-release;${ROS_BRANCH};protocol=https"
 SRCREV = "33826069412c91c4588ee26d78e3de1d71e19751"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

@@ -17,26 +17,26 @@ LIC_FILES_CHKSUM = "file://package.xml;beginline=7;endline=7;md5=12c26a18c7f493f
 ROS_CN = "fibar_lib"
 ROS_BPN = "fibar_lib"
 
-ROS_BUILD_DEPENDS = " \
+ROS_BUILD_DEPENDS = "\
     clang \
 "
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     cmake-native \
 "
 
-ROS_EXPORT_DEPENDS = " \
+ROS_EXPORT_DEPENDS = "\
     clang \
 "
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     clang \
 "
 
 # Currently informational only -- see http://www.ros.org/reps/rep-0149.html#dependency-tags.
-ROS_TEST_DEPENDS = " \
+ROS_TEST_DEPENDS = "\
     gtest \
 "
 
@@ -51,7 +51,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/kilted/fibar_lib"
 SRC_URI = "git://github.com/ros2-gbp/fibar_lib-release;${ROS_BRANCH};protocol=https"
 SRCREV = "103a4ea93ea79ce985ec1fddb10a15823b8381a8"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "cmake"
 

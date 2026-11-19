@@ -18,7 +18,6 @@ SRC_URI = " \
     file://0001-disable-docbook2man.patch \
 "
 
-S = "${WORKDIR}/git"
 
 inherit pkgconfig
 
@@ -33,11 +32,11 @@ EXTRA_OEMAKE = "${PACKAGECONFIG_CONFARGS} RPM_OPT_FLAGS='${CFLAGS}'"
 
 do_compile() {
     # build core only - don't ship gui
-    oe_runmake -C src core
+    oe_runmake -C src SBINDIR=${sbindir} core
 }
 
 do_install() {
-    oe_runmake install DESTDIR=${D}
+    oe_runmake install DESTDIR=${D} SBINDIR=${sbindir}
 }
 
 BBCLASSEXTEND = "native"

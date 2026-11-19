@@ -56,7 +56,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/zed_description"
 SRC_URI = "git://github.com/ros2-gbp/zed-ros2-description-release;${ROS_BRANCH};protocol=https"
 SRCREV = "76b77eec13ce5329146b66bb99f38ea5530e01b0"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

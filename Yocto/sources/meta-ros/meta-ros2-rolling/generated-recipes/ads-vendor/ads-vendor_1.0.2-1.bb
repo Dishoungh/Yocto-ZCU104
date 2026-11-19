@@ -43,7 +43,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/ads_vendor"
 SRC_URI = "git://github.com/b-robotized/ads_vendor-release;${ROS_BRANCH};protocol=https"
 SRCREV = "b041bdc7261cbf3065a79769c6782999cc47b452"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

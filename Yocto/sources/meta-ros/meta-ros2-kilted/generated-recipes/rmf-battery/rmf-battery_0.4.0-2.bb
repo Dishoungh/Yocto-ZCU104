@@ -17,30 +17,30 @@ LIC_FILES_CHKSUM = "file://package.xml;beginline=9;endline=9;md5=12c26a18c7f493f
 ROS_CN = "rmf_battery"
 ROS_BPN = "rmf_battery"
 
-ROS_BUILD_DEPENDS = " \
+ROS_BUILD_DEPENDS = "\
     libeigen \
     rmf-traffic \
     rmf-utils \
 "
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     cmake-native \
     eigen3-cmake-module-native \
 "
 
-ROS_EXPORT_DEPENDS = " \
+ROS_EXPORT_DEPENDS = "\
     rmf-traffic \
     rmf-utils \
 "
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     rmf-traffic \
 "
 
 # Currently informational only -- see http://www.ros.org/reps/rep-0149.html#dependency-tags.
-ROS_TEST_DEPENDS = " \
+ROS_TEST_DEPENDS = "\
     ament-cmake-catch2 \
     ament-cmake-uncrustify \
 "
@@ -56,7 +56,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/kilted/rmf_battery"
 SRC_URI = "git://github.com/ros2-gbp/rmf_battery-release;${ROS_BRANCH};protocol=https"
 SRCREV = "e91738a5da036ae7f1cfdeb0e0ff02bc76b66402"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "cmake"
 

@@ -16,22 +16,22 @@ LIC_FILES_CHKSUM = "file://package.xml;beginline=10;endline=10;md5=82f0323c08605
 ROS_CN = "steering_functions"
 ROS_BPN = "steering_functions"
 
-ROS_BUILD_DEPENDS = " \
+ROS_BUILD_DEPENDS = "\
     libeigen \
     ros-environment \
 "
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     cmake-native \
 "
 
-ROS_EXPORT_DEPENDS = " \
+ROS_EXPORT_DEPENDS = "\
     libeigen \
 "
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     libeigen \
 "
 
@@ -49,7 +49,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/jazzy/steering_functions"
 SRC_URI = "git://github.com/ros2-gbp/steering_functions-release;${ROS_BRANCH};protocol=https"
 SRCREV = "6bc9fd51c83a1040d0e1a7f66aca7dfa3a716611"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "cmake"
 

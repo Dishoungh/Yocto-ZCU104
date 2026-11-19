@@ -18,7 +18,7 @@ ROS_BPN = "bcr_arm_moveit_config"
 
 ROS_BUILD_DEPENDS = ""
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     ament-cmake-native \
 "
 
@@ -26,7 +26,7 @@ ROS_EXPORT_DEPENDS = ""
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     bcr-arm-description \
     controller-manager \
     joint-state-publisher \
@@ -60,7 +60,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/jazzy/bcr_arm_moveit_config"
 SRC_URI = "git://github.com/ros2-gbp/bcr_arm-release;${ROS_BRANCH};protocol=https"
 SRCREV = "aaadae463b7440743650ca44e9b46302cd1c1603"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

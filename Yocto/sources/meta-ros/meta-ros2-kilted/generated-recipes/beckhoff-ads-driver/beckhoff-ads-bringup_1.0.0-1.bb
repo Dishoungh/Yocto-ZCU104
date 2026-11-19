@@ -18,7 +18,7 @@ ROS_BPN = "beckhoff_ads_bringup"
 
 ROS_BUILD_DEPENDS = ""
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     ament-cmake-native \
 "
 
@@ -26,7 +26,7 @@ ROS_EXPORT_DEPENDS = ""
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     controller-manager \
     robot-state-publisher \
     xacro \
@@ -46,7 +46,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/kilted/beckhoff_ads_bringup"
 SRC_URI = "git://github.com/b-robotized/beckhoff_ads_driver-release;${ROS_BRANCH};protocol=https"
 SRCREV = "95fd0374b4523d55fefa5c61a051cfdaf9a05c6d"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

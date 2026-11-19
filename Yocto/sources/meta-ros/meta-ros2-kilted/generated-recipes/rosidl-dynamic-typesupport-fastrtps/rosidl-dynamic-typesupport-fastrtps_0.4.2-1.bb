@@ -18,7 +18,7 @@ LIC_FILES_CHKSUM = "file://package.xml;beginline=9;endline=9;md5=12c26a18c7f493f
 ROS_CN = "rosidl_dynamic_typesupport_fastrtps"
 ROS_BPN = "rosidl_dynamic_typesupport_fastrtps"
 
-ROS_BUILD_DEPENDS = " \
+ROS_BUILD_DEPENDS = "\
     fastcdr \
     fastdds \
     rcpputils \
@@ -26,11 +26,11 @@ ROS_BUILD_DEPENDS = " \
     rosidl-dynamic-typesupport \
 "
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     ament-cmake-ros-core-native \
 "
 
-ROS_EXPORT_DEPENDS = " \
+ROS_EXPORT_DEPENDS = "\
     fastcdr \
     fastdds \
     rcpputils \
@@ -40,7 +40,7 @@ ROS_EXPORT_DEPENDS = " \
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     fastcdr \
     fastdds \
     rcpputils \
@@ -62,7 +62,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/kilted/rosidl_dynamic_typesupport_fastrtps"
 SRC_URI = "git://github.com/ros2-gbp/rosidl_dynamic_typesupport_fastrtps-release;${ROS_BRANCH};protocol=https"
 SRCREV = "378d414e43591358004ec1257d03fbaaba2046f1"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

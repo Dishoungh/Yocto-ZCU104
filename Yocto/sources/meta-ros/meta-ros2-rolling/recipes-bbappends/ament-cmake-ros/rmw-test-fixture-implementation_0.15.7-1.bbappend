@@ -1,6 +1,4 @@
-# Copyright (c) 2025 Wind River Systems, Inc.
-
-ROS_BUILD_DEPENDS += "\
+ROS_BUILDTOOL_DEPENDS:append = " \
     rosidl-generator-cpp-native \
 "
 

@@ -13,3 +13,8 @@ SRC_URI[sha256sum] = "3810d36b5079256f4f2f7ce552e22213d43b1031c131538df8a2dbc3c5
 UPSTREAM_CHECK_URI = "https://github.com/tpm2-software/${BPN}/releases"
 
 inherit autotools pkgconfig bash-completion
+
+PACKAGECONGIG ??= "efivar"
+PACKAGECONFIG[efivar] = "--with-efivar,--without-efivar,efivar"
+
+BBCLASSEXTEND = "native nativesdk"

@@ -43,7 +43,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/live555_vendor"
 SRC_URI = "git://github.com/ros2-gbp/live555_vendor-release;${ROS_BRANCH};protocol=https"
 SRCREV = "66f33417794fd8e80b8ead85be94c58ea922d07a"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "cmake"
 

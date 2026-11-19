@@ -17,7 +17,7 @@ LIC_FILES_CHKSUM = "file://package.xml;beginline=8;endline=8;md5=34de8913993f991
 ROS_CN = "system_fingerprint"
 ROS_BPN = "system_fingerprint"
 
-ROS_BUILD_DEPENDS = " \
+ROS_BUILD_DEPENDS = "\
     rcl-interfaces \
     rclpy \
     ros2action \
@@ -29,7 +29,7 @@ ROS_BUILD_DEPENDS = " \
 
 ROS_BUILDTOOL_DEPENDS = ""
 
-ROS_EXPORT_DEPENDS = " \
+ROS_EXPORT_DEPENDS = "\
     rcl-interfaces \
     rclpy \
     ros2action \
@@ -41,7 +41,7 @@ ROS_EXPORT_DEPENDS = " \
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     python3-git \
     rcl-interfaces \
     rclpy \
@@ -66,7 +66,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/kilted/system_fingerprint"
 SRC_URI = "git://github.com/ros2-gbp/ros_system_fingerprint-release;${ROS_BRANCH};protocol=https"
 SRCREV = "df84519e1eef144a7e1904b6d831210b2e49ab55"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_python"
 

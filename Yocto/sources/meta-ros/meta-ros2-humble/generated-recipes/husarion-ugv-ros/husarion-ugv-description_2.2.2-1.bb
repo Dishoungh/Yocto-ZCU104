@@ -20,7 +20,7 @@ ROS_BPN = "husarion_ugv_description"
 
 ROS_BUILD_DEPENDS = ""
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     ament-cmake-native \
 "
 
@@ -28,7 +28,7 @@ ROS_EXPORT_DEPENDS = ""
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     husarion-components-description \
     joint-state-publisher \
     joint-state-publisher-gui \
@@ -53,7 +53,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/humble/husarion_ugv_description"
 SRC_URI = "git://github.com/ros2-gbp/husarion_ugv_ros-release;${ROS_BRANCH};protocol=https"
 SRCREV = "17bd001b54c6f43fc4a313e65c3d86ed6f6cdc40"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

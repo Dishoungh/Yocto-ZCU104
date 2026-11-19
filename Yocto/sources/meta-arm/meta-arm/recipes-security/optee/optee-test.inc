@@ -3,19 +3,18 @@ DESCRIPTION = "Open Portable Trusted Execution Environment - Test suite"
 HOMEPAGE = "https://www.op-tee.org/"
 
 LICENSE = "BSD-2-Clause & GPL-2.0-only"
-LIC_FILES_CHKSUM = "file://LICENSE.md;md5=daa2bcccc666345ab8940aab1315a4fa"
 
 inherit python3native ptest
 inherit deploy
 require optee.inc
 
 DEPENDS = "optee-client optee-os-tadevkit python3-cryptography-native openssl"
+DEPENDS:append:toolchain-clang = " lld-native"
 
-SRC_URI = "git://github.com/OP-TEE/optee_test.git;branch=master;protocol=https \
+SRC_URI = "git://github.com/OP-TEE/optee_test.git;protocol=https;${OPTEE_SRC_URI_BRANCH_OR_TAG} \
            file://run-ptest \
           "
 
-S = "${WORKDIR}/git"
 B = "${WORKDIR}/build"
 
 EXTRA_OEMAKE += "TA_DEV_KIT_DIR=${TA_DEV_KIT_DIR} \

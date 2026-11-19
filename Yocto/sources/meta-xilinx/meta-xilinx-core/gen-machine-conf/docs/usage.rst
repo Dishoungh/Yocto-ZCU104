@@ -1,4 +1,4 @@
-.. Copyright (C) 2022-2025, Advanced Micro Devices, Inc. All rights reserved.
+.. Copyright (C) 2022-2026, Advanced Micro Devices, Inc. All rights reserved.
 
 .. SPDX-License-Identifier: MIT
 
@@ -7,17 +7,12 @@
 Gen Machine Conf Usage Introduction
 -----------------------------------
 
-gen-machine-conf has two sub commands parse-xsa and parse-sdt you must
-use one or the other. Most options work for either sub command but some
-are only available/required in one sub command or the other.
+gen-machine-conf uses the parse-sdt sub command to parse System Device-tree
+and generate Yocto configurations.
 
 gen-machine-conf is capable of auto-detecting the subcommand based on
 the file/URI specified with --hw-description.
-If a .xsa file is specified, it uses the subcommand parse-xsa, and
-if system-top.dts is specified, it uses the subcommand parse-sdt.
-
-If a directory is specified and it contains both a .xsa file and
-system-top.dts, the tool will use system-top.dts (therefore assuming parse-sdt).
+If system-top.dts is specified, it uses the subcommand parse-sdt.
 
 gen-machine-conf usage
 ----------------------
@@ -25,24 +20,24 @@ gen-machine-conf usage
 .. code-block:: console
 
   $ gen-machine-conf -h
-  usage: gen-machine-conf [--template Template yaml file] [--hw-description [<PATH_TO_XSA>/<xsa_name>.xsa] or <PATH_TO_SDTDIR>]
-                          [--soc-family {microblaze,microblaze-v,zynq,zynqmp,versal,versal-2ve-2vm}]
+  usage: gen-machine-conf [--template Template yaml file] [--hw-description <PATH_TO_SDTDIR>]
+                          [--soc-family {microblaze-v,zynq,zynqmp,versal,versal-2ve-2vm,versal-2vp}]
                           [--soc-variant SOC_VARIANT] [--machine-name MACHINE]
                           [-c <config_dir>] [-r REQUIRE_MACHINE] [-O MACHINE_OVERRIDES] [--output OUTPUT] [--native-sysroot NATIVE_SYSROOT]
-                          [--menuconfig [{project,rootfs}]] [--petalinux] [--add-config [CONFIG_<macro>=y]] [--add-rootfsconfig ADD_ROOTFSCONFIG] [-D]
+                          [--menuconfig] [--add-config [CONFIG_<macro>=y]] [-D] [--force]
                           [-h] [-v]
                           <subcommand> ...
 
-  PetaLinux/Yocto Machine Configuration File generation tool
+  Yocto Machine Configuration File generation tool
 
   required arguments:
-    --hw-description [<PATH_TO_XSA>/<xsa_name>.xsa] or <PATH_TO_SDTDIR>
-                          Specify Hardware(xsa) file or System Device-tree Directory
+    --hw-description <PATH_TO_SDTDIR>
+                          Specify System Device-tree Directory
 
   options:
     --template Template yaml file
                           Yaml template file
-    --soc-family {microblaze,microblaze-v,zynq,zynqmp,versal,versal-2ve-2vm}
+    --soc-family {microblaze-v,zynq,zynqmp,versal,versal-2ve-2vm,versal-2vp}
                           SOC family type from choice list (usually auto detected).
     --soc-variant SOC_VARIANT
                           SOC Variant: Ex: cg, dr, eg, ev, ai-prime, premium (usually auto detected).
@@ -57,45 +52,19 @@ gen-machine-conf usage
     --output OUTPUT       Output directory name
     --native-sysroot NATIVE_SYSROOT
                           Native sysroot path to use the mconf/conf or lopper commands.
-    --menuconfig [{project,rootfs}]
-                          UI menuconfig option to update configuration(default is project).
-                          project - To update System Level configurations
-                          rootfs  - To update Rootfs configurations
-    --petalinux           Generate Rootfs and PetaLinux Tool conf files and update the build/local.conf file with generated .conf files.
+    --menuconfig          Launch menuconfig UI to update system level configurations.
     --add-config [CONFIG_<macro>=y]
                           Specify config macro or file containing config macros to be added on top of default configs
-    --add-rootfsconfig ADD_ROOTFSCONFIG
-                          Specify a file with list of package names to add into rootfs menu entry
     -D, --debug           Enable debug output
+    --force               Force regenerate all configuration files, ignoring the cached change-detection hashes
     -h, --help            show this help message and exit
     -v, --version         show version information and exit
 
   subcommands:
     <subcommand>
-      parse-sdt           Parse System device-tree file and generate Yocto/PetaLinux configurations.
-      parse-xsa           Parse xsa file and generate Yocto/PetaLinux configurations.
+      parse-sdt           Parse System device-tree file and generate Yocto configurations.
 
   Use gen-machine-conf <subcommand> --help to get help on a specific command
-
-gen-machine-conf parse-xsa usage
---------------------------------
-The parse-xsa is the "older" way of getting hardware configuration
-information into Yocto. It uses the output of AMD Vivado™ Design Suite
-directly.
-
-.. code-block:: console
-
-  $ gen-machine-conf parse-xsa -h
-  usage: gen-machine-conf parse-xsa [--hw-description <PATH_TO_XSA>/<xsa_name>.xsa] [other options]
-
-  options:
-    -h, --help            show this help message and exit
-    --xsct-tool [XSCT_TOOL_PATH]
-                          Vivado or Vitis XSCT path to use xsct commands (Optional if you are already have AMD tools in your path)
-    -l <config_file>, --localconf <config_file>
-                          Write local.conf changes to this file
-    --multiconfigfull     Generate/Enable Full set of multiconfig .conf and .dts files. Default is minimal
-    --multiconfigenable   Enable multiconfig support. default is disabled.
 
 gen-machine-conf parse-sdt usage
 --------------------------------
@@ -144,3 +113,47 @@ configuration used by ``runqemu``.
   When using gen-machine-conf in Yocto the SDT builds
   --soc-family arguments is not mandatory as the needed information
   is provided by the system device tree.
+
+Output Directory Layout
+-----------------------
+
+Persistent, user-facing state is kept at the root of the output directory,
+while transient scratch is contained in a dedicated ``work/`` subdirectory:
+
+- Persistent (output root): the generated project ``config``,
+  ``configs/Kconfig*``, ``sys_hw_data.yaml``, the generated device trees under
+  ``dts_path``, the cached hardware-derived platform info (``hw_info.yaml``)
+  and the change-detection hashes (``.statistics``).
+- Scratch (``<output>/work``): lopper byproducts and transient DTS/DTSI/conf
+  files generated while parsing the System Device Tree. These are throwaway
+  and safe to delete between runs.
+
+Re-Run and Change Detection
+---------------------------
+
+When the same output directory is reused, gen-machine-conf skips regenerating
+the configuration when none of its tracked inputs have changed. It records a
+content hash of each tracked input under ``<output>/.statistics`` and compares
+against it on the next run. The tracked inputs are:
+
+- the hardware description (system device-tree)
+- the generated project ``config``
+- the template YAML
+- domain files (``CONFIG_YOCTO_MC_DOMAIN_FILEPATH``)
+- custom DTSI files referenced through Kconfig
+
+When nothing changed, the tool logs that it is skipping regeneration and
+reuses the cached hardware-derived platform info (``<output>/hw_info.yaml``) to
+avoid re-running the expensive lopper queries. PDI/bitstream, ELF and psu_init
+inputs are not content-tracked because only their paths, not their content, are
+embedded into the generated output.
+
+Use ``--force`` to ignore the cached hashes and regenerate all configuration
+files from scratch.
+
+.. note::
+
+  These files are generated and can be overwritten on later runs:
+  ``conf/machine/<machine>.conf``, the auto-generated ``.dts`` and ``.dtsi``
+  files under ``conf/dts``, the generated multiconfig files and the generated
+  machine include files.

@@ -210,5 +210,4 @@ BBMASK += "generated-recipes/libcamera/libcamera_.*.bb"
 
 BBMASK += "generated-recipes/librealsense2/librealsense2_.*.bb"
 
-# meta-ros provides a recipe for tl-expected to use instead of the generated one
 BBMASK += "generated-recipes-moveit2/tl-expected/tl-expected_.*.bb"

@@ -20,7 +20,7 @@ ROS_BPN = "tiago_rgbd_sensors"
 
 ROS_BUILD_DEPENDS = ""
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     ament-cmake-auto-native \
 "
 
@@ -31,7 +31,7 @@ ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 ROS_EXEC_DEPENDS = ""
 
 # Currently informational only -- see http://www.ros.org/reps/rep-0149.html#dependency-tags.
-ROS_TEST_DEPENDS = " \
+ROS_TEST_DEPENDS = "\
     ament-lint-auto \
     ament-lint-common \
 "
@@ -43,11 +43,10 @@ DEPENDS += "${ROS_EXPORT_DEPENDS} ${ROS_BUILDTOOL_EXPORT_DEPENDS}"
 
 RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 
-# matches with: https://github.com/pal-gbp/tiago_navigation-release/archive/release/humble/tiago_rgbd_sensors/4.12.0-1.tar.gz
+# matches with: https://github.com/ros2-gbp/tiago_navigation-release/archive/release/humble/tiago_rgbd_sensors/4.12.0-1.tar.gz
 ROS_BRANCH ?= "branch=release/humble/tiago_rgbd_sensors"
-SRC_URI = "git://github.com/pal-gbp/tiago_navigation-release;${ROS_BRANCH};protocol=https"
+SRC_URI = "git://github.com/ros2-gbp/tiago_navigation-release;${ROS_BRANCH};protocol=https"
 SRCREV = "f59eebc1ff63dea41786526d0d9433e32e832867"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

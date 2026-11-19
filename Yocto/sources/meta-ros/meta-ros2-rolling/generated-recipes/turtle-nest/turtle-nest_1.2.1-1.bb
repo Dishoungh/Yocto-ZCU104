@@ -61,7 +61,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/turtle_nest"
 SRC_URI = "git://github.com/ros2-gbp/turtle_nest-release;${ROS_BRANCH};protocol=https"
 SRCREV = "a1d6da11047e4edcac7092d509b0cc06b335d9bc"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

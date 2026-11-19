@@ -69,7 +69,6 @@ RDEPENDS:packagegroup-meta-python3 = "\
     python3-click-repl \
     python3-click-spinner \
     python3-cmd2 \
-    python3-colorama \
     python3-coloredlogs \
     python3-colorlog \
     python3-colorzero \
@@ -196,7 +195,6 @@ RDEPENDS:packagegroup-meta-python3 = "\
     python3-ipython \
     python3-ipython-genutils \
     python3-iso3166 \
-    python3-isodate \
     python3-isort \
     python3-itsdangerous \
     python3-javaobj-py3 \
@@ -212,7 +210,6 @@ RDEPENDS:packagegroup-meta-python3 = "\
     python3-jsonref \
     python3-jsonschema \
     python3-jstyleson \
-    python3-kconfiglib \
     python3-keras-applications \
     python3-keras-preprocessing \
     ${@bb.utils.contains("DISTRO_FEATURES", "x11 opengl", "python3-kivy", "", d)} \
@@ -236,6 +233,7 @@ RDEPENDS:packagegroup-meta-python3 = "\
     python3-mccabe \
     python3-meh \
     python3-meld3 \
+    python3-mlcommons-loadgen \
     python3-mock \
     python3-monotonic \
     python3-mpmath \
@@ -249,6 +247,7 @@ RDEPENDS:packagegroup-meta-python3 = "\
     python3-netaddr \
     python3-netifaces \
     python3-networkx \
+    python3-nltk \
     python3-nmap \
     python3-nocasedict \
     python3-nocaselist \
@@ -301,7 +300,7 @@ RDEPENDS:packagegroup-meta-python3 = "\
     python3-py-ubjson \
     python3-pyalsaaudio \
     python3-pyasn1-modules \
-    python3-pyatspi \
+    ${@bb.utils.contains("DISTRO_FEATURES", "gobject-introspection-data ${GTK2DISTROFEATURES}", "python3-pyatspi", "", d)} \
     python3-pyaudio \
     python3-pybind11 \
     python3-pybind11-json \
@@ -336,7 +335,7 @@ RDEPENDS:packagegroup-meta-python3 = "\
     python3-pyperclip \
     python3-pyperf \
     python3-pyrad \
-    python3-pyro4 \
+    python3-pyro5 \
     python3-pyroute2 \
     python3-pyrsistent \
     python3-pyscaffold \
@@ -349,8 +348,10 @@ RDEPENDS:packagegroup-meta-python3 = "\
     python3-pytest-forked \
     python3-pytest-helpers-namespace \
     python3-pytest-html \
+    python3-pytest-httpx \
     python3-pytest-lazy-fixtures \
     python3-pytest-metadata \
+    python3-pytest-picked\
     python3-pytest-tempdir \
     python3-pytest-timeout \
     python3-pytest-xdist \
@@ -380,6 +381,7 @@ RDEPENDS:packagegroup-meta-python3 = "\
     python3-rlp \
     python3-robotframework \
     python3-robotframework-seriallibrary \
+    python3-rouge-score \
     python3-rsa \
     python3-ruamel-yaml \
     python3-scrypt \
@@ -452,7 +454,6 @@ RDEPENDS:packagegroup-meta-python3 = "\
     python3-websocket-client \
     python3-werkzeug \
     python3-werkzeug \
-    python3-whoosh \
     python3-wrapt \
     python3-wtforms \
     python3-xlrd \
@@ -466,6 +467,7 @@ RDEPENDS:packagegroup-meta-python3 = "\
     python3-yappi \
     python3-yarl \
     python3-zopeinterface \
+    python3-zstandard \
     telepathy-python3 \
     unattended-upgrades \
 "
@@ -524,7 +526,6 @@ RDEPENDS:packagegroup-meta-python3-ptest = "\
     python3-unidiff-ptest \
     python3-uritemplate-ptest \
     python3-webcolors-ptest \
-    python3-whoosh-ptest \
     python3-wpa-supplicant \
     python3-xlrd-ptest \
     python3-xmltodict-ptest \

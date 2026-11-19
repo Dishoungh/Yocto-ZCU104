@@ -1,5 +1,5 @@
 SUMMARY = "Linux Kernel Runtime Guard"
-DESCRIPTION="LKRG performs runtime integrity checking of the Linux \
+DESCRIPTION = "LKRG performs runtime integrity checking of the Linux \
 kernel and detection of security vulnerability exploits against the kernel."
 SECTION = "security"
 HOMEPAGE = "https://www.openwall.com/lkrg/"
@@ -12,8 +12,6 @@ DEPENDS = "virtual/kernel elfutils"
 SRC_URI = "git://github.com/lkrg-org/lkrg.git;protocol=https;branch=main"
 
 SRCREV = "5dc5cfea1f4dc8febdd5274d99e277c17df06acc"
-
-S = "${WORKDIR}/git"
 
 inherit module kernel-module-split
 

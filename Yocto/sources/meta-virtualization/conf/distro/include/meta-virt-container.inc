@@ -21,20 +21,32 @@
 # conflicting on target or causing runtime issues / errors.
 #
 
-## CNCF "components"
+#### CNCF "components"
 
-# engines: docker-ce/docker-moby, virtual-containerd, cri-o, podman
-VIRTUAL-RUNTIME_container_engine ??= "podman"
-# runtime: runc, crun, runv, runx
-VIRTUAL-RUNTIME_container_runtime ??= "virtual-runc"
-# networking: cni, netavark
-VIRTUAL-RUNTIME_container_networking ??= "cni"
-# dns: cni, aardvark-dns
-VIRTUAL-RUNTIME_container_dns ??= "cni"
-# orchestration: k8s, k3s
-VIRTUAL-RUNTIME_container_orchestration ??= "k3s"
+## engines: docker/docker-moby, virtual-containerd, cri-o, podman, lxc
+# VIRTUAL-RUNTIME_container_engine ??= "podman"
+## runtime: runc, crun, runv, runx
+# VIRTUAL-RUNTIME_container_runtime ??= "virtual-runc"
+## networking: cni, netavark
+# VIRTUAL-RUNTIME_container_networking ??= "cni"
+## dns: cni, aardvark-dns
+# VIRTUAL-RUNTIME_container_dns ??= "cni"
+## orchestration: k8s, k3s
+# VIRTUAL-RUNTIME_container_orchestration ??= "k3s"
 
 ## Kubernetes terminology "components"
+# VIRTUAL-RUNTIME_cri ??= "virtual-containerd"
+# VIRTUAL-RUNTIME_cni ??= "cni"
 
-VIRTUAL-RUNTIME_cri ??= "virtual-containerd"
-VIRTUAL-RUNTIME_cni ??= "cni"
+CONTAINER_RO_REMOVE ?= " ${@bb.utils.contains('VIRTUAL-RUNTIME_container_engine', 'podman', 'shadow', '', d)}"
+ROOTFS_RO_UNNEEDED:remove = "${CONTAINER_RO_REMOVE}"
+
+# Container registry IMAGE_FEATURES support.
+# Defining FEATURE_PACKAGES_container-registry globally makes
+# "container-registry" a valid IMAGE_FEATURES value for any image
+# recipe (image.bbclass check_image_features auto-discovers
+# FEATURE_PACKAGES_* variables). This avoids IMAGE_FEATURES[validitems]
+# which pollutes signatures when set globally.
+# Default is empty (validation only); container-image-host.bb sets the
+# actual packages.
+FEATURE_PACKAGES_container-registry ?= ""

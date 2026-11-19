@@ -18,7 +18,7 @@ LIC_FILES_CHKSUM = "file://package.xml;beginline=22;endline=22;md5=f12ef8c0445c0
 ROS_CN = "gz_ogre_next_vendor"
 ROS_BPN = "gz_ogre_next_vendor"
 
-ROS_BUILD_DEPENDS = " \
+ROS_BUILD_DEPENDS = "\
     ${ROS_UNRESOLVED_DEP-glslang-dev} \
     ${ROS_UNRESOLVED_DEP-glslc} \
     ${ROS_UNRESOLVED_DEP-libfreeimage-dev} \
@@ -40,12 +40,12 @@ ROS_BUILD_DEPENDS = " \
     zziplib \
 "
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     ament-cmake-native \
     ament-cmake-vendor-package-native \
 "
 
-ROS_EXPORT_DEPENDS = " \
+ROS_EXPORT_DEPENDS = "\
     ${ROS_UNRESOLVED_DEP-glslang-dev} \
     ${ROS_UNRESOLVED_DEP-glslc} \
     ${ROS_UNRESOLVED_DEP-libfreeimage-dev} \
@@ -69,7 +69,7 @@ ROS_EXPORT_DEPENDS = " \
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     ${ROS_UNRESOLVED_DEP-glslang-dev} \
     ${ROS_UNRESOLVED_DEP-glslc} \
     ${ROS_UNRESOLVED_DEP-libfreeimage-dev} \
@@ -92,7 +92,7 @@ ROS_EXEC_DEPENDS = " \
 "
 
 # Currently informational only -- see http://www.ros.org/reps/rep-0149.html#dependency-tags.
-ROS_TEST_DEPENDS = " \
+ROS_TEST_DEPENDS = "\
     ament-cmake-xmllint \
     ament-lint-auto \
 "
@@ -108,7 +108,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/jazzy/gz_ogre_next_vendor"
 SRC_URI = "git://github.com/ros2-gbp/gz_ogre_next_vendor-release;${ROS_BRANCH};protocol=https"
 SRCREV = "72fb805e4715ba139c8104c830c31a0e3b71c957"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

@@ -3,11 +3,9 @@
 OVERRIDES .= ":qemuboot-xilinx"
 
 # Default machine targets for Xilinx QEMU (FDT Generic)
-QB_RNG=""
+QB_RNG = ""
 
 DEFAULT_QB_SYSTEM_NAME = "qemu-system-amd-fpga-multiarch"
-DEFAULT_QB_SYSTEM_NAME:microblaze = "qemu-system-microblazeel"
-DEFAULT_QB_SYSTEM_NAME:microblaze-v:riscv32 = "qemu-system-riscv32"
 DEFAULT_QB_SYSTEM_NAME:microblaze-v:riscv64 = "qemu-system-riscv64"
 QB_SYSTEM_NAME ?= "${DEFAULT_QB_SYSTEM_NAME}"
 
@@ -36,11 +34,12 @@ DEFAULT_SECONDARY_BOOT_MODE:zynqmp = "5"
 DEFAULT_SECONDARY_BOOT_MODE:versal = "5"
 DEFAULT_SECONDARY_BOOT_MODE:versal-net = "5"
 DEFAULT_SECONDARY_BOOT_MODE:versal-2ve-2vm = "5"
+DEFAULT_SECONDARY_BOOT_MODE:versal-2vp = "5"
 
 QEMU_SECONDARY_BOOT_MODE ?= "${DEFAULT_SECONDARY_BOOT_MODE}"
 QEMU_SECONDARY_BOOT_MODE[doc] = "Boot mode value for secondary boot, used for generating QB_ROOTFS_OPT values"
 
-# ZynqMP or Versal SD and eMMC drive index.
+# ZynqMP or Versal (and Versal 2vp) SD and eMMC drive index.
 # Set based on either primary or secondary boot modes
 #
 # SoC                         Device                      Drive Index
@@ -72,6 +71,11 @@ QEMU_HW_SD_DRIVE_INDEX[versal-2ve-2vm_6] = "3"
 QEMU_HW_SD_DRIVE_INDEX[versal-2ve-2vm_11] = "UFS"
 QEMU_HW_SD_DRIVE_INDEX[versal-2ve-2vm_14] = "1"
 
+QEMU_HW_SD_DRIVE_INDEX[versal-2vp_3] = "0"
+QEMU_HW_SD_DRIVE_INDEX[versal-2vp_5] = "1"
+QEMU_HW_SD_DRIVE_INDEX[versal-2vp_6] = "3"
+QEMU_HW_SD_DRIVE_INDEX[versal-2vp_14] = "1"
+
 inherit_defer qemuboot
 
 def qemu_rootfs_params(data, param):
@@ -79,9 +83,7 @@ def qemu_rootfs_params(data, param):
     bundle_image = data.getVar('INITRAMFS_IMAGE_BUNDLE') or ""
     soc_family = data.getVar('SOC_FAMILY') or ""
     tune_features = (data.getVar('TUNE_FEATURES') or '').split()
-    if 'microblaze' in tune_features:
-        soc_family = 'microblaze'
-    elif 'rv' in tune_features:
+    if 'rv' in tune_features:
         soc_family = 'microblaze-v'
 
     if param == 'rootfs':
@@ -89,13 +91,13 @@ def qemu_rootfs_params(data, param):
 
     elif param == 'fstype':
         fstype_dict = {
-            "microblaze": "cpio.gz",
             "microblaze-v": "ext4",
             "zynq": "cpio.gz",
             "zynqmp": "cpio.gz.u-boot",
             "versal": "cpio.gz.u-boot.qemu-sd-fatimg",
             "versal-net": "cpio.gz.u-boot.qemu-sd-fatimg",
-            "versal-2ve-2vm": "cpio.gz.u-boot.qemu-sd-fatimg"
+            "versal-2ve-2vm": "cpio.gz.u-boot.qemu-sd-fatimg",
+            "versal-2vp": "cpio.gz.u-boot.qemu-sd-fatimg"
         }
         if not initramfs_image:
             image_fs = (data.getVar('IMAGE_FSTYPES') or '').split()
@@ -126,7 +128,8 @@ def qemu_rootfs_params(data, param):
 # Helper for setting up a machines MTD device(s)
 
 # mtd settings:
-#  zynq/zynqmp/versal - 0 - single qspi
+#  zynq/zynqmp/versal/versal 2vp
+#                     - 0 - single qspi
 #                       0 & 1 - striped qspi
 #
 #  versal/versal-net  - 4 - ospi
@@ -139,6 +142,7 @@ QEMU_FLASH_TYPE_DEFAULT:zynqmp = "${@'qspi' if d.getVar("QEMU_HW_BOOT_MODE") in 
 QEMU_FLASH_TYPE_DEFAULT:versal = "${@'qspi' if d.getVar("QEMU_HW_BOOT_MODE") in [ '1',  '2' ] else ('ospi' if d.getVar("QEMU_HW_BOOT_MODE") == '8' else 'undefined')}"
 QEMU_FLASH_TYPE_DEFAULT:versal-net = "${@'qspi' if d.getVar("QEMU_HW_BOOT_MODE") in [ '1',  '2' ] else ('ospi' if d.getVar("QEMU_HW_BOOT_MODE") == '8' else 'undefined')}"
 QEMU_FLASH_TYPE_DEFAULT:versal-2ve-2vm = "${@'qspi' if d.getVar("QEMU_HW_BOOT_MODE") in [ '1',  '2' ] else ('ospi' if d.getVar("QEMU_HW_BOOT_MODE") == '8' else 'undefined')}"
+QEMU_FLASH_TYPE_DEFAULT:versal-2vp = "${@'qspi' if d.getVar("QEMU_HW_BOOT_MODE") in [ '1',  '2' ] else ('ospi' if d.getVar("QEMU_HW_BOOT_MODE") == '8' else 'undefined')}"
 QEMU_FLASH_TYPE ?= "${QEMU_FLASH_TYPE_DEFAULT}"
 QEMU_FLASH_TYPE[doc] = "blank/undefined, qpsi or ospi - used to determine automatic flash filename"
 
@@ -153,9 +157,7 @@ QEMU_FLASH_FILE[doc] = "Filename for the created flash file that qemu will boot"
 def qemu_mtd_params(data):
     soc_family = data.getVar('SOC_FAMILY') or ""
     tune_features = (data.getVar('TUNE_FEATURES') or '').split()
-    if 'microblaze' in tune_features:
-        soc_family = 'microblaze'
-    elif 'rv' in tune_features:
+    if 'rv' in tune_features:
         soc_family = 'microblaze-v'
 
     file = data.getVar("QEMU_FLASH_FILE") or ""
@@ -166,7 +168,7 @@ def qemu_mtd_params(data):
         return ''
 
     if flash_type == "qspi":
-        if soc_family in [ "zynq", "zynqmp", "versal", "versal-net" ]:
+        if soc_family in [ "zynq", "zynqmp", "versal", "versal-net", "versal-2vp" ]:
             if stripe != "1":
                 return '-drive file=@DEPLOY_DIR_IMAGE@/%s.bin,if=mtd,format=raw,index=0' % file
             else:
@@ -174,7 +176,7 @@ def qemu_mtd_params(data):
         else:
             return 'unknown qspi configuration'
     elif flash_type == "ospi":
-        if soc_family in [ "versal", "versal-net" ]:
+        if soc_family in [ "versal", "versal-net", "versal-2vp" ]:
             return '-drive file=@DEPLOY_DIR_IMAGE@/%s.bin,if=mtd,format=raw,index=4' % file
         elif soc_family in [ "versal-2ve-2vm" ]:
             return '-drive file=@DEPLOY_DIR_IMAGE@/%s.bin,if=mtd,format=raw,index=0' % file

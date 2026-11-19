@@ -5,6 +5,7 @@
         #size-cells = <0x2>;
         model = "Xilinx Versal vmk180 Eval board rev1.1 (QSPI)";
         board = "vmk180";
+        vivado-version = "2026.2";
         device_id = "xcvm1802";
         slrcount = <0x1>;
         family = "Versal";
@@ -19,7 +20,7 @@
         };
 
         cpus_a72: cpus {
-                phandle = <0xc8>;
+                phandle = <0xca>;
                 #address-cells = <0x1>;
                 #size-cells = <0x0>;
                 compatible = "cpus,cluster";
@@ -27,7 +28,7 @@
                 #ranges-size-cells = <0x2>;
 
                 psv_cortexa72_0: cpu@0 {
-                        phandle = <0xc1>;
+                        phandle = <0xc3>;
                         compatible = "arm,cortex-a72", "arm,armv8";
                         device_type = "cpu";
                         enable-method = "psci";
@@ -53,7 +54,7 @@
                 };
 
                 psv_cortexa72_1: cpu@1 {
-                        phandle = <0xc3>;
+                        phandle = <0xc5>;
                         compatible = "arm,cortex-a72", "arm,armv8";
                         device_type = "cpu";
                         enable-method = "psci";
@@ -167,12 +168,12 @@
         };
 
         versal_fpga: versal-fpga {
-                phandle = <0xaa>;
+                phandle = <0xac>;
                 compatible = "xlnx,versal-fpga";
         };
 
         sensor0: versal-thermal-sensor {
-                phandle = <0xac>;
+                phandle = <0xae>;
                 compatible = "xlnx,versal-thermal";
                 #thermal-sensor-cells = <0x1>;
                 io-channels = <&sysmon0 0x0>;
@@ -481,7 +482,7 @@
                         xlnx,eth-mode = <0x1>;
                         xlnx,enet-clk-freq-hz = <0x77358c6>;
                         xlnx,enet-slcr-100mbps-div0 = <0xa>;
-                        phy-handle = <0xaf>;
+                        phy-handle = <0xb1>;
 
                         mdio: mdio {
                                 phandle = <0xdd>;
@@ -489,8 +490,7 @@
                                 #size-cells = <0x0>;
 
                                 phy1: ethernet-phy@1 {
-                                        phandle = <0xaf>;
-                                        #phy-cells = <0x1>;
+                                        phandle = <0xb1>;
                                         compatible = "ethernet-phy-id2000.a231";
                                         reg = <0x1>;
                                         ti,rx-internal-delay = <0xb>;
@@ -503,8 +503,7 @@
                                 };
 
                                 phy2: ethernet-phy@2 {
-                                        phandle = <0xb0>;
-                                        #phy-cells = <0x1>;
+                                        phandle = <0xb2>;
                                         compatible = "ethernet-phy-id2000.a231";
                                         reg = <0x2>;
                                         ti,rx-internal-delay = <0xb>;
@@ -545,7 +544,7 @@
                         xlnx,eth-mode = <0x1>;
                         xlnx,enet-clk-freq-hz = <0x77358c6>;
                         xlnx,enet-slcr-100mbps-div0 = <0xa>;
-                        phy-handle = <0xb0>;
+                        phy-handle = <0xb2>;
                 };
 
                 gpio0: gpio@ff0b0000 {
@@ -850,8 +849,6 @@
                         is-dual = <0x1>;
 
                         flash@0 {
-                                #address-cells = <0x1>;
-                                #size-cells = <0x1>;
                                 compatible = "m25p80", "jedec,spi-nor";
                                 reg = <0x0 0x1>;
                                 parallel-memories = /bits/ 64 <0x8000000 0x8000000>;
@@ -859,9 +856,15 @@
                                 spi-rx-bus-width = <0x4>;
                                 spi-max-frequency = <0x8f0d180>;
 
-                                partition@0 {
-                                        label = "spi0-flash0";
-                                        reg = <0x0 0x10000000>;
+                                partitions {
+                                        compatible = "fixed-partitions";
+                                        #address-cells = <0x1>;
+                                        #size-cells = <0x1>;
+
+                                        partition@0 {
+                                                label = "spi0-flash0";
+                                                reg = <0x0 0x10000000>;
+                                        };
                                 };
                         };
                 };
@@ -1218,15 +1221,24 @@
                         bus-range = <0x0 0xff>;
                         ranges = <0x2000000 0x0 0xe0010000 0x0 0xe0010000 0x0 0x10000000 0x43000000 0x80 0x0 0x80 0x0 0x0 0x80000000>;
                         msi-map = <0x0 &gic_its 0x0 0x10000>;
-                        reg = <0x6 0x0 0x0 0x10000000 0x0 0xfca10000 0x0 0x1000 0x0 0xfca00000 0x0 0x10000>;
-                        reg-names = "cfg", "cpm_slcr", "cpm_crx";
-                        reset-gpios = <&gpio1 0x26 0x1>;
+                        reg = <0x6 0x0 0x0 0x10000000 0x0 0xfca10000 0x0 0x1000>;
+                        reg-names = "cfg", "cpm_slcr";
+                        resets = <&versal_reset 0xc410054>;
 
                         pcie_intc_0: interrupt-controller {
-                                phandle = <0xb3>;
+                                phandle = <0xb5>;
                                 #address-cells = <0x0>;
                                 #interrupt-cells = <0x1>;
                                 interrupt-controller;
+                        };
+
+                        pcie@0,0 {
+                                device_type = "pci";
+                                reg = <0x0 0x0 0x0 0x0 0x0>;
+                                reset-gpios = <&gpio1 0x26 0x1>;
+                                #address-cells = <0x3>;
+                                #size-cells = <0x2>;
+                                ranges;
                         };
                 };
 
@@ -1252,11 +1264,11 @@
                         bus-range = <0x0 0xff>;
                         ranges = <0x2000000 0x0 0xe0000000 0x0 0xe0000000 0x0 0x10000000 0x43000000 0x80 0x0 0x80 0x0 0x0 0x80000000>;
                         msi-map = <0x0 &gic_its 0x0 0x10000>;
-                        reg = <0x6 0x0 0x0 0x10000000 0x0 0xfcdd0000 0x0 0x1000 0x0 0xfce20000 0x0 0x10000 0x0 0xfcdc0000 0x0 0x10000>;
-                        reg-names = "cfg", "cpm_slcr", "cpm_csr", "cpm_crx";
+                        reg = <0x6 0x0 0x0 0x10000000 0x0 0xfcdd0000 0x0 0x1000 0x0 0xfce20000 0x0 0x10000>;
+                        reg-names = "cfg", "cpm_slcr", "cpm_csr";
 
                         pcie_intc_2: interrupt-controller {
-                                phandle = <0xb4>;
+                                phandle = <0xb6>;
                                 #address-cells = <0x0>;
                                 #interrupt-cells = <0x1>;
                                 interrupt-controller;
@@ -1269,7 +1281,7 @@
                         status = "disabled";
                         reg = <0x0 0xfd4d0000 0x0 0x10000>;
                         interrupt-names = "wdt", "wwdt_reset_pending", "gwdt", "gwdt_reset_pending";
-                        interrupts = <0x0 0x64 0x1 0x0 0x6d 0x1 0x0 0x6c 0x1 0x0 0x6e 0x1>;
+                        interrupts = <0x0 0x64 0x1 0x0 0x6d 0x1 0x0 0x6c 0x4 0x0 0x6e 0x4>;
                         interrupt-parent = <&gic>;
                         timeout-sec = <0x1e>;
                         clocks = <&versal_clk 0x4c>;
@@ -1841,7 +1853,7 @@
                         xlnx,ip-name = "psv_coresight";
                 };
 
-                CIPS_0_pspmc_0_psv_coresight_fpd_cti1b: CIPS_0_pspmc_0_psv_coresight_fpd_cti1b@f0bb0000 {
+                CIPS_0_pspmc_0_psv_coresight_fpd_cti1b: CIPS-0-pspmc-0-psv-coresight-fpd-cti1b@f0bb0000 {
                         phandle = <0x1b>;
                         compatible = "xlnx,psv-coresight-fpd-cti1b-1.0";
                         status = "okay";
@@ -1849,7 +1861,7 @@
                         reg = <0x0 0xf0bb0000 0x0 0x10000>;
                 };
 
-                CIPS_0_pspmc_0_psv_coresight_fpd_cti1c: CIPS_0_pspmc_0_psv_coresight_fpd_cti1c@f0bc0000 {
+                CIPS_0_pspmc_0_psv_coresight_fpd_cti1c: CIPS-0-pspmc-0-psv-coresight-fpd-cti1c@f0bc0000 {
                         phandle = <0x1c>;
                         compatible = "xlnx,psv-coresight-fpd-cti1c-1.0";
                         status = "okay";
@@ -1857,7 +1869,7 @@
                         reg = <0x0 0xf0bc0000 0x0 0x10000>;
                 };
 
-                CIPS_0_pspmc_0_psv_coresight_fpd_cti1d: CIPS_0_pspmc_0_psv_coresight_fpd_cti1d@f0bd0000 {
+                CIPS_0_pspmc_0_psv_coresight_fpd_cti1d: CIPS-0-pspmc-0-psv-coresight-fpd-cti1d@f0bd0000 {
                         phandle = <0x1d>;
                         compatible = "xlnx,psv-coresight-fpd-cti1d-1.0";
                         status = "okay";
@@ -1865,7 +1877,7 @@
                         reg = <0x0 0xf0bd0000 0x0 0x10000>;
                 };
 
-                CIPS_0_pspmc_0_psv_coresight_lpd_cti: CIPS_0_pspmc_0_psv_coresight_lpd_cti@f09d0000 {
+                CIPS_0_pspmc_0_psv_coresight_lpd_cti: CIPS-0-pspmc-0-psv-coresight-lpd-cti@f09d0000 {
                         phandle = <0x16>;
                         compatible = "xlnx,psv-coresight-lpd-cti-1.0";
                         status = "okay";
@@ -1873,7 +1885,7 @@
                         reg = <0x0 0xf09d0000 0x0 0x10000>;
                 };
 
-                CIPS_0_pspmc_0_psv_coresight_pmc_cti: CIPS_0_pspmc_0_psv_coresight_pmc_cti@f08d0000 {
+                CIPS_0_pspmc_0_psv_coresight_pmc_cti: CIPS-0-pspmc-0-psv-coresight-pmc-cti@f08d0000 {
                         phandle = <0x14>;
                         compatible = "xlnx,psv-coresight-pmc-cti-1.0";
                         status = "okay";
@@ -1881,7 +1893,7 @@
                         reg = <0x0 0xf08d0000 0x0 0x10000>;
                 };
 
-                CIPS_0_pspmc_0_psv_coresight_r50_cti: CIPS_0_pspmc_0_psv_coresight_r50_cti@f0a10000 {
+                CIPS_0_pspmc_0_psv_coresight_r50_cti: CIPS-0-pspmc-0-psv-coresight-r50-cti@f0a10000 {
                         phandle = <0x17>;
                         compatible = "xlnx,psv-coresight-r50-cti-1.0";
                         status = "okay";
@@ -1889,7 +1901,7 @@
                         reg = <0x0 0xf0a10000 0x0 0x10000>;
                 };
 
-                CIPS_0_pspmc_0_psv_coresight_r51_cti: CIPS_0_pspmc_0_psv_coresight_r51_cti@f0a50000 {
+                CIPS_0_pspmc_0_psv_coresight_r51_cti: CIPS-0-pspmc-0-psv-coresight-r51-cti@f0a50000 {
                         phandle = <0x18>;
                         compatible = "xlnx,psv-coresight-r51-cti-1.0";
                         status = "okay";
@@ -1897,7 +1909,7 @@
                         reg = <0x0 0xf0a50000 0x0 0x10000>;
                 };
 
-                CIPS_0_pspmc_0_psv_cpm: CIPS_0_pspmc_0_psv_cpm@0 {
+                CIPS_0_pspmc_0_psv_cpm: CIPS-0-pspmc-0-psv-cpm@0 {
                         phandle = <0x5e>;
                         xlnx,cpm5-slcr-addr = <0xfcdd0000>;
                         compatible = "xlnx,psv-cpm-1.0";
@@ -1908,7 +1920,7 @@
                         xlnx,cpm5-dma0-csr-addr = <0xfce20000>;
                 };
 
-                CIPS_0_pspmc_0_psv_pmc_analog_0: CIPS_0_pspmc_0_psv_pmc_analog_0@f1160000 {
+                CIPS_0_pspmc_0_psv_pmc_analog_0: CIPS-0-pspmc-0-psv-pmc-analog-0@f1160000 {
                         phandle = <0x38>;
                         compatible = "xlnx,psv-pmc-analog-1.0";
                         status = "okay";
@@ -1919,7 +1931,7 @@
                         xlnx,cram-scan = <0x0>;
                 };
 
-                CIPS_0_pspmc_0_psv_pmc_iou_slcr_0: CIPS_0_pspmc_0_psv_pmc_iou_slcr_0@f1060000 {
+                CIPS_0_pspmc_0_psv_pmc_iou_slcr_0: CIPS-0-pspmc-0-psv-pmc-iou-slcr-0@f1060000 {
                         phandle = <0x36>;
                         compatible = "xlnx,psv-pmc-iou-slcr-1.0";
                         status = "okay";
@@ -1927,7 +1939,7 @@
                         reg = <0x0 0xf1060000 0x0 0x10000>;
                 };
 
-                CIPS_0_pspmc_0_psv_pmc_tap: CIPS_0_pspmc_0_psv_pmc_tap@f11a0000 {
+                CIPS_0_pspmc_0_psv_pmc_tap: CIPS-0-pspmc-0-psv-pmc-tap@f11a0000 {
                         phandle = <0x39>;
                         compatible = "xlnx,psv-pmc-tap-1.0";
                         status = "okay";
@@ -2076,7 +2088,7 @@
                                         reg = <0x1>;
 
                                         fpd_funnel_in_port1: endpoint {
-                                                phandle = <0xc0>;
+                                                phandle = <0xc2>;
                                                 remote-endpoint = <&apu_etf_out_port>;
                                         };
                                 };
@@ -2087,7 +2099,7 @@
                                 port {
 
                                         fpd_funnel_out_port: endpoint {
-                                                phandle = <0xb7>;
+                                                phandle = <0xb9>;
                                                 remote-endpoint = <&fpd_etf_in_port>;
                                         };
                                 };
@@ -2107,7 +2119,7 @@
                                 port {
 
                                         fpd_etf_in_port: endpoint {
-                                                phandle = <0xb6>;
+                                                phandle = <0xb8>;
                                                 remote-endpoint = <&fpd_funnel_out_port>;
                                         };
                                 };
@@ -2118,7 +2130,7 @@
                                 port {
 
                                         fpd_etf_out_port: endpoint {
-                                                phandle = <0xb9>;
+                                                phandle = <0xbb>;
                                                 remote-endpoint = <&replicator_in_port>;
                                         };
                                 };
@@ -2138,7 +2150,7 @@
                                 port {
 
                                         replicator_in_port: endpoint {
-                                                phandle = <0xb8>;
+                                                phandle = <0xba>;
                                                 remote-endpoint = <&fpd_etf_out_port>;
                                         };
                                 };
@@ -2152,7 +2164,7 @@
                                         reg = <0x0>;
 
                                         replicator_out_port0: endpoint {
-                                                phandle = <0xbb>;
+                                                phandle = <0xbd>;
                                                 remote-endpoint = <&etr_in_port>;
                                         };
                                 };
@@ -2172,7 +2184,7 @@
                                 port {
 
                                         etr_in_port: endpoint {
-                                                phandle = <0xba>;
+                                                phandle = <0xbc>;
                                                 remote-endpoint = <&replicator_out_port0>;
                                         };
                                 };
@@ -2195,7 +2207,7 @@
                                         reg = <0x0>;
 
                                         funnel_in_port0: endpoint {
-                                                phandle = <0xc2>;
+                                                phandle = <0xc4>;
                                                 remote-endpoint = <&etm0_out_port>;
                                         };
                                 };
@@ -2204,7 +2216,7 @@
                                         reg = <0x1>;
 
                                         funnel_in_port1: endpoint {
-                                                phandle = <0xc4>;
+                                                phandle = <0xc6>;
                                                 remote-endpoint = <&etm1_out_port>;
                                         };
                                 };
@@ -2215,7 +2227,7 @@
                                 port {
 
                                         funnel_out_port: endpoint {
-                                                phandle = <0xbf>;
+                                                phandle = <0xc1>;
                                                 remote-endpoint = <&etf_in_port>;
                                         };
                                 };
@@ -2235,7 +2247,7 @@
                                 port {
 
                                         etf_in_port: endpoint {
-                                                phandle = <0xbe>;
+                                                phandle = <0xc0>;
                                                 remote-endpoint = <&funnel_out_port>;
                                         };
                                 };
@@ -2246,7 +2258,7 @@
                                 port {
 
                                         apu_etf_out_port: endpoint {
-                                                phandle = <0xb5>;
+                                                phandle = <0xb7>;
                                                 remote-endpoint = <&fpd_funnel_in_port1>;
                                         };
                                 };
@@ -2277,7 +2289,7 @@
                                 port {
 
                                         etm0_out_port: endpoint {
-                                                phandle = <0xbc>;
+                                                phandle = <0xbe>;
                                                 remote-endpoint = <&funnel_in_port0>;
                                         };
                                 };
@@ -2308,7 +2320,7 @@
                                 port {
 
                                         etm1_out_port: endpoint {
-                                                phandle = <0xbd>;
+                                                phandle = <0xbf>;
                                                 remote-endpoint = <&funnel_in_port1>;
                                         };
                                 };
@@ -2317,7 +2329,7 @@
         };
 
         pl_alt_ref: pl-alt-ref {
-                phandle = <0xc6>;
+                phandle = <0xc8>;
                 bootph-all;
                 compatible = "fixed-clock";
                 #clock-cells = <0x0>;
@@ -2326,7 +2338,7 @@
         };
 
         ref: ref {
-                phandle = <0xc5>;
+                phandle = <0xc7>;
                 bootph-all;
                 compatible = "fixed-clock";
                 #clock-cells = <0x0>;
@@ -2335,7 +2347,7 @@
         };
 
         rtc_clk: rtc-clk {
-                phandle = <0xb1>;
+                phandle = <0xb3>;
                 bootph-all;
                 compatible = "fixed-clock";
                 #clock-cells = <0x0>;
@@ -2344,7 +2356,7 @@
         };
 
         can0_clk: can0-clk {
-                phandle = <0xad>;
+                phandle = <0xaf>;
                 #clock-cells = <0x0>;
                 compatible = "fixed-factor-clock";
                 clocks = <&versal_clk 0x60>;
@@ -2354,7 +2366,7 @@
         };
 
         can1_clk: can1-clk {
-                phandle = <0xae>;
+                phandle = <0xb0>;
                 #clock-cells = <0x0>;
                 compatible = "fixed-factor-clock";
                 clocks = <&versal_clk 0x61>;
@@ -2389,7 +2401,7 @@
                         };
 
                         versal_reset: reset-controller {
-                                phandle = <0xb2>;
+                                phandle = <0xb4>;
                                 compatible = "xlnx,versal-reset";
                                 #reset-cells = <0x1>;
                         };
@@ -2519,10 +2531,10 @@
         };
 
         __symbols__ {
-                cpus_a72 = "/cpus-a72@0";
-                psv_cortexa72_0 = "/cpus-a72@0/cpu@0";
-                psv_cortexa72_1 = "/cpus-a72@0/cpu@1";
-                CPU_SLEEP_0 = "/cpus-a72@0/idle-states/cpu-sleep-0";
+                psv_cortexa72_0 = "/cpus/cpu@0";
+                psv_cortexa72_1 = "/cpus/cpu@1";
+                CPU_SLEEP_0 = "/cpus/idle-states/cpu-sleep-0";
+                cpus_a72 = "/cpus";
                 l2 = "/l2-cache";
                 cpu_opp_table = "/opp-table-cpu";
                 dcc = "/dcc";
@@ -2531,20 +2543,16 @@
                 timer = "/timer";
                 versal_fpga = "/versal-fpga";
                 sensor0 = "/versal-thermal-sensor";
-                versal_thermal = "/thermal-zones/versal-thermal";
                 temp_alert = "/thermal-zones/versal-thermal/trips/temp-alert";
                 ot_crit = "/thermal-zones/versal-thermal/trips/ot-crit";
-                versal_thermal_aie = "/thermal-zones/versal-aie-thermal";
+                versal_thermal = "/thermal-zones/versal-thermal";
                 temp_alert_aie = "/thermal-zones/versal-aie-thermal/trips/temp-alert-aie";
                 ot_crit_aie = "/thermal-zones/versal-aie-thermal/trips/ot-crit-aie";
-                amba_apu = "/apu-bus";
-                gic_its = "/axi/interrupt-controller@f9000000/msi-controller@f9020000";
-                amba = "/axi";
-                imux = "/axi/interrupt-multiplex";
+                versal_thermal_aie = "/thermal-zones/versal-aie-thermal";
                 can0 = "/axi/can@ff060000";
                 can1 = "/axi/can@ff070000";
-                cci = "/axi/cci@fd000000";
                 cci_pmu = "/axi/cci@fd000000/pmu@10000";
+                cci = "/axi/cci@fd000000";
                 lpd_dma_chan0 = "/axi/dma-controller@ffa80000";
                 lpd_dma_chan1 = "/axi/dma-controller@ffa90000";
                 lpd_dma_chan2 = "/axi/dma-controller@ffaa0000";
@@ -2553,10 +2561,10 @@
                 lpd_dma_chan5 = "/axi/dma-controller@ffad0000";
                 lpd_dma_chan6 = "/axi/dma-controller@ffae0000";
                 lpd_dma_chan7 = "/axi/dma-controller@ffaf0000";
-                gem0 = "/axi/ethernet@ff0c0000";
-                mdio = "/axi/ethernet@ff0c0000/mdio";
                 phy1 = "/axi/ethernet@ff0c0000/mdio/ethernet-phy@1";
                 phy2 = "/axi/ethernet@ff0c0000/mdio/ethernet-phy@2";
+                mdio = "/axi/ethernet@ff0c0000/mdio";
+                gem0 = "/axi/ethernet@ff0c0000";
                 gem1 = "/axi/ethernet@ff0d0000";
                 gpio0 = "/axi/gpio@ff0b0000";
                 gpio1 = "/axi/gpio@f1020000";
@@ -2586,18 +2594,17 @@
                 ttc1 = "/axi/timer@ff0f0000";
                 ttc2 = "/axi/timer@ff100000";
                 ttc3 = "/axi/timer@ff110000";
-                usb0 = "/axi/usb@ff9d0000";
                 dwc3_0 = "/axi/usb@ff9d0000/usb@fe200000";
-                cpm_pciea = "/axi/pci@fca10000";
+                usb0 = "/axi/usb@ff9d0000";
                 pcie_intc_0 = "/axi/pci@fca10000/interrupt-controller";
-                cpm5_pcie = "/axi/pcie@fcdd0000";
+                cpm_pciea = "/axi/pci@fca10000";
                 pcie_intc_2 = "/axi/pcie@fcdd0000/interrupt-controller";
+                cpm5_pcie = "/axi/pcie@fcdd0000";
                 watchdog = "/axi/watchdog@fd4d0000";
                 watchdog1 = "/axi/watchdog@ff120000";
                 xilsem_edac = "/axi/edac@f2014050";
                 dma0 = "/axi/pmcdma@f11c0000";
                 dma1 = "/axi/pmcdma@f11d0000";
-                ipi0 = "/axi/mailbox@ff330000";
                 ipi_0_to_ipi_0 = "/axi/mailbox@ff330000/child@ff330000";
                 ipi_0_to_ipi_1 = "/axi/mailbox@ff330000/child@ff340000";
                 ipi_0_to_ipi_2 = "/axi/mailbox@ff330000/child@ff350000";
@@ -2608,7 +2615,7 @@
                 ipi_0_to_ipi_pmc = "/axi/mailbox@ff330000/child@ff320000";
                 ipi_0_to_ipi_pmc_nobuf = "/axi/mailbox@ff330000/child@ff390000";
                 ipi_0_to_ipi_psm = "/axi/mailbox@ff330000/child@ff310000";
-                ipi3 = "/axi/mailbox@ff360000";
+                ipi0 = "/axi/mailbox@ff330000";
                 ipi_3_to_ipi_0 = "/axi/mailbox@ff360000/child@ff330000";
                 ipi_3_to_ipi_1 = "/axi/mailbox@ff360000/child@ff340000";
                 ipi_3_to_ipi_2 = "/axi/mailbox@ff360000/child@ff350000";
@@ -2619,7 +2626,7 @@
                 ipi_3_to_ipi_pmc = "/axi/mailbox@ff360000/child@ff320000";
                 ipi_3_to_ipi_pmc_nobuf = "/axi/mailbox@ff360000/child@ff390000";
                 ipi_3_to_ipi_psm = "/axi/mailbox@ff360000/child@ff310000";
-                ipi4 = "/axi/mailbox@ff370000";
+                ipi3 = "/axi/mailbox@ff360000";
                 ipi_4_to_ipi_0 = "/axi/mailbox@ff370000/child@ff330000";
                 ipi_4_to_ipi_1 = "/axi/mailbox@ff370000/child@ff340000";
                 ipi_4_to_ipi_2 = "/axi/mailbox@ff370000/child@ff350000";
@@ -2630,7 +2637,7 @@
                 ipi_4_to_ipi_pmc = "/axi/mailbox@ff370000/child@ff320000";
                 ipi_4_to_ipi_pmc_nobuf = "/axi/mailbox@ff370000/child@ff390000";
                 ipi_4_to_ipi_psm = "/axi/mailbox@ff370000/child@ff310000";
-                ipi5 = "/axi/mailbox@ff380000";
+                ipi4 = "/axi/mailbox@ff370000";
                 ipi_5_to_ipi_0 = "/axi/mailbox@ff380000/child@ff330000";
                 ipi_5_to_ipi_1 = "/axi/mailbox@ff380000/child@ff340000";
                 ipi_5_to_ipi_2 = "/axi/mailbox@ff380000/child@ff350000";
@@ -2641,7 +2648,7 @@
                 ipi_5_to_ipi_pmc = "/axi/mailbox@ff380000/child@ff320000";
                 ipi_5_to_ipi_pmc_nobuf = "/axi/mailbox@ff380000/child@ff390000";
                 ipi_5_to_ipi_psm = "/axi/mailbox@ff380000/child@ff310000";
-                ipi6 = "/axi/mailbox@ff3a0000";
+                ipi5 = "/axi/mailbox@ff380000";
                 ipi_6_to_ipi_0 = "/axi/mailbox@ff3a0000/child@ff330000";
                 ipi_6_to_ipi_1 = "/axi/mailbox@ff3a0000/child@ff340000";
                 ipi_6_to_ipi_2 = "/axi/mailbox@ff3a0000/child@ff350000";
@@ -2652,23 +2659,26 @@
                 ipi_6_to_ipi_pmc = "/axi/mailbox@ff3a0000/child@ff320000";
                 ipi_6_to_ipi_pmc_nobuf = "/axi/mailbox@ff3a0000/child@ff390000";
                 ipi_6_to_ipi_psm = "/axi/mailbox@ff3a0000/child@ff310000";
+                ipi6 = "/axi/mailbox@ff3a0000";
                 coresight = "/axi/coresight@f0800000";
-                CIPS_0_pspmc_0_psv_coresight_fpd_cti1b = "/axi/CIPS_0_pspmc_0_psv_coresight_fpd_cti1b@f0bb0000";
-                CIPS_0_pspmc_0_psv_coresight_fpd_cti1c = "/axi/CIPS_0_pspmc_0_psv_coresight_fpd_cti1c@f0bc0000";
-                CIPS_0_pspmc_0_psv_coresight_fpd_cti1d = "/axi/CIPS_0_pspmc_0_psv_coresight_fpd_cti1d@f0bd0000";
-                CIPS_0_pspmc_0_psv_coresight_lpd_cti = "/axi/CIPS_0_pspmc_0_psv_coresight_lpd_cti@f09d0000";
-                CIPS_0_pspmc_0_psv_coresight_pmc_cti = "/axi/CIPS_0_pspmc_0_psv_coresight_pmc_cti@f08d0000";
-                CIPS_0_pspmc_0_psv_coresight_r50_cti = "/axi/CIPS_0_pspmc_0_psv_coresight_r50_cti@f0a10000";
-                CIPS_0_pspmc_0_psv_coresight_r51_cti = "/axi/CIPS_0_pspmc_0_psv_coresight_r51_cti@f0a50000";
-                CIPS_0_pspmc_0_psv_cpm = "/axi/CIPS_0_pspmc_0_psv_cpm@0";
-                CIPS_0_pspmc_0_psv_pmc_analog_0 = "/axi/CIPS_0_pspmc_0_psv_pmc_analog_0@f1160000";
-                CIPS_0_pspmc_0_psv_pmc_iou_slcr_0 = "/axi/CIPS_0_pspmc_0_psv_pmc_iou_slcr_0@f1060000";
-                CIPS_0_pspmc_0_psv_pmc_tap = "/axi/CIPS_0_pspmc_0_psv_pmc_tap@f11a0000";
-                amba_xppu = "/indirect-bus@1";
+                CIPS_0_pspmc_0_psv_coresight_fpd_cti1b = "/axi/CIPS-0-pspmc-0-psv-coresight-fpd-cti1b@f0bb0000";
+                CIPS_0_pspmc_0_psv_coresight_fpd_cti1c = "/axi/CIPS-0-pspmc-0-psv-coresight-fpd-cti1c@f0bc0000";
+                CIPS_0_pspmc_0_psv_coresight_fpd_cti1d = "/axi/CIPS-0-pspmc-0-psv-coresight-fpd-cti1d@f0bd0000";
+                CIPS_0_pspmc_0_psv_coresight_lpd_cti = "/axi/CIPS-0-pspmc-0-psv-coresight-lpd-cti@f09d0000";
+                CIPS_0_pspmc_0_psv_coresight_pmc_cti = "/axi/CIPS-0-pspmc-0-psv-coresight-pmc-cti@f08d0000";
+                CIPS_0_pspmc_0_psv_coresight_r50_cti = "/axi/CIPS-0-pspmc-0-psv-coresight-r50-cti@f0a10000";
+                CIPS_0_pspmc_0_psv_coresight_r51_cti = "/axi/CIPS-0-pspmc-0-psv-coresight-r51-cti@f0a50000";
+                CIPS_0_pspmc_0_psv_cpm = "/axi/CIPS-0-pspmc-0-psv-cpm@0";
+                CIPS_0_pspmc_0_psv_pmc_analog_0 = "/axi/CIPS-0-pspmc-0-psv-pmc-analog-0@f1160000";
+                CIPS_0_pspmc_0_psv_pmc_iou_slcr_0 = "/axi/CIPS-0-pspmc-0-psv-pmc-iou-slcr-0@f1060000";
+                CIPS_0_pspmc_0_psv_pmc_tap = "/axi/CIPS-0-pspmc-0-psv-pmc-tap@f11a0000";
+                gic_its = "/axi/interrupt-controller@f9000000/msi-controller@f9020000";
+                gic = "/axi/interrupt-controller@f9000000";
+                amba = "/axi";
                 lpd_xppu = "/indirect-bus@1/xppu@ff990000";
                 pmc_xppu = "/indirect-bus@1/xppu@f1310000";
                 pmc_xppu_npi = "/indirect-bus@1/xppu@f1300000";
-                amba_xmpu = "/indirect-bus@2";
+                amba_xppu = "/indirect-bus@1";
                 fpd_xmpu = "/indirect-bus@2/xmpu@fd390000";
                 pmc_xmpu = "/indirect-bus@2/xmpu@f12f0000";
                 ocm_xmpu = "/indirect-bus@2/xmpu@ff980000";
@@ -2676,41 +2686,40 @@
                 ddrmc_xmpu_1 = "/indirect-bus@2/xmpu@f6220000";
                 ddrmc_xmpu_2 = "/indirect-bus@2/xmpu@f6390000";
                 ddrmc_xmpu_3 = "/indirect-bus@2/xmpu@f6500000";
-                fpd_funnel = "/indirect-bus@2/fpd-funnel@f0b20000";
                 fpd_funnel_in_port1 = "/indirect-bus@2/fpd-funnel@f0b20000/in-ports/port@1/endpoint";
                 fpd_funnel_out_port = "/indirect-bus@2/fpd-funnel@f0b20000/out-ports/port/endpoint";
-                fpd_etf = "/indirect-bus@2/fpd-etf@f0b30000";
+                fpd_funnel = "/indirect-bus@2/fpd-funnel@f0b20000";
                 fpd_etf_in_port = "/indirect-bus@2/fpd-etf@f0b30000/in-ports/port/endpoint";
                 fpd_etf_out_port = "/indirect-bus@2/fpd-etf@f0b30000/out-ports/port/endpoint";
-                replicator = "/indirect-bus@2/replicator@f0b40000";
+                fpd_etf = "/indirect-bus@2/fpd-etf@f0b30000";
                 replicator_in_port = "/indirect-bus@2/replicator@f0b40000/in-ports/port/endpoint";
                 replicator_out_port0 = "/indirect-bus@2/replicator@f0b40000/out-ports/port@0/endpoint";
-                etr = "/indirect-bus@2/etr@f0b50000";
+                replicator = "/indirect-bus@2/replicator@f0b40000";
                 etr_in_port = "/indirect-bus@2/etr@f0b50000/in-ports/port/endpoint";
-                apu_funnel = "/indirect-bus@2/funnel@f0c20000";
+                etr = "/indirect-bus@2/etr@f0b50000";
                 funnel_in_port0 = "/indirect-bus@2/funnel@f0c20000/in-ports/port@0/endpoint";
                 funnel_in_port1 = "/indirect-bus@2/funnel@f0c20000/in-ports/port@1/endpoint";
                 funnel_out_port = "/indirect-bus@2/funnel@f0c20000/out-ports/port/endpoint";
-                apu_etf = "/indirect-bus@2/etf@f0c30000";
+                apu_funnel = "/indirect-bus@2/funnel@f0c20000";
                 etf_in_port = "/indirect-bus@2/etf@f0c30000/in-ports/port/endpoint";
                 apu_etf_out_port = "/indirect-bus@2/etf@f0c30000/out-ports/port/endpoint";
+                apu_etf = "/indirect-bus@2/etf@f0c30000";
                 cpu0_debug = "/indirect-bus@2/cpu0-debug@f0d00000";
-                etm0 = "/indirect-bus@2/etm@f0d30000";
                 etm0_out_port = "/indirect-bus@2/etm@f0d30000/out-ports/port/endpoint";
+                etm0 = "/indirect-bus@2/etm@f0d30000";
                 cpu1_debug = "/indirect-bus@2/cpu1-debug@f0d40000";
-                etm1 = "/indirect-bus@2/etm@f0d70000";
                 etm1_out_port = "/indirect-bus@2/etm@f0d70000/out-ports/port/endpoint";
+                etm1 = "/indirect-bus@2/etm@f0d70000";
+                amba_xmpu = "/indirect-bus@2";
                 pl_alt_ref = "/pl-alt-ref";
                 ref = "/ref";
                 rtc_clk = "/rtc-clk";
                 can0_clk = "/can0-clk";
                 can1_clk = "/can1-clk";
-                versal_firmware = "/firmware/versal-firmware";
                 versal_clk = "/firmware/versal-firmware/clock-controller";
                 zynqmp_power = "/firmware/versal-firmware/power-management";
                 versal_reset = "/firmware/versal-firmware/reset-controller";
                 pinctrl0 = "/firmware/versal-firmware/pinctrl";
-                versal_sec_cfg = "/firmware/versal-firmware/versal-sec-cfg";
                 bbram_zeroize = "/firmware/versal-firmware/versal-sec-cfg/nvmem-layout/bbram-zeroize@4";
                 bbram_key = "/firmware/versal-firmware/versal-sec-cfg/nvmem-layout/bbram-key@10";
                 bbram_usr = "/firmware/versal-firmware/versal-sec-cfg/nvmem-layout/bbram-usr@30";
@@ -2723,9 +2732,10 @@
                 user_key5 = "/firmware/versal-firmware/versal-sec-cfg/nvmem-layout/user-key@1b0";
                 user_key6 = "/firmware/versal-firmware/versal-sec-cfg/nvmem-layout/user-key@1d0";
                 user_key7 = "/firmware/versal-firmware/versal-sec-cfg/nvmem-layout/user-key@1f0";
+                versal_sec_cfg = "/firmware/versal-firmware/versal-sec-cfg";
+                versal_firmware = "/firmware/versal-firmware";
                 noc_ddr_ddr_memory = "/memory@00000000";
                 noc_lpddr0_ddr_memory = "/memory@50000000000";
                 noc_lpddr1_ddr_memory = "/memory@60000000000";
-                gic = "/axi/interrupt-controller@f9000000";
         };
 };

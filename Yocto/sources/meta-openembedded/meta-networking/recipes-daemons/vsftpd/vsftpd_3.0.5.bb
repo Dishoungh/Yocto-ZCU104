@@ -18,7 +18,6 @@ SRC_URI = "https://security.appspot.com/downloads/vsftpd-${PV}.tar.gz \
            file://volatiles.99_vsftpd \
            file://vsftpd.service \
            file://vsftpd-2.1.0-filter.patch \
-           ${@bb.utils.contains('PACKAGECONFIG', 'tcp-wrappers', 'file://vsftpd-tcp_wrappers-support.patch', '', d)} \
            ${@bb.utils.contains('DISTRO_FEATURES', 'pam', '', '${NOPAM_SRC}', d)} \
            file://0001-sysdeputil.c-Fix-with-musl-which-does-not-have-utmpx.patch \
            "
@@ -31,20 +30,16 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=a6067ad950b28336613aed9dd47b1271 \
                         file://LICENSE;md5=654df2042d44b8cac8a5654fc5be63eb"
 SRC_URI[sha256sum] = "26b602ae454b0ba6d99ef44a09b6b9e0dfa7f67228106736df1f278c70bc91d3"
 
-
-PACKAGECONFIG ??= "tcp-wrappers"
-PACKAGECONFIG[tcp-wrappers] = ",,tcp-wrappers"
-
 DEPENDS += "${@bb.utils.contains('DISTRO_FEATURES', 'pam', 'libpam', '', d)}"
 RDEPENDS:${PN} += "${@bb.utils.contains('DISTRO_FEATURES', 'pam', 'pam-plugin-listfile', '', d)}"
 PAMLIB = "${@bb.utils.contains('DISTRO_FEATURES', 'pam', '-L${STAGING_BASELIBDIR} -lpam', '', d)}"
-WRAPLIB = "${@bb.utils.contains('PACKAGECONFIG', 'tcp-wrappers', '-lwrap', '', d)}"
-NOPAM_SRC ="${@bb.utils.contains('PACKAGECONFIG', 'tcp-wrappers', 'file://nopam-with-tcp_wrappers.patch', 'file://nopam.patch', d)}"
+NOPAM_SRC = "file://nopam.patch"
 
-inherit update-rc.d useradd systemd
+inherit update-rc.d useradd systemd multilib_script
 
+MULTILIB_SCRIPTS = "${PN}:${sysconfdir}/pam.d/vsftpd"
 CONFFILES:${PN} = "${sysconfdir}/vsftpd.conf"
-LDFLAGS:append =" -lcrypt -lcap"
+LDFLAGS:append = " -lcrypt -lcap"
 CFLAGS:append:libc-musl = " -D_GNU_SOURCE -D_LARGEFILE64_SOURCE -include fcntl.h"
 EXTRA_OEMAKE = "-e MAKEFLAGS="
 
@@ -56,7 +51,7 @@ do_configure() {
 }
 
 do_compile() {
-   oe_runmake "LIBS=-L${STAGING_LIBDIR} -lcrypt -lcap ${PAMLIB} ${WRAPLIB}"
+   oe_runmake "LIBS=-L${STAGING_LIBDIR} -lcrypt -lcap ${PAMLIB}"
 }
 
 do_install() {
@@ -65,14 +60,14 @@ do_install() {
     install -d ${D}${mandir}/man5
     oe_runmake 'DESTDIR=${D}' install
     install -d ${D}${sysconfdir}
-    install -m 600 ${WORKDIR}/vsftpd.conf ${D}${sysconfdir}/vsftpd.conf
+    install -m 600 ${UNPACKDIR}/vsftpd.conf ${D}${sysconfdir}/vsftpd.conf
     install -d ${D}${sysconfdir}/init.d/
-    install -m 755 ${WORKDIR}/init ${D}${sysconfdir}/init.d/vsftpd
+    install -m 755 ${UNPACKDIR}/init ${D}${sysconfdir}/init.d/vsftpd
     install -d ${D}/${sysconfdir}/default/volatiles
-    install -m 644 ${WORKDIR}/volatiles.99_vsftpd ${D}/${sysconfdir}/default/volatiles/99_vsftpd
+    install -m 644 ${UNPACKDIR}/volatiles.99_vsftpd ${D}/${sysconfdir}/default/volatiles/99_vsftpd
 
-    install -m 600 ${WORKDIR}/vsftpd.ftpusers ${D}${sysconfdir}/
-    install -m 600 ${WORKDIR}/vsftpd.user_list ${D}${sysconfdir}/
+    install -m 600 ${UNPACKDIR}/vsftpd.ftpusers ${D}${sysconfdir}/
+    install -m 600 ${UNPACKDIR}/vsftpd.user_list ${D}${sysconfdir}/
     if ! test -z "${PAMLIB}" ; then
         install -d ${D}${sysconfdir}/pam.d/
         cp ${S}/RedHat/vsftpd.pam ${D}${sysconfdir}/pam.d/vsftpd
@@ -87,7 +82,7 @@ do_install() {
 
     # Install systemd unit files
     install -d ${D}${systemd_unitdir}/system
-    install -m 0644 ${WORKDIR}/vsftpd.service ${D}${systemd_unitdir}/system
+    install -m 0644 ${UNPACKDIR}/vsftpd.service ${D}${systemd_unitdir}/system
     sed -i -e 's#@SBINDIR@#${sbindir}#g' ${D}${systemd_unitdir}/system/vsftpd.service
 }
 

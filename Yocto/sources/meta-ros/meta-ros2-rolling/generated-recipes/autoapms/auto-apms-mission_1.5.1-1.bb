@@ -55,7 +55,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/auto_apms_mission"
 SRC_URI = "git://github.com/ros2-gbp/autoapms-release;${ROS_BRANCH};protocol=https"
 SRCREV = "8b41404f87d5cfb6e3939558a6a5c2a3e083d11b"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

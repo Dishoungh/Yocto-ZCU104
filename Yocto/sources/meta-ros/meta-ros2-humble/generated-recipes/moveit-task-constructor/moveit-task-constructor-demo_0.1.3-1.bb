@@ -16,18 +16,18 @@ LIC_FILES_CHKSUM = "file://package.xml;beginline=12;endline=12;md5=d566ef916e9de
 ROS_CN = "moveit_task_constructor"
 ROS_BPN = "moveit_task_constructor_demo"
 
-ROS_BUILD_DEPENDS = " \
+ROS_BUILD_DEPENDS = "\
     generate-parameter-library \
     moveit-core \
     moveit-ros-planning-interface \
     moveit-task-constructor-core \
 "
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     ament-cmake-native \
 "
 
-ROS_EXPORT_DEPENDS = " \
+ROS_EXPORT_DEPENDS = "\
     generate-parameter-library \
     moveit-core \
     moveit-ros-planning-interface \
@@ -36,7 +36,7 @@ ROS_EXPORT_DEPENDS = " \
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     generate-parameter-library \
     moveit-configs-utils \
     moveit-core \
@@ -61,7 +61,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/humble/moveit_task_constructor_demo"
 SRC_URI = "git://github.com/ros2-gbp/moveit_task_constructor-release;${ROS_BRANCH};protocol=https"
 SRCREV = "158abe019d8dea73cec576cd6413119e47fdda86"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

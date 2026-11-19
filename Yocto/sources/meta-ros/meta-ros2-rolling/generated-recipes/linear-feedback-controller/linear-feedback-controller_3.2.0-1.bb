@@ -103,7 +103,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/linear_feedback_controller"
 SRC_URI = "git://github.com/ros2-gbp/linear-feedback-controller-release;${ROS_BRANCH};protocol=https"
 SRCREV = "b5b73b0d45e047e5e1c821aee5402bd56aee6710"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

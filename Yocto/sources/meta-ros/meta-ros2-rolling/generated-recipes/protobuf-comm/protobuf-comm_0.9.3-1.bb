@@ -56,7 +56,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/protobuf_comm"
 SRC_URI = "git://github.com/ros2-gbp/protobuf_comm-release;${ROS_BRANCH};protocol=https"
 SRCREV = "687b699f15b10a7de4f8db0ec44aee3b20fa9d68"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "cmake"
 

@@ -1,4 +1,5 @@
 # Copyright (c) 2023 Wind River Systems, Inc.
+
 ROS_BUILDTOOL_DEPENDS:remove = "clang-native-native"
 
 ROS_BUILDTOOL_DEPENDS += "\
@@ -8,6 +9,11 @@ ROS_BUILDTOOL_DEPENDS += "\
 "
 
 inherit python3native pkgconfig
+
+# QA Issue: File /opt/ros/rolling/lib/pkgconfig/pinocchiopy.pc in package pinocchio-dev contains reference to TMPDIR [buildpaths]
+do_install:append() {
+    sed -i -e "s#-I${RECIPE_SYSROOT_NATIVE}#-I#g" ${D}${ros_prefix}/lib/pkgconfig/pinocchiopy.pc
+}
 
 # ERROR: pinocchio-2.6.17-1-r0 do_package: QA Issue: pinocchio: Files/directories were installed but not shipped in any package:
 #   /usr/share/ament_index

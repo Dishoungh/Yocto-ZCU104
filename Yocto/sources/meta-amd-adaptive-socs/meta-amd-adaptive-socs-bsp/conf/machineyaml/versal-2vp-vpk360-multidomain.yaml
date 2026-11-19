@@ -1,0 +1,65 @@
+inherit:
+    ${BSPLAYERDIR_amd-adaptive-socs-bsp}/conf/machineyaml/versal-2vp-vpk360-sdt-seg.yaml
+
+args:
+    - --machine-name versal-2vp-vpk360-multidomain
+
+args_append:
+    - --domain-file ${LAYER_PATH_xilinx-standalone-sdt}/conf/domainyaml/versal-multidomain-base.yaml \
+                    ${BSPLAYERDIR_amd-adaptive-socs-bsp}/conf/domainyaml/versal-domain-access-overlay.yaml \
+                    ${BSPLAYERDIR_amd-adaptive-socs-bsp}/conf/domainyaml/vpk360-linux-overlay.yaml \
+                    ${LAYER_PATH_xilinx-standalone-sdt}/conf/domainyaml/versal-openamp-zephyr-common-overlay.yaml \
+                    ${LAYER_PATH_xilinx-standalone-sdt}/conf/domainyaml/versal-openamp-zephyr-ps-wizard-overlay.yaml \
+                    ${LAYER_PATH_xilinx-standalone-sdt}/conf/domainyaml/versal-libmetal-overlay.yaml
+
+kconfig:
+    CONFIG_SUBSYSTEM_DT_DOMAIN_ACCESS: y
+    CONFIG_YOCTO_BBMC_CORTEXR5_1_BAREMETAL: y
+    CONFIG_YOCTO_BBMC_LINUX_DTSI: \
+        ${BSPLAYERDIR_amd-adaptive-socs-bsp}/recipes-bsp/device-tree/files/ospi-2g-memory-map.dtsi \
+        ${LAYER_PATH_xilinx-virtualization}/recipes-bsp/device-tree/files/versal-xen.dtsi \
+        ${BSPLAYERDIR_amd-adaptive-socs-bsp}/recipes-bsp/device-tree/files/platform-misc.dtsi
+        
+machine:
+    post:
+        include:
+            comment: "Enable meta-xilinx-imgrcvry if available"
+            op: 'conf/enable-xilinx-imgrcvry.conf'
+        EXTRA_OECMAKE:append:pn-xilplmi:
+            comment: 'Restore the multi-boot register for A/B firmware and drop the JTAG and Security features'
+            op: '='
+            val: ' -DXILPLMI_pm_restore_multiboot=ON -DXILPLMI_plm_auth_jtag_en=OFF -DXILPLMI_plm_rsa_en=OFF -DXILPLMI_plm_ecdsa_en=OFF -DXILPLMI_plm_puf_en=OFF -DXILPLMI_plm_ocp_en=OFF -DXILPLMI_plm_ocp_key_mgmt_en=OFF'
+        CFLAGS:append:pn-image-selector:
+            comment: 'Enable Push Button support'
+            op: '='
+            val: ' -DXIS_ENABLE_PB'
+        IMGRCVRY_KERNEL_ADDR:
+            comment: 'Image recovery kernel address'
+            op: '='
+            val: '0x20200000'
+        IMGRCVRY_ROOTFS_ADDR:
+            comment: 'Image recovery rootfs address'
+            op: '='
+            val: '0x24000000'
+        PREBOOT_CFG_FILE:
+            comment: 'Preboot config file'
+            op: '='
+            val: 'file://preboot_cmd_versal_2vp.cfg'
+        PRODUCT_NAME:
+            comment: 'UEFI Capsule Update / LVFS Configuration'
+            op: '='
+            val: 'VPK360'
+        PRODUCT_GUID:
+            op: '='
+            val: '2ca0d16b-dcc2-5ee5-95bd-c9551224d78f'
+        PRODUCT_URL:
+            op: '='
+            val: 'https://www.amd.com/en/products/adaptive-socs-and-fpgas/versal.html'
+        BOOTBIN_INC:
+            comment: 'Enable libmetal application'
+            op: '='
+            val: 'libmetal-demo-rpu1.inc'
+        SPI_IMAGE_SIZE:
+            comment: 'OSPI flash size (256MB)'
+            op: '='
+            val: '0x1000_0000'

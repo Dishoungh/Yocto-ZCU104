@@ -19,7 +19,7 @@ ROS_BPN = "bcr_arm"
 
 ROS_BUILD_DEPENDS = ""
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     ament-cmake-native \
 "
 
@@ -27,7 +27,7 @@ ROS_EXPORT_DEPENDS = ""
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     bcr-arm-description \
     bcr-arm-gazebo \
     bcr-arm-moveit-config \
@@ -47,7 +47,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/humble/bcr_arm"
 SRC_URI = "git://github.com/ros2-gbp/bcr_arm-release;${ROS_BRANCH};protocol=https"
 SRCREV = "b8124f2aae33bcbb8953b3098d949cda911d3e03"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

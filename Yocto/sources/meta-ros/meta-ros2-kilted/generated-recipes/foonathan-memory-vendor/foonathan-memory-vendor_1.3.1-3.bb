@@ -19,21 +19,21 @@ ROS_BPN = "foonathan_memory_vendor"
 
 ROS_BUILD_DEPENDS = ""
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     cmake-native \
     git-native \
 "
 
 ROS_EXPORT_DEPENDS = ""
 
-ROS_BUILDTOOL_EXPORT_DEPENDS = " \
+ROS_BUILDTOOL_EXPORT_DEPENDS = "\
     cmake-native \
 "
 
 ROS_EXEC_DEPENDS = ""
 
 # Currently informational only -- see http://www.ros.org/reps/rep-0149.html#dependency-tags.
-ROS_TEST_DEPENDS = " \
+ROS_TEST_DEPENDS = "\
     ament-cmake-copyright \
     ament-cmake-lint-cmake \
     ament-cmake-test \
@@ -51,7 +51,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/kilted/foonathan_memory_vendor"
 SRC_URI = "git://github.com/ros2-gbp/foonathan_memory_vendor-release;${ROS_BRANCH};protocol=https"
 SRCREV = "5029c9d4184d92b4ff2b9d735956a7bac6270424"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "cmake"
 

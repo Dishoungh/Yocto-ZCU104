@@ -72,7 +72,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/rqt_play_motion_builder"
 SRC_URI = "git://github.com/ros2-gbp/play_motion_builder-release;${ROS_BRANCH};protocol=https"
 SRCREV = "3b064ba318b74a9da0a6a95c55b8e44a43707cd9"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

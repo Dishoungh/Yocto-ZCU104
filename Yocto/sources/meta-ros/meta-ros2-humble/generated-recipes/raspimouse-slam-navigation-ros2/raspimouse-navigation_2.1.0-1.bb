@@ -18,7 +18,7 @@ LIC_FILES_CHKSUM = "file://package.xml;beginline=9;endline=9;md5=bb69307f9a85663
 ROS_CN = "raspimouse_slam_navigation_ros2"
 ROS_BPN = "raspimouse_navigation"
 
-ROS_BUILD_DEPENDS = " \
+ROS_BUILD_DEPENDS = "\
     hls-lfcd-lds-driver \
     nav2-bringup \
     raspimouse \
@@ -28,11 +28,11 @@ ROS_BUILD_DEPENDS = " \
     urg-node \
 "
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     ament-cmake-native \
 "
 
-ROS_EXPORT_DEPENDS = " \
+ROS_EXPORT_DEPENDS = "\
     hls-lfcd-lds-driver \
     nav2-bringup \
     raspimouse \
@@ -44,7 +44,7 @@ ROS_EXPORT_DEPENDS = " \
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     hls-lfcd-lds-driver \
     nav2-bringup \
     raspimouse \
@@ -55,7 +55,7 @@ ROS_EXEC_DEPENDS = " \
 "
 
 # Currently informational only -- see http://www.ros.org/reps/rep-0149.html#dependency-tags.
-ROS_TEST_DEPENDS = " \
+ROS_TEST_DEPENDS = "\
     ament-lint-auto \
     ament-lint-common \
 "
@@ -71,7 +71,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/humble/raspimouse_navigation"
 SRC_URI = "git://github.com/ros2-gbp/raspimouse_slam_navigation_ros2-release;${ROS_BRANCH};protocol=https"
 SRCREV = "380c2be291c396b2d49add0f62076e8f0e81f08f"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

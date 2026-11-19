@@ -20,7 +20,7 @@ ROS_BPN = "talos_robot"
 
 ROS_BUILD_DEPENDS = ""
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     ament-cmake-native \
 "
 
@@ -28,7 +28,7 @@ ROS_EXPORT_DEPENDS = ""
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     talos-bringup \
     talos-controller-configuration \
     talos-description \
@@ -45,11 +45,10 @@ DEPENDS += "${ROS_EXPORT_DEPENDS} ${ROS_BUILDTOOL_EXPORT_DEPENDS}"
 
 RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 
-# matches with: https://github.com/pal-gbp/talos_robot-release/archive/release/humble/talos_robot/2.10.3-1.tar.gz
+# matches with: https://github.com/ros2-gbp/talos_robot-release/archive/release/humble/talos_robot/2.10.3-1.tar.gz
 ROS_BRANCH ?= "branch=release/humble/talos_robot"
-SRC_URI = "git://github.com/pal-gbp/talos_robot-release;${ROS_BRANCH};protocol=https"
+SRC_URI = "git://github.com/ros2-gbp/talos_robot-release;${ROS_BRANCH};protocol=https"
 SRCREV = "6d76bc2580047177d5eb4e54073c14700bb7bf41"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

@@ -10,7 +10,7 @@ DEPENDS = " \
 "
 
 
-S = "${WORKDIR}/git/AMD"
+S = "${UNPACKDIR}/${BB_GIT_DEFAULT_DESTSUFFIX}/AMD"
 
 EXTRA_OEMAKE = "CC='${CC}'"
 

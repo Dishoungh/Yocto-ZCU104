@@ -19,7 +19,7 @@ ROS_BPN = "rdl"
 
 ROS_BUILD_DEPENDS = ""
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     ament-cmake-native \
 "
 
@@ -27,7 +27,7 @@ ROS_EXPORT_DEPENDS = ""
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     rdl-benchmark \
     rdl-dynamics \
     rdl-urdfreader \
@@ -47,7 +47,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/jazzy/rdl"
 SRC_URI = "git://github.com/jlack1987/rdl-release;${ROS_BRANCH};protocol=https"
 SRCREV = "6e0245b7759a5b17b07e65596d8021b0ef6a8957"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

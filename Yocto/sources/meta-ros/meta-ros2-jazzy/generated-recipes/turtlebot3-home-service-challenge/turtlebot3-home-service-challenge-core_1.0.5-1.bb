@@ -26,7 +26,7 @@ ROS_EXPORT_DEPENDS = ""
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     geometry-msgs \
     nav2-msgs \
     rclpy \
@@ -49,7 +49,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/jazzy/turtlebot3_home_service_challenge_core"
 SRC_URI = "git://github.com/ros2-gbp/turtlebot3_home_service_challenge-release;${ROS_BRANCH};protocol=https"
 SRCREV = "c04383b2e17dc2b7a658f129b36643bb757a7802"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_python"
 

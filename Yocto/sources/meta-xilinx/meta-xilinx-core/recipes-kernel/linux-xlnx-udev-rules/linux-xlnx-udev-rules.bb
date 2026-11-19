@@ -8,7 +8,7 @@ SRC_URI = "\
     file://99-dma-heap.rules \
 "
 
-S = "${WORKDIR}"
+S = "${UNPACKDIR}"
 
 inherit useradd
 
@@ -16,18 +16,18 @@ COMPATIBLE_MACHINE ?= "^$"
 COMPATIBLE_MACHINE:zynq = ".*"
 COMPATIBLE_MACHINE:zynqmp = ".*"
 COMPATIBLE_MACHINE:microblaze = ".*"
-COMPATIBLE_MACHINE:riscv32 = ".*"
 COMPATIBLE_MACHINE:riscv64 = ".*"
 COMPATIBLE_MACHINE:versal = ".*"
 COMPATIBLE_MACHINE:versal-net = ".*"
 COMPATIBLE_MACHINE:versal-2ve-2vm = ".*"
+COMPATIBLE_MACHINE:versal-2vp = ".*"
 
 do_configure[noexec] = '1'
 do_compile[noexec] = '1'
 
 do_install () {
     install -d ${D}${sysconfdir}/udev/rules.d
-    for rule in $(find ${WORKDIR} -maxdepth 1 -type f -name "*.rules"); do
+    for rule in $(find ${UNPACKDIR} -maxdepth 1 -type f -name "*.rules"); do
         install -m 0644 $rule ${D}${sysconfdir}/udev/rules.d/
     done
 }

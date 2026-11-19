@@ -18,7 +18,7 @@ ROS_BPN = "rqt_robot_dashboard"
 
 ROS_BUILD_DEPENDS = ""
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     python3-setuptools-native \
 "
 
@@ -26,7 +26,7 @@ ROS_EXPORT_DEPENDS = ""
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     diagnostic-msgs \
     python-qt-binding \
     qt-gui \
@@ -51,7 +51,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/jazzy/rqt_robot_dashboard"
 SRC_URI = "git://github.com/ros2-gbp/rqt_robot_dashboard-release;${ROS_BRANCH};protocol=https"
 SRCREV = "9af87622aa4d2f3d538fb7353965bb5e49686d92"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_python"
 

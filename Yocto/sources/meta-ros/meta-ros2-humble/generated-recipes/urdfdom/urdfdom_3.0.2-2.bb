@@ -16,7 +16,7 @@ LIC_FILES_CHKSUM = "file://package.xml;beginline=11;endline=11;md5=d566ef916e9de
 ROS_CN = "urdfdom"
 ROS_BPN = "urdfdom"
 
-ROS_BUILD_DEPENDS = " \
+ROS_BUILD_DEPENDS = "\
     console-bridge \
     console-bridge-vendor \
     libtinyxml \
@@ -24,7 +24,7 @@ ROS_BUILD_DEPENDS = " \
     urdfdom-headers \
 "
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     cmake-native \
 "
 
@@ -32,7 +32,7 @@ ROS_EXPORT_DEPENDS = ""
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     console-bridge \
     console-bridge-vendor \
     libtinyxml \
@@ -54,7 +54,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/humble/urdfdom"
 SRC_URI = "git://github.com/ros2-gbp/urdfdom-release;${ROS_BRANCH};protocol=https"
 SRCREV = "f542c91673cb3fa3c8742164d1565a09de150c30"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "cmake"
 

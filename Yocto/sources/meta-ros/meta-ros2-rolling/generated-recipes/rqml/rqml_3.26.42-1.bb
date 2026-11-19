@@ -45,7 +45,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/rqml"
 SRC_URI = "git://github.com/ros2-gbp/rqml-release;${ROS_BRANCH};protocol=https"
 SRCREV = "905637b7295183534fae8a635a3d8c02fa0b1ac2"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

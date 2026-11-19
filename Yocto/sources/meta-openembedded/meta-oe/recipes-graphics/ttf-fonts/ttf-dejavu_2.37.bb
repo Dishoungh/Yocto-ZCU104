@@ -2,7 +2,7 @@ require ttf.inc
 
 SUMMARY = "DejaVu font - TTF Edition"
 HOMEPAGE = "http://dejavu.sourceforge.net/wiki/"
-LICENSE = "BitstreamVera"
+LICENSE = "Bitstream-Vera"
 LIC_FILES_CHKSUM = "file://../LICENSE;md5=449b2c30bfe5fa897fe87b8b70b16cfa"
 
 # all subpackages except ${PN}-common itself rdepends on ${PN}-common
@@ -17,13 +17,13 @@ RDEPENDS:${PN}-common = ""
 SRC_URI = "${SOURCEFORGE_MIRROR}/dejavu/dejavu-fonts-ttf-${PV}.tar.bz2 \
            file://30-dejavu-aliases.conf"
 
-S = "${WORKDIR}/dejavu-fonts-ttf-${PV}/ttf"
+S = "${UNPACKDIR}/dejavu-fonts-ttf-${PV}/ttf"
 
 UPSTREAM_CHECK_URI = "https://sourceforge.net/projects/dejavu/files/dejavu/"
 
 do_install:append () {
     install -d ${D}${sysconfdir}/fonts/conf.d/
-    install -m 0644 ${WORKDIR}/30-dejavu-aliases.conf ${D}${sysconfdir}/fonts/conf.d/
+    install -m 0644 ${UNPACKDIR}/30-dejavu-aliases.conf ${D}${sysconfdir}/fonts/conf.d/
 }
 
 PACKAGES = "\
@@ -44,7 +44,6 @@ FILES:${PN}-serif-condensed = "${datadir}/fonts/truetype/DejaVuSerifCondensed*.t
 FILES:${PN}-mathtexgyre     = "${datadir}/fonts/truetype/DejaVuMathTeXGyre.ttf"
 FILES:${PN}-common          = "${sysconfdir}"
 
-SRC_URI[md5sum] = "d0efec10b9f110a32e9b8f796e21782c"
 SRC_URI[sha256sum] = "fa9ca4d13871dd122f61258a80d01751d603b4d3ee14095d65453b4e846e17d7"
 
 BBCLASSEXTEND = "native nativesdk"

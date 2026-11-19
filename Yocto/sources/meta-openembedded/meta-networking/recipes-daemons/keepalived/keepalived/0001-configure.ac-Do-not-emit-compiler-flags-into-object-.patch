@@ -13,12 +13,10 @@ Signed-off-by: Khem Raj <raj.khem@gmail.com>
  configure.ac | 3 +--
  1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/configure.ac b/configure.ac
-index fae16f1..677b94a 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -904,8 +904,7 @@ if test "$enable_hardening" != no; then
- 	  "-Wp,-D_FORTIFY_SOURCE=2" \
+@@ -1066,8 +1066,7 @@ if test "$enable_hardening" != no; then
+ 	  "-Wformat -Werror=format-security" \
  	  "-fexceptions" \
  	  "-fstack-protector-strong" \
 -	  "--param=ssp-buffer-size=4" \

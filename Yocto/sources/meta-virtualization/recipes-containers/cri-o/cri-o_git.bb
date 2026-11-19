@@ -1,4 +1,4 @@
-HOMEPAGE = "https://github.com/kubernetes-sigs/cri-o"
+HOMEPAGE = "https://github.com/cri-o/cri-o"
 SUMMARY = "Open Container Initiative-based implementation of Kubernetes Container Runtime Interface"
 DESCRIPTION = "cri-o is meant to provide an integration path between OCI conformant \
 runtimes and the kubelet. Specifically, it implements the Kubelet Container Runtime \
@@ -14,10 +14,11 @@ At a high level, we expect the scope of cri-o to be restricted to the following 
  - Resource isolation as required by the CRI \
  "
 
-SRCREV_cri-o = "359f960f46697517f048e6ff3caf728ae75cb384"
+SRCREV_cri-o = "8273bca378a36dd225fcaf90b6b732cc4c6d4248"
 SRC_URI = "\
-	git://github.com/kubernetes-sigs/cri-o.git;branch=release-1.30;name=cri-o;protocol=https \
+	git://github.com/cri-o/cri-o.git;branch=release-1.36;name=cri-o;protocol=https;destsuffix=${GO_SRCURI_DESTSUFFIX} \
         file://crio.conf \
+        file://run-ptest \
 	"
 
 # Apache-2.0 for docker
@@ -26,9 +27,9 @@ LIC_FILES_CHKSUM = "file://src/import/LICENSE;md5=e3fc50a88d0a364313df4b21ef20c2
 
 GO_IMPORT = "import"
 
-PV = "1.30.8+git${SRCREV_cri-o}"
+PV = "1.35.0+git"
 
-inherit features_check
+inherit features_check ptest
 REQUIRED_DISTRO_FEATURES ?= "seccomp"
 
 DEPENDS = " \
@@ -58,7 +59,10 @@ inherit goarch
 inherit pkgconfig
 inherit container-host
 
-EXTRA_OEMAKE="BUILDTAGS=''"
+EXTRA_OEMAKE = "BUILDTAGS='' DEBUG=1 STRIP=true"
+# avoid textrel QA issue
+EXTRA_OEMAKE += "GO_BUILD='${GO} build -trimpath -buildmode=pie'"
+EXTRA_OEMAKE += "GO_TEST='${GO} test -trimpath -buildmode=pie'"
 
 do_compile() {
 	set +e
@@ -69,6 +73,13 @@ do_compile() {
 	oe_runmake binaries
 }
 
+do_compile_ptest() {
+    set +e
+
+    cd ${S}/src/import
+
+    oe_runmake test-binaries
+}
 SYSTEMD_PACKAGES = "${@bb.utils.contains('DISTRO_FEATURES','systemd','${PN}','',d)}"
 SYSTEMD_SERVICE:${PN} = "${@bb.utils.contains('DISTRO_FEATURES','systemd','crio.service','',d)}"
 SYSTEMD_AUTO_ENABLE:${PN} = "enable"
@@ -83,7 +94,7 @@ do_install() {
     install -d ${D}${systemd_unitdir}/system/
     install -d ${D}/usr/share/containers/oci/hooks.d
 
-    install ${WORKDIR}/crio.conf ${D}/${sysconfdir}/crio/crio.conf
+    install ${UNPACKDIR}/crio.conf ${D}/${sysconfdir}/crio/crio.conf
 
     # sample config files, they'll go in the ${PN}-config below
     install -d ${D}/${sysconfdir}/crio/config/
@@ -100,16 +111,43 @@ do_install() {
     install -d ${D}${localstatedir}/lib/crio
 }
 
+do_install_ptest() {
+    install -d ${D}${PTEST_PATH}/test
+    install -d ${D}${PTEST_PATH}/bin
+    cp -rf ${S}/src/import/test ${D}${PTEST_PATH}
+    cp -rf ${S}/src/import/bin ${D}${PTEST_PATH}
+    # CRI-O testing changed the default container runtime from runc to crun in version 1.31+.
+    # To maintain compatibility with older tests expecting runc, and to allow for other custom runtimes,
+    # this section explicitly sets CONTAINER_DEFAULT_RUNTIME in the run-ptest script.
+    # The value is determined by the VIRTUAL-RUNTIME_container_runtime variable.
+    if [ "${VIRTUAL-RUNTIME_container_runtime}" = "virtual-runc" ]; then
+        sed -i '/^.\/test\/test_runner/iexport CONTAINER_DEFAULT_RUNTIME=runc' ${D}${PTEST_PATH}/run-ptest
+    else
+        sed -i '/^.\/test\/test_runner/iexport CONTAINER_DEFAULT_RUNTIME=${VIRTUAL-RUNTIME_container_runtime}' ${D}${PTEST_PATH}/run-ptest
+    fi
+
+}
+
 FILES:${PN}-config = "${sysconfdir}/crio/config/*"
 FILES:${PN} += "${systemd_unitdir}/system/*"
 FILES:${PN} += "/usr/local/bin/*"
 FILES:${PN} += "/usr/share/containers/oci/hooks.d"
 
-# don't clobber hooks.d
-ALLOW_EMPTY:${PN} = "1"
+INSANE_SKIP:${PN}-ptest += "ldflags"
 
-INSANE_SKIP:${PN} += "ldflags already-stripped textrel"
-
-deltask compile_ptest_base
+RDEPENDS:${PN}-ptest += " \
+    bash \
+    bats \
+    cni \
+    crictl \
+    coreutils \
+    dbus-daemon-proxy \
+    iproute2 \
+    util-linux-unshare \
+    jq \
+    slirp4netns \
+    parallel \
+    podman \
+"
 
 COMPATIBLE_HOST = "^(?!(qemu)?mips).*"

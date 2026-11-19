@@ -2,9 +2,9 @@ SUMMARY = "RPMsg examples: Matrix Multiplication demo"
 
 include rpmsg-example.inc
 
-S = "${WORKDIR}/git/examples/linux/rpmsg-mat-mul"
+S = "${UNPACKDIR}/${BP}/examples/linux/rpmsg-mat-mul"
 
-RRECOMMENDS:${PN} = "kernel-module-rpmsg-char kernel-module-rpmsg-ctrl"
+RRECOMMENDS:${PN} = "kernel-module-rpmsg-char"
 
 FILES:${PN} = "\
 	/usr/bin/mat_mul_demo\

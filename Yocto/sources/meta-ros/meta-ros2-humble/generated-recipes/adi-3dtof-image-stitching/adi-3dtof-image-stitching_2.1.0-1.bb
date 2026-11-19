@@ -15,7 +15,7 @@ LIC_FILES_CHKSUM = "file://package.xml;beginline=14;endline=14;md5=2c00b8d285410
 ROS_CN = "adi_3dtof_image_stitching"
 ROS_BPN = "adi_3dtof_image_stitching"
 
-ROS_BUILD_DEPENDS = " \
+ROS_BUILD_DEPENDS = "\
     compressed-depth-image-transport \
     cv-bridge \
     image-geometry \
@@ -30,11 +30,11 @@ ROS_BUILD_DEPENDS = " \
     tf2-ros \
 "
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     ament-cmake-native \
 "
 
-ROS_EXPORT_DEPENDS = " \
+ROS_EXPORT_DEPENDS = "\
     compressed-depth-image-transport \
     cv-bridge \
     image-geometry \
@@ -51,7 +51,7 @@ ROS_EXPORT_DEPENDS = " \
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     compressed-depth-image-transport \
     cv-bridge \
     image-geometry \
@@ -68,7 +68,7 @@ ROS_EXEC_DEPENDS = " \
 "
 
 # Currently informational only -- see http://www.ros.org/reps/rep-0149.html#dependency-tags.
-ROS_TEST_DEPENDS = " \
+ROS_TEST_DEPENDS = "\
     ament-lint-auto \
     ament-lint-common \
 "
@@ -84,7 +84,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/humble/adi_3dtof_image_stitching"
 SRC_URI = "git://github.com/ros2-gbp/adi_3dtof_image_stitching-release;${ROS_BRANCH};protocol=https"
 SRCREV = "64169744fd172742d9edaf6c0f87301522432adb"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

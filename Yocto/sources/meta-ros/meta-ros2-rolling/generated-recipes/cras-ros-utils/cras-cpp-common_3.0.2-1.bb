@@ -91,7 +91,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/cras_cpp_common"
 SRC_URI = "git://github.com/ros2-gbp/cras_ros_utils-release;${ROS_BRANCH};protocol=https"
 SRCREV = "95643ee54d2b00e8c585e83cca201df3d71bee07"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

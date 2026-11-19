@@ -18,7 +18,7 @@ ROS_BPN = "bcr_arm_moveit_config"
 
 ROS_BUILD_DEPENDS = ""
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     ament-cmake-native \
 "
 
@@ -26,7 +26,7 @@ ROS_EXPORT_DEPENDS = ""
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     bcr-arm-description \
     controller-manager \
     joint-state-publisher \
@@ -61,7 +61,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/humble/bcr_arm_moveit_config"
 SRC_URI = "git://github.com/ros2-gbp/bcr_arm-release;${ROS_BRANCH};protocol=https"
 SRCREV = "d35ccc280758bb06dc9be5acf03b09be22d980bb"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

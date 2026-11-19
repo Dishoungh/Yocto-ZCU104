@@ -1,0 +1,42 @@
+args:
+    - --hw-description https://edf.amd.com/sswreleases/rel-v2026.2/sdt/2026.2/2026.2_1107_1_11071152/external/alveo-v80-amr/alveo-v80-amr_2026.2_1107_1_11071152.tar.gz
+    - --machine-name alveo-v80-amr
+    - -g full
+    - -O amd-amr
+    - --domain-file ${LAYER_PATH_xilinx-standalone-sdt}/conf/domainyaml/versal-linux-only-base.yaml \
+                    ${LAYER_PATH_amd-hybrid-bsp-layer}/conf/domainyaml/alveo-v80-amr-linux-overlay.yaml
+kconfig:
+    CONFIG_YOCTO_BBMC_CORTEXR5_0_FREERTOS: y
+    CONFIG_SUBSYSTEM_TF-A_SERIAL_SERIAL1_SELECT: y
+    CONFIG_SUBSYSTEM_SERIAL_SERIAL1_SELECT: y
+    CONFIG_YOCTO_BBMC_LINUX_DTSI: \
+      ${LAYER_PATH_amd-hybrid-bsp-layer}/recipes-bsp/device-tree/files/alveo-platform-amr.dtsi
+
+machine:
+    description: >-
+        AMP/multidomain machine for the AMD Alveo V80 Compute
+        Accelerator Card (Versal Premium) running the AMR (AVED
+        Management Runtime) stack: Cortex-A72 Linux plus Cortex-R5
+        FreeRTOS and MicroBlaze PMC/PSM sub-machines.
+    post:
+        SPI_IMAGE_SIZE:
+            comment: 'OSPI flash size (256MB)'
+            op: '='
+            val: '0x1000_0000'
+        UBOOT_BOOT_SCRIPT:alveo-v80-amr:${DISTRO}:
+            comment: 'Use the specific boot script'
+            op: '='
+            val: 'u-boot-xlnx-scr'
+        UBOOT_USER_SPECIFIED_TEXT_BASE:
+            comment: 'AMC gives the APU DRAM at 0x1C800000 (size 0x63800000, ~1592MB). U-Boot must be linked (CONFIG_TEXT_BASE) at this base.'
+            op: '='
+            val: '0x1c800000'
+        TFA_BL33_LOAD:
+            op: '='
+            val: '0x1c800000'
+        UBOOT_ENTRYPOINT:
+            op: '='
+            val: '0x1e000000'
+        UBOOT_LOADADDRESS:
+            op: '='
+            val: '0x1e000000'

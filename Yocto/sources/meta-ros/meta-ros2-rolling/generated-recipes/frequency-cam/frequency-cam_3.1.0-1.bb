@@ -76,7 +76,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/frequency_cam"
 SRC_URI = "git://github.com/ros2-gbp/frequency_cam-release;${ROS_BRANCH};protocol=https"
 SRCREV = "875c207fe90fc619a55e8f9aad6f47dbcd630c0c"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

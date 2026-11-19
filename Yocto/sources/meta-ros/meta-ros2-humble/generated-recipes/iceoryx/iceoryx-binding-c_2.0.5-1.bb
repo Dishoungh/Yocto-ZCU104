@@ -17,12 +17,12 @@ LIC_FILES_CHKSUM = "file://package.xml;beginline=8;endline=8;md5=80318c4afef111a
 ROS_CN = "iceoryx"
 ROS_BPN = "iceoryx_binding_c"
 
-ROS_BUILD_DEPENDS = " \
+ROS_BUILD_DEPENDS = "\
     iceoryx-hoofs \
     iceoryx-posh \
 "
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     cmake-native \
 "
 
@@ -46,7 +46,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/humble/iceoryx_binding_c"
 SRC_URI = "git://github.com/ros2-gbp/iceoryx-release;${ROS_BRANCH};protocol=https"
 SRCREV = "f8b5985115fdd92947f814e081e425a411c27173"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "cmake"
 

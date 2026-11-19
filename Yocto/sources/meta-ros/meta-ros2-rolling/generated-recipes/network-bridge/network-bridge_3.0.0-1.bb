@@ -75,7 +75,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/network_bridge"
 SRC_URI = "git://github.com/ros2-gbp/network_bridge-release;${ROS_BRANCH};protocol=https"
 SRCREV = "813f3d273f7b460ea69b5299bbb52b2b084bfaba"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

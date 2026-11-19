@@ -7,7 +7,7 @@ SRCNAME = "ros-vcstools-upstream"
 SRC_URI = "https://salsa.debian.org/science-team/ros-vcstools/-/archive/upstream/${PV}/${SRCNAME}-${PV}.tar.gz"
 SRC_URI[sha256sum] = "543f452e8c8f1df709d040971669f00317e595fe979505730c2982728129056c"
 
-S = "${WORKDIR}/${SRCNAME}-${PV}"
+S = "${UNPACKDIR}/${SRCNAME}-${PV}"
 
 RDEPENDS:${PN} += "python3-pyyaml python3-dateutil"
 

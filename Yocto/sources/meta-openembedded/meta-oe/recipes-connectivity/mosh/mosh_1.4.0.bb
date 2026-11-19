@@ -15,6 +15,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=d32239bcb673463ab874e80d47fae504"
 DEPENDS = "protobuf-native protobuf ncurses zlib libio-pty-perl openssl libutempter abseil-cpp"
 
 GITHUB_BASE_URI = "https://github.com/mobile-shell/${BPN}/releases/"
+
 SRC_URI = "${GITHUB_BASE_URI}download/${BP}/${BP}.tar.gz \
            file://0001-configure.ac-add-support-of-protobuf-4.22.x.patch \
            "
@@ -49,3 +50,4 @@ RDEPENDS:${PN}-server += "openssh-sshd"
 ARM_INSTRUCTION_SET = "arm"
 
 CXXFLAGS:append = " -std=c++17"
+LDFLAGS:append:riscv32 = " -latomic"

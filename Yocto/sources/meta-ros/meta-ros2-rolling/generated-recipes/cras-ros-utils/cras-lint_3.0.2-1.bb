@@ -50,7 +50,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/cras_lint"
 SRC_URI = "git://github.com/ros2-gbp/cras_ros_utils-release;${ROS_BRANCH};protocol=https"
 SRCREV = "78062f9e47c81727c1bb299f5803b50da5b4dfa7"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

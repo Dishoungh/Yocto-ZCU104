@@ -16,21 +16,21 @@ LIC_FILES_CHKSUM = "file://package.xml;beginline=8;endline=8;md5=8dc6050b5352930
 ROS_CN = "aws-robomaker-small-warehouse-world"
 ROS_BPN = "aws_robomaker_small_warehouse_world"
 
-ROS_BUILD_DEPENDS = " \
+ROS_BUILD_DEPENDS = "\
     gazebo-ros \
 "
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     ament-cmake-native \
 "
 
-ROS_EXPORT_DEPENDS = " \
+ROS_EXPORT_DEPENDS = "\
     gazebo-ros \
 "
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     ${ROS_UNRESOLVED_DEP-gazebo} \
     gazebo-plugins \
     gazebo-ros \
@@ -50,7 +50,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/humble/aws_robomaker_small_warehouse_world"
 SRC_URI = "git://github.com/ros2-gbp/aws_robomaker_small_warehouse_world-release;${ROS_BRANCH};protocol=https"
 SRCREV = "f9c9070e9cd91a1427854905bb1f46810f66d37d"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

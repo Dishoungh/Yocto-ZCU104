@@ -59,7 +59,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/catch_ros2"
 SRC_URI = "git://github.com/ros2-gbp/catch_ros2-release;${ROS_BRANCH};protocol=https"
 SRCREV = "452ecb81191ca3b0281b9618674a3eaa8580c2fe"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

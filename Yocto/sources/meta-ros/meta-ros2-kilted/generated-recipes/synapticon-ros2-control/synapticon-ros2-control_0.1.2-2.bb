@@ -16,7 +16,7 @@ LIC_FILES_CHKSUM = "file://package.xml;beginline=12;endline=12;md5=58e54c03ca7f8
 ROS_CN = "synapticon_ros2_control"
 ROS_BPN = "synapticon_ros2_control"
 
-ROS_BUILD_DEPENDS = " \
+ROS_BUILD_DEPENDS = "\
     hardware-interface \
     libcap \
     pluginlib \
@@ -24,11 +24,11 @@ ROS_BUILD_DEPENDS = " \
     rclcpp-lifecycle \
 "
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     ament-cmake-native \
 "
 
-ROS_EXPORT_DEPENDS = " \
+ROS_EXPORT_DEPENDS = "\
     hardware-interface \
     libcap \
     pluginlib \
@@ -38,7 +38,7 @@ ROS_EXPORT_DEPENDS = " \
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     controller-manager \
     forward-command-controller \
     hardware-interface \
@@ -68,7 +68,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/kilted/synapticon_ros2_control"
 SRC_URI = "git://github.com/ros2-gbp/synapticon_ros2_control-release;${ROS_BRANCH};protocol=https"
 SRCREV = "b2d2a6789252d6c4ac235771a711b62bb26cf41a"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

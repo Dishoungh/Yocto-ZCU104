@@ -18,11 +18,11 @@ LIC_FILES_CHKSUM = "file://package.xml;beginline=21;endline=21;md5=12c26a18c7f49
 ROS_CN = "hebi_cpp_api"
 ROS_BPN = "hebi_cpp_api"
 
-ROS_BUILD_DEPENDS = " \
+ROS_BUILD_DEPENDS = "\
     libeigen \
 "
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     ament-cmake-native \
 "
 
@@ -46,7 +46,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/kilted/hebi_cpp_api"
 SRC_URI = "git://github.com/ros2-gbp/hebi_cpp_api-release;${ROS_BRANCH};protocol=https"
 SRCREV = "6e399da273ef2cab4fda3829e6ea09bf671ceed8"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

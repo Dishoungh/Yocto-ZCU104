@@ -18,7 +18,7 @@ ROS_BPN = "ads_vendor"
 
 ROS_BUILD_DEPENDS = ""
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     ament-cmake-native \
     git-native \
 "
@@ -43,7 +43,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/kilted/ads_vendor"
 SRC_URI = "git://github.com/b-robotized/ads_vendor-release;${ROS_BRANCH};protocol=https"
 SRCREV = "2634cb538e7c5e2a4dfe77e271e1a359165300cf"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

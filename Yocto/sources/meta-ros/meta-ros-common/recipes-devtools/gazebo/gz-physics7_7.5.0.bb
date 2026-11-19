@@ -7,7 +7,6 @@ SRC_URI = "git://github.com/gazebosim/gz-physics.git;protocol=https;branch=gz-ph
 
 SRCREV = "966563e1a403e90bf9a9cbf642dd0f58809f4a36"
 
-S = "${WORKDIR}/git"
 
 DEPENDS = " \
     gz-cmake3 \
@@ -17,7 +16,6 @@ DEPENDS = " \
     gz-plugin2 \
     gz-utils2 \
     sdformat \
-    libeigen \
     bullet \
     google-benchmark-vendor \
 "

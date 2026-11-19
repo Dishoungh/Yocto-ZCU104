@@ -1,0 +1,26 @@
+args:
+    - --hw-description https://edf.amd.com/sswreleases/rel-v2026.2/sdt/2026.2/2026.2_1107_1_11071152/external/zynqmp-zcu216-sdt-full/zynqmp-zcu216-sdt-full_2026.2_1107_1_11071152.tar.gz
+    - --machine-name zynqmp-zcu216-sdt-full
+    - -g full
+    - --domain-file ${LAYER_PATH_xilinx-standalone-sdt}/conf/domainyaml/zynqmp-linux-only-base.yaml \
+                    ${BSPLAYERDIR_amd-adaptive-socs-bsp}/conf/domainyaml/zcu216-linux-overlay.yaml \
+                    ${BSPLAYERDIR_amd-adaptive-socs-bsp}/conf/domainyaml/zcu216-platform-overlay.yaml
+
+kconfig:
+    CONFIG_SUBSYSTEM_BOOTMODE_5: y
+
+machine:
+    description: >-
+        Machine configuration for the AMD Zynq UltraScale+ RFSoC ZCU216
+        evaluation kit (Cortex-A53 Linux plus FSBL and MicroBlaze PMU
+        sub-machines), built from system device tree.
+    post:
+        QB_MEM:
+            op: '='
+            val: "-m 4G"
+        QEMU_HW_DTB_PS:
+            op: '='
+            val: "${QEMU_HW_DTB_PATH}/board-zynqmp-zcu102.dtb"
+        QEMU_HW_DTB_PMU:
+            op: '='
+            val: "${QEMU_HW_DTB_PATH}/zynqmp-pmu.dtb"

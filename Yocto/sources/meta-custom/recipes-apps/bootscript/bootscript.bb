@@ -16,7 +16,7 @@ SYSTEMD_AUTO_ENABLE:${PN} = "enable"
 
 RDEPENDS:${PN} = "bash"
 
-S = "${WORKDIR}"
+S = "${UNPACKDIR}"
 
 SRC_URI += "file://bootscript.service"
 SRC_URI += "file://bootscript.sh"

@@ -20,7 +20,7 @@ ROS_BPN = "tiago_gazebo"
 
 ROS_BUILD_DEPENDS = ""
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     ament-cmake-auto-native \
 "
 
@@ -28,7 +28,7 @@ ROS_EXPORT_DEPENDS = ""
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     ${ROS_UNRESOLVED_DEP-gz-sensors6} \
     gazebo-plugins \
     gazebo-ros \
@@ -53,7 +53,7 @@ ROS_EXEC_DEPENDS = " \
 "
 
 # Currently informational only -- see http://www.ros.org/reps/rep-0149.html#dependency-tags.
-ROS_TEST_DEPENDS = " \
+ROS_TEST_DEPENDS = "\
     ament-cmake-gtest \
     ament-lint-auto \
     ament-lint-common \
@@ -70,11 +70,10 @@ DEPENDS += "${ROS_EXPORT_DEPENDS} ${ROS_BUILDTOOL_EXPORT_DEPENDS}"
 
 RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 
-# matches with: https://github.com/pal-gbp/tiago_simulation-release/archive/release/humble/tiago_gazebo/4.10.1-1.tar.gz
+# matches with: https://github.com/ros2-gbp/tiago_simulation-release/archive/release/humble/tiago_gazebo/4.10.1-1.tar.gz
 ROS_BRANCH ?= "branch=release/humble/tiago_gazebo"
-SRC_URI = "git://github.com/pal-gbp/tiago_simulation-release;${ROS_BRANCH};protocol=https"
+SRC_URI = "git://github.com/ros2-gbp/tiago_simulation-release;${ROS_BRANCH};protocol=https"
 SRCREV = "8f374608f4424c04248d0277bcd43e44317d120a"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

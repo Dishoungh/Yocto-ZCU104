@@ -1,0 +1,18 @@
+# EDF_DEPLOY_DEPENDS is specified in meta-amd-edf
+
+DEPLOY_DEPENDS:append:versal-vrk160-multidomain = " ${EDF_DEPLOY_DEPENDS}"
+DEPLOY_DEPENDS:append:versal-vrk160-revb-multidomain = " ${EDF_DEPLOY_DEPENDS}"
+DEPLOY_DEPENDS:append:versal-vek280-multidomain = " ${EDF_DEPLOY_DEPENDS}"
+DEPLOY_DEPENDS:append:versal-vhk158-multidomain = " ${EDF_DEPLOY_DEPENDS}"
+DEPLOY_DEPENDS:append:versal-2ve-2vm-vek385-multidomain = " ${EDF_DEPLOY_DEPENDS}"
+DEPLOY_DEPENDS:append:versal-2ve-2vm-vek385-revb-multidomain = " ${EDF_DEPLOY_DEPENDS}"
+DEPLOY_DEPENDS:append:versal-vrk165-multidomain = " ${EDF_DEPLOY_DEPENDS}"
+DEPLOY_DEPENDS:append:versal-vrk165-revb-multidomain = " ${EDF_DEPLOY_DEPENDS}"
+DEPLOY_DEPENDS:append:versal-2ve-2vm-vek386-multidomain = " ${EDF_DEPLOY_DEPENDS}"
+DEPLOY_DEPENDS:append:versal-2vp-vpk360-multidomain = " ${EDF_DEPLOY_DEPENDS}"
+DEPLOY_DEPENDS:append:versal-vmk180-multidomain = " ${EDF_DEPLOY_DEPENDS}"
+DEPLOY_DEPENDS:append:zynqmp-zcu104-multidomain = " ${EDF_DEPLOY_DEPENDS}"
+DEPLOY_DEPENDS:append:versal-vck190-multidomain = " ${EDF_DEPLOY_DEPENDS}"
+DEPLOY_DEPENDS:append:versal-vpk120-multidomain = " ${EDF_DEPLOY_DEPENDS}"
+DEPLOY_DEPENDS:append:versal-vpk180-multidomain = " ${EDF_DEPLOY_DEPENDS}"
+DEPLOY_DEPENDS:append:versal-2ve-2vm-vmk365-multidomain = " ${EDF_DEPLOY_DEPENDS}"

@@ -1,5 +1,5 @@
 header:
-  version: 9
+  version: 19
 
 distro: poky
 
@@ -11,17 +11,28 @@ repos:
       meta-integrity:
       meta-hardening:
 
-  poky:
-    url: https://git.yoctoproject.org/git/poky
-    refspec: scarthgap
+  bitbake:
+    url: "https://git.openembedded.org/bitbake"
+    branch: "2.18"
+    layers:
+      .: disabled
+
+  openembedded-core:
+    url: "https://git.openembedded.org/openembedded-core"
+    branch: wrynose
     layers:
       meta:
+
+  meta-yocto:
+    url: "https://git.yoctoproject.org/git/meta-yocto"
+    branch: wrynose
+    layers:
       meta-poky:
       meta-yocto-bsp:
 
   meta-openembedded:
-    url: http://git.openembedded.org/meta-openembedded
-    refspec: scarthgap
+    url: "http://git.openembedded.org/meta-openembedded"
+    branch: wrynose
     layers:
       meta-oe:
       meta-perl:
@@ -43,7 +54,6 @@ local_conf_header:
     BB_TASK_IONICE_LEVEL = '2.7'
     BB_TASK_IONICE_LEVEL_task-testimage = '2.1'
     TEST_QEMUBOOT_TIMEOUT = "1500"
-    EXTRA_IMAGE_FEATURES ?= "debug-tweaks"
     PACKAGE_CLASSES = "package_ipk"
 
     DISTRO_FEATURES:append = " security pam apparmor smack ima tpm tpm2"

@@ -6,26 +6,30 @@ LIC_FILES_CHKSUM = "file://LICENSE.md;md5=6318ca11420bfdfb7b026c4153b0db19"
 PE = "1"
 PV .= "+git"
 
-S = "${WORKDIR}/git"
 B = "${S}"
 
 BRANCH ?= "master"
 REPO ?= "git://github.com/Xilinx/vdu-firmware.git;protocol=https"
 SRCREV ?= "e14e7614fbcbd72f0aa75b953e089bf4634ee128"
 
-BRANCHARG = "${@['nobranch=1', 'branch=${BRANCH}'][d.getVar('BRANCH', True) != '']}"
+BRANCHARG = "${@['nobranch=1', 'branch=${BRANCH}'][d.getVar('BRANCH') != '']}"
 SRC_URI   = "${REPO};${BRANCHARG}"
 
-inherit autotools features_check
+inherit features_check
 
 REQUIRED_MACHINE_FEATURES = "vdu"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
-EXTRA_OEMAKE +="INSTALL_PATH=${D}/${nonarch_base_libdir}/firmware"
+EXTRA_OEMAKE += "INSTALL_PATH=${D}/${nonarch_base_libdir}/firmware"
 
+do_configure[noexec] = "1"
 do_compile[noexec] = "1"
 do_install[dirs] = "${S}"
+
+do_install:append() {
+    oe_runmake install
+}
 
 # Inhibit warnings about files being stripped
 INHIBIT_PACKAGE_DEBUG_SPLIT = "1"

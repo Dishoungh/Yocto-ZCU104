@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # Copyright (C) 2021-2022, Xilinx, Inc.  All rights reserved.
-# Copyright (C) 2022-2025, Advanced Micro Devices, Inc.  All rights reserved.
+# Copyright (C) 2022-2026, Advanced Micro Devices, Inc.  All rights reserved.
 #
 # Author:
 #       Raju Kumar Pothuraju <rajukumar.pothuraju@amd.com>
@@ -12,63 +12,14 @@ import configparser
 import os
 import re
 import common_utils
-import bitbake_utils
 import yaml_utils
 import project_config
 import lopper_utils
 import glob
-from post_process_config import CheckIP, GetIPProperty, CheckDeviceCount
 import logging
 
 
 logger = logging.getLogger('Gen-Machineconf')
-
-
-def GetProcessorProperties(system_conffile, prop):
-    processor = common_utils.GetConfigValue(
-        'CONFIG_SUBSYSTEM_PROCESSOR_', system_conffile, 'choice', '_SELECT=y')
-    linux_kernel_properties = ''
-    if 'linux_kernel_properties' in plnx_syshw_data['processor'][processor].keys():
-        linux_kernel_properties = plnx_syshw_data['processor'][processor]['linux_kernel_properties']
-    if linux_kernel_properties and prop in linux_kernel_properties.keys():
-        return linux_kernel_properties[prop].split(' ')[0]
-    return ''
-
-
-Tunefeatures = {
-    'XILINX_MICROBLAZE0_USE_PCMP_INSTR': {'1': 'pattern-compare'},
-    'XILINX_MICROBLAZE0_USE_BARREL': {'1': 'barrel-shift'},
-    'XILINX_MICROBLAZE0_USE_DIV': {'1': 'divide-hard'},
-    'XILINX_MICROBLAZE0_USE_HW_MUL': {'1': 'multiply-low', '2': 'multiply-high'},
-    'XILINX_MICROBLAZE0_USE_FPU': {'1': 'fpu-hard', '2': 'fpu-hard-extended', 'default': 'fpu-soft'},
-    'XILINX_MICROBLAZE0_ENDIANNESS': {'!1': 'bigendian'},
-    'XILINX_MICROBLAZE0_DATASIZE': {'64': '64-bit'},
-    'XILINX_MICROBLAZE0_USE_REORDER_INSTR': {'!0': 'reorder'},
-    'XILINX_MICROBLAZE0_AREA_OPTIMIZED': {'2': 'frequency-optimized'}
-}
-
-
-def GetTuneFeatures(soc_family, system_conffile):
-    processor = common_utils.GetConfigValue(
-        'CONFIG_SUBSYSTEM_PROCESSOR_', system_conffile, 'choice', '_SELECT=y')
-    tune_features = [soc_family]
-    hwversion = GetProcessorProperties(
-        system_conffile, 'XILINX_MICROBLAZE0_HW_VER')
-    if hwversion:
-        hwversion = 'v%s' % hwversion
-        tune_features += [hwversion]
-    for feature in Tunefeatures.keys():
-        param_value = GetProcessorProperties(system_conffile, feature)
-        add_key = False
-        for key in Tunefeatures[feature].keys():
-            if key == param_value or (key.startswith('!') and key[1:] != param_value):
-                tune_features += [Tunefeatures[feature][key]]
-                add_key = True
-        # Add default one from dict if key does not match
-        if not add_key and 'default' in Tunefeatures[feature].keys():
-            tune_features += [Tunefeatures[feature]['default']]
-
-    return ' '.join(tune_features)
 
 
 Machinefeatures_soc = {
@@ -80,6 +31,8 @@ Machinefeatures_soc = {
     },
     'versal-2ve-2vm': {
         'common': 'vcu2 malig78ae'
+    },
+    'versal-2vp': {
     }
 }
 
@@ -235,8 +188,8 @@ def YoctoCommonConfigs(args, arch, system_conffile, MultiConfDict):
         atf_mem_size = common_utils.GetConfigValue('CONFIG_SUBSYSTEM_TF-A_MEM_SIZE',
                                                    system_conffile)
         if atf_mem_settings:
-            machine_override_string += 'ATF_MEM_BASE ?= "%s"\n' % atf_mem_base
-            machine_override_string += 'ATF_MEM_SIZE ?= "%s"\n' % atf_mem_size
+            machine_override_string += 'TFA_MEM_BASE ?= "%s"\n' % atf_mem_base
+            machine_override_string += 'TFA_MEM_SIZE ?= "%s"\n' % atf_mem_size
 
         atf_extra_settings = common_utils.GetConfigValue('CONFIG_SUBSYSTEM_TF-A_EXTRA_COMPILER_FLAGS',
                                                          system_conffile)
@@ -253,7 +206,7 @@ def YoctoCommonConfigs(args, arch, system_conffile, MultiConfDict):
         atf_debug = common_utils.GetConfigValue(
                 'CONFIG_SUBSYSTEM_TF-A_DEBUG', system_conffile)
         if atf_debug:
-            machine_override_string += 'DEBUG_ATF = "1"\n'
+            machine_override_string += 'TFA_DEBUG = "1"\n'
 
         optee_serial_ip_name = common_utils.GetConfigValue('CONFIG_SUBSYSTEM_SERIAL_OP-TEE_IP_NAME',
                                                         system_conffile)
@@ -288,6 +241,15 @@ def YoctoCommonConfigs(args, arch, system_conffile, MultiConfDict):
     if uboot_spl_type:
         machine_override_string += f'SPL_BINARY ?= "{uboot_spl_type}"\n'
 
+    memory = common_utils.GetConfigValue('CONFIG_SUBSYSTEM_MEMORY_', system_conffile,
+                                         'choice', '_SELECT=y')
+    uboot_textbase = common_utils.GetConfigValue(
+        'CONFIG_SUBSYSTEM_MEMORY_%s_U__BOOT_TEXTBASE_OFFSET' % memory,
+        system_conffile)
+    if uboot_textbase:
+        machine_override_string += \
+            'UBOOT_USER_SPECIFIED_TEXT_BASE ?= "%s"\n' % uboot_textbase
+
     ddr_baseaddr = common_utils.GetConfigValue('CONFIG_SUBSYSTEM_MEMORY_', system_conffile,
                                                'asterisk', '_BASEADDR=')
     if not ddr_baseaddr:
@@ -311,9 +273,7 @@ def YoctoCommonConfigs(args, arch, system_conffile, MultiConfDict):
         machine_override_string += 'KBUILD_DEFCONFIG = "%s"\n' % kernel_config
 
     # Additional kernel make command-line arguments
-    if args.soc_family == 'microblaze':
-        kernel_loadaddr = ddr_baseaddr
-    elif args.soc_family == 'microblaze-v':
+    if args.soc_family == 'microblaze-v':
         uboot_entry_offset = '0x1200000'
         kernel_loadaddr = hex(int(ddr_baseaddr, 16) + int(uboot_entry_offset, 16))
     else:
@@ -341,15 +301,23 @@ def YoctoCommonConfigs(args, arch, system_conffile, MultiConfDict):
         machine_override_string += '\n# Yocto MACHINE_FEATURES Variable\n'
         machine_override_string += 'MACHINE_FEATURES += "%s"\n' % (machine_features)
 
-    if args.soc_variant == 'ev' and args.soc_family == 'zynqmp':
-        machine_override_string += '\n# Yocto IMAGE_FEATURES Variable\n'
-        machine_override_string += 'MACHINE_HWCODECS = "libvcu-omxil"\n'
-        machine_override_string += 'IMAGE_FEATURES += "hwcodecs"\n'
+    is_hwcodecs = common_utils.GetConfigValue(
+        'CONFIG_YOCTO_MACHINE_HWCODECS', system_conffile)
+    if is_hwcodecs == 'y':
+        hwcodecs_value = common_utils.GetConfigValue(
+            'CONFIG_YOCTO_MACHINE_HWCODECS_ENGINE_', system_conffile,
+            'choicelist', '=y').lower()
+        hwcodecs_extra = common_utils.GetConfigValue(
+            'CONFIG_YOCTO_MACHINE_HWCODECS_EXTRA', system_conffile)
+        hwcodecs_value = ' '.join((hwcodecs_value + ' ' + hwcodecs_extra).split())
+        if hwcodecs_value:
+            machine_override_string += '\n# Yocto MACHINE_HWCODECS Variable\n'
+            machine_override_string += 'MACHINE_HWCODECS ?= "%s"\n' % hwcodecs_value
 
     return machine_override_string
 
 
-def YoctoMCFimwareConfigs(args, arch, dtg_machine, system_conffile, req_conf_file, MultiConfDict):
+def YoctoMCFimwareConfigs(args, arch, system_conffile, req_conf_file, MultiConfDict):
     machine_override_string = ''
     # Capture the tunes
     if 'PmuTune' in MultiConfDict:
@@ -443,238 +411,175 @@ def YoctoMCFimwareConfigs(args, arch, dtg_machine, system_conffile, req_conf_fil
 
     return machine_override_string
 
-def SerialConsoleSettings(system_conffile, sdt=False):
+def GetSerialConsoleFromSyshw():
+    ''' Derive the 'From SDT' console from the syshw /chosen stdout-path
+    (e.g. 'serial1:115200n8'): resolve the 'serialN' alias to its 'tty_device'.
+    Returns ('<baud>;<tty>', baudrate) or ('', '') if undetermined. '''
+    global syshw_data
+    chosen = syshw_data.get('chosen', {}) or {}
+    stdout_path = str(chosen.get('stdout-path', '') or '')
+    if not stdout_path:
+        return '', ''
+    # stdout-path form: '<alias-or-path>:<baud>n8' (the ':<options>' part is
+    # optional). Split off the reference and pull the baudrate from the options.
+    ref, _, options = stdout_path.partition(':')
+    baud_match = re.search(r'[0-9]+', options)
+    baudrate = baud_match.group(0) if baud_match else '115200'
+    # Resolve the referenced serial node to its tty device name. The reference
+    # is normally a 'serialN' alias; fall back to matching the DT node path.
+    tty_device = ''
+    for _, slave_data in common_utils.IterSyshwSlaves(syshw_data, 'serial'):
+        if ref in (slave_data.get('aliases', []) or []) or \
+                ref == slave_data.get('dt_node'):
+            tty_device = str(slave_data.get('tty_device', '') or '')
+            break
+    if not tty_device:
+        return '', ''
+    return '%s;%s' % (baudrate, tty_device), baudrate
+
+
+def SerialConsoleSettings(system_conffile, soc_family=''):
     serialname = common_utils.GetConfigValue('CONFIG_SUBSYSTEM_SERIAL_', system_conffile,
                                              'choice', '_SELECT=y')
     serial_console = ''
     baudrate = ''
+    if serialname == 'FROM_SDT':
+        # Console is defined by the SDT, derive it from the syshw chosen node
+        serial_console, baudrate = GetSerialConsoleFromSyshw()
+        if not serial_console:
+            # The syshw chosen node carried no resolvable stdout-path. Fall back
+            # to serial0 with the SoC-default tty so the image still gets a
+            # login console instead of none. The tty prefix is SoC-determined.
+            soc_tty = {'zynq': 'ttyPS0', 'zynqmp': 'ttyPS0',
+                       'versal': 'ttyAMA0', 'versal-net': 'ttyAMA0',
+                       'versal-2ve-2vm': 'ttyAMA0', 'versal-2vp': 'ttyAMA0',
+                       'microblaze-v': 'ttyUL0'}
+            tty = soc_tty.get(soc_family, 'ttyPS0')
+            baudrate = '115200'
+            serial_console = '%s;%s' % (baudrate, tty)
+            logger.warning('Serial set to "From SDT" but no console could be '
+                           'derived from the syshw chosen node; '
+                           'defaulting to serial0 (%s).' % tty)
+        return serial_console, baudrate
     if serialname and serialname != 'MANUAL':
-        serialipname = GetIPProperty(serialname, system_conffile)
         baudrate = common_utils.GetConfigValue('CONFIG_SUBSYSTEM_SERIAL_%s_BAUDRATE_'
                                                % serialname, system_conffile, 'choice', '=y')
-        if serialipname == 'axi_uartlite' or serialipname == 'mdm':
-            serial_console = '%s;ttyUL0' % baudrate
-        elif serialipname == 'axi_uart16550':
-            serial_console = '%s;ttyS0' % baudrate
-        elif 'sbsauart' in serialipname:
-            serial_console = '%s;ttyAMA0' % baudrate
-        else:
-            serial_console = '%s;ttyPS0' % baudrate
-
-        # parse the selected serial IP if no_alias/sdt flow selected to get the serial no.
-        # serial no. will be suffix to the serial ip name Ex:psu_uart_1 -> serial no. is 1.
-        no_alias = common_utils.GetConfigValue(
-            'CONFIG_SUBSYSTEM_ENABLE_NO_ALIAS', system_conffile)
-        serial_no = ''
-        if no_alias == 'y' or sdt:
-            serial_ips = CheckDeviceCount('serial', system_conffile)
-            if len(serial_ips) < 2:
-                # Set serial no as 0 if only one serial ip is enabled
-                serial_no = '0'
-            elif "_" in serialname:
-                try:
-                    serial_no = serialname.lower().split(serialipname + '_')[1]
-                except IndexError:
-                    tmp = re.findall('[0-9]+', serialname)
-                    if tmp:
-                        serial_no = tmp[0]
-            else:
-                tmp = re.findall('[0-9]+', serialname)
-                if tmp:
-                    serial_no = tmp[0]
-            if serial_no:
-                serial_console = serial_console[:-1]
-                serial_console = serial_console + serial_no
+        # Resolve the selected UART's tty device from the syshw data. The
+        # selection token matches the (bankless) serial slave name.
+        serial_slave = serialname.lower()
+        for slave_name, slave_data in common_utils.IterSyshwSlaves(syshw_data, 'serial'):
+            if re.sub('_bankless$', '', slave_name) == serial_slave:
+                tty_device = str(slave_data.get('tty_device', '') or '')
+                if tty_device:
+                    serial_console = '%s;%s' % (baudrate, tty_device)
+                break
     return serial_console, baudrate
 
 
-def YoctoXsctConfigs(args, arch, dtg_machine, system_conffile, req_conf_file,
-                     MultiConfDict, machine_override_string):
-
-    soc_family = args.soc_family
-    soc_variant = args.soc_variant
-
-    # Set Tune Features for MicroBlaze
-    if soc_family == 'microblaze':
-        tune_settings = GetTuneFeatures(soc_family, system_conffile)
-        # MicroBlaze Tune features Settings
-        machine_override_string += '\n# MicroBlaze Tune features Settings\n'
-        machine_override_string += 'TUNE_FEATURES:tune-microblaze ?= "%s"\n' \
-                                   % tune_settings
-        machine_override_string += 'DEFAULTTUNE ?= "microblaze"\n'
-
-    machine_override_string += '\n# Yocto device-tree variables\n'
-    serial_manual = common_utils.GetConfigValue('CONFIG_SUBSYSTEM_SERIAL_MANUAL_SELECT',
-                                                system_conffile)
-    serial_ipname = common_utils.GetConfigValue('CONFIG_SUBSYSTEM_SERIAL_IP_NAME',
-                                                system_conffile)
-    if not serial_manual:
-        machine_override_string += 'YAML_CONSOLE_DEVICE_CONFIG:pn-device-tree ?= "%s"\n' \
-            % serial_ipname
-
-    memory_manual = common_utils.GetConfigValue('CONFIG_SUBSYSTEM_MEMORY_MANUAL_SELECT',
-                                                system_conffile)
-    memory_ipname = common_utils.GetConfigValue('CONFIG_SUBSYSTEM_MEMORY_IP_NAME',
-                                                system_conffile)
-    if not memory_manual:
-        machine_override_string += 'YAML_MAIN_MEMORY_CONFIG:pn-device-tree ?= "%s"\n' \
-            % memory_ipname
-
-    dt_padding_size = common_utils.GetConfigValue('CONFIG_SUBSYSTEM_DTB_PADDING_SIZE',
-                                                  system_conffile)
-    machine_override_string += 'DT_PADDING_SIZE:pn-device-tree ?= "%s"\n' \
-        % dt_padding_size
-
-    dt_compiler_flags = common_utils.GetConfigValue('CONFIG_SUBSYSTEM_DEVICETREE_COMPILER_FLAGS',
-                                                    system_conffile)
-    machine_override_string += 'DTC_FLAGS:pn-device-tree ?= "%s"\n' \
-        % dt_compiler_flags
-
-    processor_ipname = common_utils.GetConfigValue('CONFIG_SUBSYSTEM_PROCESSOR0_IP_NAME',
-                                                   system_conffile)
-    if soc_family == 'microblaze':
-        machine_override_string += 'XSCTH_PROC:pn-device-tree ?= "%s"\n' \
-            % processor_ipname
-
-    # Set dt board file as per the machine file
-    # if config set to template/auto/AUTO
-    if dtg_machine:
-        if dtg_machine.lower() != 'auto':
-            machine_override_string += 'YAML_DT_BOARD_FLAGS ?= "{BOARD %s}"\n'\
-                % dtg_machine
-
-    if soc_family == 'versal':
-        machine_override_string += '\n# Yocto PLM variables\n'
-        plm_serial_ip_name = common_utils.GetConfigValue('CONFIG_SUBSYSTEM_SERIAL_PLM_IP_NAME',
-                                                         system_conffile)
-        plm_serial_manual = common_utils.GetConfigValue('CONFIG_SUBSYSTEM_PLM_SERIAL_MANUAL_SELECT',
-                                                        system_conffile)
-        if not plm_serial_manual:
-            machine_override_string += 'YAML_SERIAL_CONSOLE_STDIN:pn-plm-firmware ?= "%s"\n' \
-                                       % plm_serial_ip_name
-            machine_override_string += 'YAML_SERIAL_CONSOLE_STDOUT:pn-plm-firmware ?= "%s"\n' \
-                                       % plm_serial_ip_name
-
-    if soc_family == 'zynqmp':
-        machine_override_string += '\n# Yocto PMUFW variables\n'
-        pmufw_extraflags = common_utils.GetConfigValue('CONFIG_SUBSYSTEM_PMUFW_COMPILER_EXTRA_FLAGS',
-                                                       system_conffile)
-        machine_override_string += 'YAML_COMPILER_FLAGS:append:pn-pmu-firmware = " %s"\n' \
-                                   % pmufw_extraflags
-        pmufw_serial_manual = common_utils.GetConfigValue('CONFIG_SUBSYSTEM_PMUFW_SERIAL_MANUAL_SELECT',
-                                                          system_conffile)
-        pmufw_serial_ipname = common_utils.GetConfigValue('CONFIG_SUBSYSTEM_SERIAL_PMUFW_IP_NAME',
-                                                          system_conffile)
-        if not pmufw_serial_manual:
-            machine_override_string += 'YAML_SERIAL_CONSOLE_STDIN:pn-pmu-firmware ?= "%s"\n' \
-                                       % pmufw_serial_ipname
-            machine_override_string += 'YAML_SERIAL_CONSOLE_STDOUT:pn-pmu-firmware ?= "%s"\n' \
-                                       % pmufw_serial_ipname
-
-    if soc_family in ['zynqmp', 'zynq']:
-        machine_override_string += '\n# Yocto FSBL variables\n'
-        fsbl_serial_manual = common_utils.GetConfigValue('CONFIG_SUBSYSTEM_FSBL_SERIAL_MANUAL_SELECT',
-                                                         system_conffile)
-        fsbl_serial_ipname = common_utils.GetConfigValue(
-            'CONFIG_SUBSYSTEM_SERIAL_FSBL_IP_NAME', system_conffile)
-        if not fsbl_serial_manual:
-            machine_override_string += 'YAML_SERIAL_CONSOLE_STDIN:pn-fsbl-firmware ?= "%s"\n' \
-                                       % fsbl_serial_ipname
-            machine_override_string += 'YAML_SERIAL_CONSOLE_STDOUT:pn-fsbl-firmware ?= "%s"\n' \
-                                       % fsbl_serial_ipname
-
-    if soc_family == 'microblaze':
-        machine_override_string += '\n# Yocto FS-Boot variables\n'
-        fsboot_serial_ipname = common_utils.GetConfigValue('CONFIG_SUBSYSTEM_SERIAL_FSBOOT_IP_NAME',
-                                                           system_conffile)
-        fsboot_serial_manual = common_utils.GetConfigValue('CONFIG_SUBSYSTEM_FSBOOT_SERIAL_MANUAL_SELECT',
-                                                           system_conffile)
-        if not fsboot_serial_manual:
-            machine_override_string += 'YAML_SERIAL_CONSOLE_STDIN:pn-fs-boot ?= "%s"\n' \
-                                       % fsboot_serial_ipname
-            machine_override_string += 'YAML_SERIAL_CONSOLE_STDOUT:pn-fs-boot ?= "%s"\n' \
-                                       % fsboot_serial_ipname
-        fsboot_memory_manual = common_utils.GetConfigValue('CONFIG_SUBSYSTEM_MEMORY_MANUAL_SELECT',
-                                                           system_conffile)
-        fsboot_memory_ipname = common_utils.GetConfigValue('CONFIG_SUBSYSTEM_MEMORY_IP_NAME',
-                                                           system_conffile)
-        fsboot_flash_ipname = common_utils.GetConfigValue('CONFIG_SUBSYSTEM_FLASH_IP_NAME',
-                                                          system_conffile)
-        if not fsboot_memory_manual:
-            machine_override_string += 'YAML_MAIN_MEMORY_CONFIG:pn-fs-boot ?= "%s"\n' \
-                                       % fsboot_memory_ipname
-            machine_override_string += 'YAML_FLASH_MEMORY_CONFIG:pn-fs-boot ?= "%s"\n' \
-                                       % fsboot_flash_ipname
-        processor_ip_name = common_utils.GetConfigValue('CONFIG_SUBSYSTEM_PROCESSOR0_IP_NAME',
-                                                        system_conffile)
-        machine_override_string += 'XSCTH_PROC:pn-fs-boot ?= "%s"\n' % processor_ip_name
-
-    serial_console, baudrate = SerialConsoleSettings(system_conffile)
-    if serial_console and baudrate:
-        machine_override_string += '\n# Serial Console Settings\n'
-        machine_override_string += 'SERIAL_CONSOLES ?= "%s"\n' % serial_console
-        machine_override_string += 'YAML_SERIAL_CONSOLE_BAUDRATE ?= "%s"\n' \
-                                   % baudrate
-
-    machine_override_string += YoctoCommonConfigs(args, arch, system_conffile, MultiConfDict)
-
-    # Add YAML pre yocto configs
-    machine_override_string = UpdateYamlConfigs('pre', machine_override_string)
-
-    # Variables that changes based on hw design or board specific requirement must be
-    # defined before calling the required inclusion file else pre-expansion value
-    # defined in respective generic machine conf will be set.
-    machine_override_string += '\n# Required generic machine inclusion\n'
-    machine_override_string += 'require conf/machine/%s\n' % \
-        req_conf_file
-
-    # Add YAML post yocto configs
-    machine_override_string = UpdateYamlConfigs('post', machine_override_string)
-
-    machine_override_string += '\n# This is an \'XSCT\' based BSP\n'
-    xsct_version = bitbake_utils.Bitbake.getVar('XILINX_XSCT_VERSION')
-    if xsct_version:
-        machine_override_string += 'XILINX_XSCT_VERSION = "%s"\n' % xsct_version
-    machine_override_string += 'XILINX_WITH_ESW = "xsct"\n'
-
-    # Variable used for Vivado XSA path, name using local file or subversion
-    # path
-    machine_override_string += '\n# Add system XSA\n'
-    machine_override_string += 'HDF_URI = "%s"\n' % args.src_uri
-    try:
-        machine_override_string += 'HDF_URI[sha256sum] = "%s"\n' % args.sha256sum
-    except AttributeError:
-        raise Exception('XSA workflow requires a sha256sum to have been computed.')
-    if args.s_dir:
-        machine_override_string += 'HDF_URI[S] = "%s"\n' % os.path.join("${WORKDIR}", args.s_dir).rstrip('/')
-
+def YoctoSdtZephyrConfigs(MultiConfDict, machine):
+    """Zephyr primary-domain machine settings (e.g. 32-bit MicroBlaze-V).
+    Returns the board block that precedes the shared CONFIG_DTFILE
+    settings. The tune features are reused from the generated microblaze-v.inc
+    (required in YoctoSdtConfigs, same as the Linux path). Kept separate from
+    the Linux path for now; to be consolidated later.
+    """
+    board = MultiConfDict.get('ZephyrBoard', '')
+    machine_override_string  = ''
+    if board:
+        machine_override_string += '\n# Zephyr RTOS settings\n'
+        machine_override_string += 'ZEPHYR_BOARD = "%s"\n' % board
+        machine_override_string += 'ARCH = "riscv32"\n'
+    machine_override_string += '\n# Warn if this machine is used with a non-Zephyr DISTRO\n'
+    # The generic machine include (which inherits xilinx-deprecated in
+    # meta-xilinx) is skipped for the Zephyr domain, so inherit it here to
+    # activate the XILINX_DEPRECATED warning below.
+    machine_override_string += 'INHERIT += "xilinx-deprecated"\n'
+    machine_override_string += ('XILINX_DEPRECATED[%s] = "${@\'This configuration is only '
+                                'intended for use with DISTRO set to amd-zephyr.  It will '
+                                'likely fail with other configurations.\' '
+                                'if (d.getVar(\'DISTRO\') != \'amd-zephyr\') else \'\'}"\n'
+                                % machine)
     return machine_override_string
 
 
-def YoctoSdtConfigs(args, arch, dtg_machine, system_conffile, req_conf_file,
-                    MultiConfDict, machine_override_string):
+def GetSdtDomainConfig(args, MultiConfDict, machine):
+    """Return the domain-specific machine settings, selected by the
+    authoritative 'PrimaryOs' key (defaults to Linux when unset). Carries the
+    device-tree data plus 'emits_*' capability flags gating optional blocks.
+    """
+    if MultiConfDict.get('PrimaryOs') == 'zephyr':
+        board_kconfig = MultiConfDict.get('ZephyrBoardKconfigDefconfig', '')
+        post_dtfile = ''
+        if board_kconfig:
+            post_dtfile = ('ZEPHYR_SDT_BOARD_KCONFIG_DEFCONFIG = '
+                           '"${CONFIG_DTFILE_DIR}/%s"\n' % os.path.basename(board_kconfig))
+        return {
+            'primary_os': 'zephyr',
+            'dtfile': MultiConfDict.get('ZephyrDT', ''),
+            'pre_dtfile': YoctoSdtZephyrConfigs(MultiConfDict, machine),
+            'post_dtfile': post_dtfile,
+            'defaulttune': MultiConfDict.get('ZephyrDefaultTune', ''),
+            'emits_dtb_path': False,
+            'emits_serial': False,
+            'emits_uboot_kernel': False,
+            'emits_generic_require': False,
+            'emits_bootfw': False,
+            'opensbi': False,
+        }
+    return {
+        'primary_os': 'linux',
+        'dtfile': MultiConfDict.get('LinuxDT', ''),
+        'pre_dtfile': '',
+        'post_dtfile': '',
+        'defaulttune': '',
+        'emits_dtb_path': True,
+        'emits_serial': True,
+        'emits_uboot_kernel': True,
+        'emits_generic_require': True,
+        'emits_bootfw': True,
+        'opensbi': args.soc_family == 'microblaze-v',
+    }
+
+
+def YoctoSdtConfigs(args, arch, system_conffile, req_conf_file,
+                    MultiConfDict, machine_override_string, machine):
+
+    domain_config = GetSdtDomainConfig(args, MultiConfDict, machine)
 
     if args.soc_family == 'microblaze-v':
         machine_override_string += '\n# MicroBlaze V Tune features Settings\n'
+        # Set DEFAULTTUNE before the tune include so it selects the right tune.
+        if domain_config.get('defaulttune'):
+            machine_override_string += 'DEFAULTTUNE = "%s"\n' % domain_config['defaulttune']
         machine_override_string += f'require {os.path.join("conf", "machine", "include", args.machine, "microblaze-v.inc")}\n'
 
-    config_dtfile = MultiConfDict.get('LinuxDT', '')
+    machine_override_string += domain_config.get('pre_dtfile', '')
+
+    config_dtfile = domain_config.get('dtfile', '')
     config_dtfile_dir = os.path.relpath(args.dts_path, start=args.config_dir)
 
-    machine_override_string += '\n# Set the default (linux) domain device tree\n'
+    machine_override_string += '\n# Set the default (%s) domain device tree\n' % domain_config.get('primary_os', 'linux')
     machine_override_string += 'CONFIG_DTFILE_DIR := "${@bb.utils.which(d.getVar(\'BBPATH\'), \'conf/%s\')}"\n' % config_dtfile_dir
     if config_dtfile:
         machine_override_string += 'CONFIG_DTFILE ?= "${CONFIG_DTFILE_DIR}/%s"\n' % os.path.basename(config_dtfile)
     machine_override_string += 'CONFIG_DTFILE[vardepsexclude] += "CONFIG_DTFILE_DIR"\n'
 
-    machine_override_string += '\nDTB_FILE_PATH ?= "${RECIPE_SYSROOT}/boot/devicetree/${@os.path.basename(d.getVar(\'CONFIG_DTFILE\').replace(\'.dts\', \'.dtb\'))}"\n'
+    machine_override_string += domain_config.get('post_dtfile', '')
 
-    serial_console, baudrate = SerialConsoleSettings(system_conffile, sdt=True)
-    if serial_console:
-        machine_override_string += '\n# Serial Console Settings\n'
-        machine_override_string += 'SERIAL_CONSOLES ?= "%s"\n' % serial_console
+    # The device tree blob, serial getty and the u-boot/kernel variables below
+    # are Linux/u-boot specific; each is gated by its domain capability flag.
+    if domain_config.get('emits_dtb_path'):
+        machine_override_string += '\nDTB_FILE_PATH ?= "${RECIPE_SYSROOT}/boot/devicetree/${@os.path.basename(d.getVar(\'CONFIG_DTFILE\').replace(\'.dts\', \'.dtb\'))}"\n'
 
-    machine_override_string += YoctoCommonConfigs(args, arch, system_conffile, MultiConfDict)
+    if domain_config.get('emits_serial'):
+        serial_console, baudrate = SerialConsoleSettings(system_conffile,
+                                                         soc_family=args.soc_family)
+        if serial_console:
+            machine_override_string += '\n# Serial Console Settings\n'
+            machine_override_string += 'SERIAL_CONSOLES ?= "%s"\n' % serial_console
+
+    if domain_config.get('emits_uboot_kernel'):
+        machine_override_string += YoctoCommonConfigs(args, arch, system_conffile, MultiConfDict)
 
     # Add YAML pre yocto configs
     machine_override_string = UpdateYamlConfigs('pre', machine_override_string)
@@ -682,12 +587,15 @@ def YoctoSdtConfigs(args, arch, dtg_machine, system_conffile, req_conf_file,
     # Variables that changes based on hw design or board specific requirement must be
     # defined before calling the required inclusion file else pre-expansion value
     # defined in respective generic machine conf will be set.
-    machine_override_string += '\n# Required generic machine inclusion\n'
-    machine_override_string += 'require conf/machine/%s\n' % \
-        req_conf_file
+    # The generic machine include is Linux/u-boot oriented and is gated by the
+    # domain capability flag.
+    if domain_config.get('emits_generic_require'):
+        machine_override_string += '\n# Required generic machine inclusion\n'
+        machine_override_string += 'require conf/machine/%s\n' % \
+            req_conf_file
 
     # Add QEMU memory configuration if applicable
-    qemu_memory = GetQemuMemCfg(args.output, args.dts_path, args.hw_file)
+    qemu_memory = GetQemuMemCfg(args.work, args.dts_path, args.hw_file)
     if qemu_memory:
         machine_override_string += '\n# QEMU Memory Configuration\n'
         machine_override_string += qemu_memory
@@ -695,7 +603,7 @@ def YoctoSdtConfigs(args, arch, dtg_machine, system_conffile, req_conf_file,
     # Add YAML post yocto configs
     machine_override_string = UpdateYamlConfigs('post', machine_override_string)
 
-    if args.soc_family == 'microblaze-v':
+    if domain_config.get('opensbi'):
         machine_override_string += '\n# Yocto Riscv OPENSBI variables\n'
         ddr_baseaddr = common_utils.GetConfigValue('CONFIG_SUBSYSTEM_MEMORY_', system_conffile,
                                                    'asterisk', '_BASEADDR=')
@@ -713,7 +621,7 @@ def YoctoSdtConfigs(args, arch, dtg_machine, system_conffile, req_conf_file,
     if hasattr(args, 'sha256sum'):
         machine_override_string += 'SDT_URI[sha256sum] = "%s"\n' % args.sha256sum
     if args.s_dir:
-        machine_override_string += 'SDT_URI[S] = "%s"\n' % os.path.join("${WORKDIR}", args.s_dir).rstrip('/')
+        machine_override_string += 'SDT_URI[S] = "%s"\n' % os.path.join("${UNPACKDIR}", args.s_dir).rstrip('/')
 
     if args.psu_init_path != os.path.dirname(args.hw_file):
         machine_override_string += '\n# Custom PSU_INIT_PATH artifacts URL\n'
@@ -726,11 +634,12 @@ def YoctoSdtConfigs(args, arch, dtg_machine, system_conffile, req_conf_file,
     # Generally this means that the path will be EMPTY or a 'short' value for a directory
     system_dt_file = ("${RECIPE_SYSROOT}${datadir}/sdt/${MACHINE}/%s" % '').rstrip('/')
 
-    machine_override_string += '\n# Set the system device trees\n'
-    machine_override_string += 'SYSTEM_DTFILE_DEPENDS = "sdt-artifacts"\n'
-    machine_override_string += 'SYSTEM_DTFILE_DIR = "%s"\n' % system_dt_file
-    machine_override_string += 'SYSTEM_DTFILE = "${SYSTEM_DTFILE_DIR}/%s"\n' % \
-                               os.path.basename(args.hw_file)
+    if domain_config.get('emits_dtb_path'):
+        machine_override_string += '\n# Set the system device trees\n'
+        machine_override_string += 'SYSTEM_DTFILE_DEPENDS = "sdt-artifacts"\n'
+        machine_override_string += 'SYSTEM_DTFILE_DIR = "%s"\n' % system_dt_file
+        machine_override_string += 'SYSTEM_DTFILE = "${SYSTEM_DTFILE_DIR}/%s"\n' % \
+                                   os.path.basename(args.hw_file)
 
     if args.soc_family != 'microblaze-v':
         machine_override_string += '\n# Load the dynamic machine features\n'
@@ -743,7 +652,7 @@ def YoctoSdtConfigs(args, arch, dtg_machine, system_conffile, req_conf_file,
         fpga_image_type = 'pdi' if args.device_id.startswith('xcsu') else 'bit'
     elif args.soc_family in ['zynq', 'zynqmp']:
         fpga_image_type = 'bit'
-    elif args.soc_family in ['versal', 'versal-2ve-2vm']:
+    elif args.soc_family in ['versal', 'versal-2ve-2vm', 'versal-2vp']:
         fpga_image_type = 'pdi'
     else:
         fpga_image_type = ''
@@ -808,26 +717,30 @@ def YoctoSdtConfigs(args, arch, dtg_machine, system_conffile, req_conf_file,
             machine_override_string += 'BITSTREAM_PATH_DIR = "%s"\n' % bitstream_path_dir
             machine_override_string += 'BITSTREAM_PATH = "${BITSTREAM_PATH_DIR}/%s"\n' % \
                                        os.path.basename(args.pl)
-    bootmode_value = common_utils.GetConfigValue('CONFIG_SUBSYSTEM_BOOTMODE_',
-                                                    system_conffile, 'choice', '=y')
-    # For JTAG bootmode, we want to set the default to empty.
-    if bootmode_value == '0':
-        bootmode_value = ''
-    machine_override_string += '\n# Primary Bootmode value\n'
-    machine_override_string += 'DEFAULT_HW_BOOT_MODE = "%s"\n' % bootmode_value
+    # Bootmode, Boot.bin device tree and boot file remapping are Linux/u-boot
+    # boot concepts, gated by the domain capability flag.
+    if domain_config.get('emits_bootfw'):
+        bootmode_value = common_utils.GetConfigValue('CONFIG_SUBSYSTEM_BOOTMODE_',
+                                                        system_conffile, 'choice', '=y')
+        # For JTAG bootmode, we want to set the default to empty.
+        if bootmode_value == '0':
+            bootmode_value = ''
+        machine_override_string += '\n# Primary Bootmode value\n'
+        machine_override_string += 'DEFAULT_HW_BOOT_MODE = "%s"\n' % bootmode_value
 
-    machine_override_string += '\n# Update bootbin to use proper device tree\n'
-    machine_override_string += 'BIF_PARTITION_IMAGE[device-tree] = "${DTB_FILE_PATH}"\n'
-    machine_override_string += '\n# Remap boot files to ensure the right device tree is listed first\n'
-    machine_override_string += 'IMAGE_BOOT_FILES =+ "devicetree/${@os.path.basename(d.getVar(\'CONFIG_DTFILE\').replace(\'.dts\', \'.dtb\'))}"\n'
+        machine_override_string += '\n# Update bootbin to use proper device tree\n'
+        machine_override_string += 'BIF_PARTITION_IMAGE[device-tree] = "${DTB_FILE_PATH}"\n'
+        machine_override_string += '\n# Remap boot files to ensure the right device tree is listed first\n'
+        machine_override_string += 'IMAGE_BOOT_FILES =+ "devicetree/${@os.path.basename(d.getVar(\'CONFIG_DTFILE\').replace(\'.dts\', \'.dtb\'))}"\n'
 
     return machine_override_string
 
 
-YoctoGenericMachines = ('microblaze-generic', 'microblaze-v-generic', 'zynq-generic',
-                        'zynqmp-generic','versal-generic', 'versal-net-generic', 'versal-2ve-2vm-generic')
+YoctoGenericMachines = ('microblaze-v-generic', 'zynq-generic',
+                        'zynqmp-generic','versal-generic', 'versal-net-generic', 'versal-2ve-2vm-generic',
+                        'versal-2vp-generic')
 
-def GenerateYoctoMachine(args, system_conffile, plnx_syshw_file, MultiConfDict=''):
+def GenerateYoctoMachine(args, system_conffile, syshw_file, MultiConfDict=''):
     genmachine_scripts = project_config.GenMachineScriptsPath()
     if not os.path.isfile(system_conffile):
         raise Exception('Failed to generate .conf file, Unable to find config'
@@ -838,15 +751,13 @@ def GenerateYoctoMachine(args, system_conffile, plnx_syshw_file, MultiConfDict='
     global YamlMachineConfs
     YamlMachineConfs = yaml_utils.TemplateYamlData.get('machine', {}) or {}
     soc_family = args.soc_family
-    import yaml
-    global plnx_syshw_data
-    with open(plnx_syshw_file, 'r') as plnx_syshw_file_f:
-        plnx_syshw_data = yaml.safe_load(plnx_syshw_file_f)
+    global syshw_data
+    syshw_data = common_utils.GetSyshwData(syshw_file)
 
-    # Get the device_id from plnx_syshw_data
+    # Get the device_id from syshw_data
     args.device_id = '999'
-    if 'device_id' in plnx_syshw_data.keys():
-        args.device_id = plnx_syshw_data['device_id']
+    if 'device_id' in syshw_data.keys():
+        args.device_id = syshw_data['device_id']
 
     # Include user given machine if INCLUDE_MACHINE_NAME set
     req_conf_file = common_utils.GetConfigValue('CONFIG_YOCTO_INCLUDE_MACHINE_NAME',
@@ -862,8 +773,6 @@ def GenerateYoctoMachine(args, system_conffile, plnx_syshw_file, MultiConfDict='
     # Get the machine file name from sys config
     yocto_machine_name = common_utils.GetConfigValue('CONFIG_YOCTO_MACHINE_NAME',
                                                      system_conffile)
-    dtg_machine = common_utils.GetConfigValue('CONFIG_SUBSYSTEM_MACHINE_NAME',
-                                              system_conffile)
     # Use the sysconfig machine name as yocto machine
     machine_conf_file = yocto_machine_name
 
@@ -880,8 +789,8 @@ def GenerateYoctoMachine(args, system_conffile, plnx_syshw_file, MultiConfDict='
     machine_override = machine_conf_file
 
     # Generate the yocto machine if config file changed.
-    if common_utils.ValidateHashFile(args.output, 'SYSTEM_CONF',
-                                     system_conffile, update=False) and \
+    if not common_utils.FileChanged(args.output, 'SYSTEM_CONF',
+                                    system_conffile) and \
             os.path.exists(machine_conf_path):
         return machine_conf_file
 
@@ -924,7 +833,7 @@ def GenerateYoctoMachine(args, system_conffile, plnx_syshw_file, MultiConfDict='
                                % (machine_conf_file, machine_conf_file)
     machine_override_string += '#### Regular settings follow\n'
 
-    machine_override_string += YoctoMCFimwareConfigs(args, arch, dtg_machine,
+    machine_override_string += YoctoMCFimwareConfigs(args, arch,
                                                      system_conffile, req_conf_file, MultiConfDict)
     # Required conf file ext can be .inc or .conf
     # add check and modify
@@ -932,14 +841,11 @@ def GenerateYoctoMachine(args, system_conffile, plnx_syshw_file, MultiConfDict='
     if not req_ext and req_ext not in ('.inc', '.conf'):
         req_conf_file = req_conf_file + '.conf'
 
-    if args.hw_flow == 'xsct':
-        machine_override_string = YoctoXsctConfigs(args, arch, dtg_machine,
-                                                   system_conffile, req_conf_file,
-                                                   MultiConfDict, machine_override_string)
-    elif args.hw_flow == 'sdt':
-        machine_override_string = YoctoSdtConfigs(args, arch, dtg_machine,
+    if args.hw_flow == 'sdt':
+        machine_override_string = YoctoSdtConfigs(args, arch,
                                                   system_conffile, req_conf_file,
-                                                  MultiConfDict, machine_override_string)
+                                                  MultiConfDict, machine_override_string,
+                                                  machine_conf_file)
     # Add PACKAGE_EXTRA_ARCHS for inherit machine overrides
     if inherit_overrides:
         package_archs = inherit_overrides.replace('-', '_')

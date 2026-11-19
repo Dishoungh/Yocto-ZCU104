@@ -1,0 +1,90 @@
+FILESEXTRAPATHS:prepend := "${THISDIR}/u-boot-xlnx:"
+FILESEXTRAPATHS:prepend:zynqmp := "${THISDIR}/zynqmp:"
+FILESEXTRAPATHS:prepend:versal := "${THISDIR}/versal:"
+FILESEXTRAPATHS:prepend:versal-net := "${THISDIR}/versal-net:"
+FILESEXTRAPATHS:prepend:versal-2ve-2vm := "${THISDIR}/versal-2ve-2vm:"
+FILESEXTRAPATHS:prepend:versal-2vp := "${THISDIR}/versal:"
+
+EDF_UBOOT_ENV_SRC = ""
+EDF_UBOOT_ENV_SRC:zynqmp = "file://edf-env.cfg file://amd_edf.h"
+EDF_UBOOT_ENV_SRC:versal = "file://edf-env.cfg file://amd_edf.h file://amd_edf_common.h"
+EDF_UBOOT_ENV_SRC:versal-net = "file://edf-env-vn.cfg file://amd_edf.h file://amd_edf_common.h"
+EDF_UBOOT_ENV_SRC:versal-2ve-2vm = "file://edf-env.cfg file://amd_edf.h file://amd_edf_common.h"
+EDF_UBOOT_ENV_SRC:versal-2vp = "file://edf-env.cfg file://amd_edf.h file://amd_edf_common.h"
+
+# Consumed as UBOOT_PREBOOT_CFG by meta-xilinx-core u-boot-xlnx.inc. Family
+# default; a board layer selects its own sequence per machine.
+DEFAULT_UBOOT_PREBOOT_CFG:versal = "file://edf-preboot.cfg"
+DEFAULT_UBOOT_PREBOOT_CFG:versal-net = "file://edf-preboot-vn.cfg"
+DEFAULT_UBOOT_PREBOOT_CFG:versal-2ve-2vm = "file://edf-preboot.cfg"
+DEFAULT_UBOOT_PREBOOT_CFG:versal-2vp = "file://edf-preboot.cfg"
+
+EDF_BOOTCMD_CFG = ""
+EDF_BOOTCMD_CFG:aarch64:amd-edf = "${@bb.utils.contains('MACHINE_FEATURES', 'efi', \
+    'file://aarch64-bootcmd-bootefi.cfg', '', d)}"
+
+SRC_URI += "${EDF_UBOOT_ENV_SRC}"
+
+# Unscoped so a board's machine override wins.
+DEFAULT_UBOOT_BOOTCMD_CFG = "${EDF_BOOTCMD_CFG}"
+
+# Generate U-Boot environment binary image
+
+DEPENDS += "u-boot-tools-xlnx-native"
+
+do_unpack:append:zynqmp() {
+    bb.build.exec_func('do_sys_config', d)
+}
+
+do_unpack:append:versal() {
+    bb.build.exec_func('do_sys_config', d)
+}
+
+do_unpack:append:versal-net() {
+    bb.build.exec_func('do_sys_config', d)
+}
+
+do_unpack:append:versal-2ve-2vm() {
+    bb.build.exec_func('do_sys_config', d)
+}
+
+do_unpack:append:versal-2vp() {
+    bb.build.exec_func('do_sys_config', d)
+}
+
+do_sys_config() {
+    cp ${UNPACKDIR}/amd_edf.h ${S}/include/configs/amd_edf.h
+    if [ -e ${UNPACKDIR}/amd_edf_common.h ]; then
+        cp ${UNPACKDIR}/amd_edf_common.h ${S}/include/configs/amd_edf_common.h
+    fi
+}
+
+do_compile:append() {
+    if [ -n "${UBOOT_INITIAL_ENV}" ]; then
+        UBOOT_ENV_SIZE="$(cat ${B}/.config | grep "^CONFIG_ENV_SIZE=" | cut -d'=' -f2)"
+
+        if [ -z "$UBOOT_ENV_SIZE" ]; then
+            bberror "Unable to read CONFIG_ENV_SIZE"
+        fi
+
+        REDUND=""
+        if grep -q "^CONFIG_ENV_REDUNDANT=y" ${B}/.config; then
+            REDUND="-r"
+        fi
+
+        # There is a 33 byte checksum added to the environment, subtract this from the size
+        UBOOT_ENV_SIZE=$(printf "%d" $UBOOT_ENV_SIZE)
+        UBOOT_ENV_SIZE=$(expr $UBOOT_ENV_SIZE - 33)
+
+        echo "Constructing u-boot-initial-env with size $UBOOT_ENV_SIZE"
+        uboot-mkenvimage $REDUND -s $UBOOT_ENV_SIZE ${B}/${config}/u-boot-initial-env -o ${B}/u-boot-initial-env.bin
+    fi
+}
+
+do_deploy:append() {
+    if [ -n "${UBOOT_INITIAL_ENV}" ]; then
+        install -D -m 644 ${B}/u-boot-initial-env.bin ${DEPLOYDIR}/${UBOOT_INITIAL_ENV}-${MACHINE}-${PV}-${PR}.bin
+        ln -sf ${UBOOT_INITIAL_ENV}-${MACHINE}-${PV}-${PR}.bin ${DEPLOYDIR}/${UBOOT_INITIAL_ENV}-${MACHINE}.bin
+        ln -sf ${UBOOT_INITIAL_ENV}-${MACHINE}-${PV}-${PR}.bin ${DEPLOYDIR}/${UBOOT_INITIAL_ENV}.bin
+    fi
+}

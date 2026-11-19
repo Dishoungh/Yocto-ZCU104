@@ -13,12 +13,12 @@ SRC_URI = "git://github.com/Xilinx/hdmi21-modules.git;protocol=https;branch=${SR
 
 SRCREV = "063e5430bc9594609c54d2cd19bce2b9d69237cf"
 
-S = "${WORKDIR}/git"
 
 COMPATIBLE_MACHINE = "^$"
 COMPATIBLE_MACHINE:zynqmp = ".*"
 COMPATIBLE_MACHINE:versal = ".*"
 COMPATIBLE_MACHINE:versal-2ve-2vm = ".*"
+COMPATIBLE_MACHINE:versal-2vp = ".*"
 
 # The inherit of module.bbclass will automatically name module packages with
 # "kernel-module-" prefix as required by the oe-core build environment.

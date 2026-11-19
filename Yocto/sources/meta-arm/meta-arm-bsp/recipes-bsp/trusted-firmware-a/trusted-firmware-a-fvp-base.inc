@@ -4,11 +4,10 @@
 # Armv8-A Base Platform FVP
 #
 
-FILESEXTRAPATHS:prepend := "${THISDIR}/files/:${THISDIR}/files/fvp-base"
+FILESEXTRAPATHS:prepend := "${THISDIR}/files/:${THISDIR}/files/fvp-base:"
 
 SRC_URI:append = " \
-    file://0001-fdts-fvp-base-Add-stdout-path-and-virtio-net-and-rng.patch \
-    file://optee_spmc_maifest.dts;subdir=git/plat/arm/board/fvp/fdts \
+    file://optee_spmc_maifest.dts;subdir=${BB_GIT_DEFAULT_DESTSUFFIX}/plat/arm/board/fvp/fdts \
 "
 
 # OP-TEE SPMC related configuration
@@ -47,6 +46,9 @@ BL32 = "${@oe.utils.conditional('SPMC_IS_OPTEE', '1',\
 EXTRA_OEMAKE += "${@oe.utils.conditional('SPMC_IS_OPTEE', '1', \
                 ' BL32=${BL32}', '', d)}"
 
+# Enable memory safety in TF-A if machine supports it.
+EXTRA_OEMAKE += "${@bb.utils.contains('MACHINE_FEATURES', 'arm-branch-protection', ' BRANCH_PROTECTION=1', '', d)}"
+
 # Generic configuration
 COMPATIBLE_MACHINE = "fvp-base"
 TFA_PLATFORM = "fvp"
@@ -61,5 +63,11 @@ TFA_BUILD_TARGET = "bl1 bl2 bl31 dtbs fip"
 
 EXTRA_OEMAKE += "FVP_DT_PREFIX=fvp-base-gicv3-psci-1t FVP_USE_GIC_DRIVER=FVP_GICV3"
 
-# Our fvp-base machine explicitly has v8.4 cores
-EXTRA_OEMAKE += "ARM_ARCH_MAJOR=8 ARM_ARCH_MINOR=4"
+# Set the ISA to fvp-base conf file and disable AArch32 system registers
+EXTRA_OEMAKE += "ARM_ARCH_MAJOR=${ARM_ISA_MAJOR} ARM_ARCH_MINOR=${ARM_ISA_MINOR} CTX_INCLUDE_AARCH32_REGS=0"
+
+# If GENERATE_COT is set, then tf-a will try to use local poetry install
+# to run the python cot-dt2c command.  Disable the local poetry and use
+# the provided cot-dt2c.
+EXTRA_OEMAKE += "host-poetry=''"
+DEPENDS += "cot-dt2c-native"

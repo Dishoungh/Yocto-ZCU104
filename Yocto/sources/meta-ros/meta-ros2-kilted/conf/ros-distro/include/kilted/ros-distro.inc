@@ -146,9 +146,9 @@ ROS_WORLD_SKIP_GROUPS += "${@bb.utils.contains_any('LICENSE_FLAGS_ACCEPTED', ['c
 ROS_WORLD_SKIP_GROUPS += "${@bb.utils.contains('DISTRO_FEATURES', 'x11', '', 'glfw', d)}"
 
 # webots recipes depending on unavailable python moules like:
-# ERROR: Nothing RPROVIDES 'ROS_UNRESOLVED_DEP-python-transforms3d-pip' (but meta-ros2-rolling/generated-recipes/webots-ros2-desktop/webots-ros2-core_0.0.3-1.bb RDEPENDS on or otherwise requires it)
-# ERROR: Nothing RPROVIDES 'ROS_UNRESOLVED_DEP-urdf2webots-pip' (but meta-ros2-rolling/generated-recipes/webots-ros2-desktop/webots-ros2-importer_0.0.3-1.bb RDEPENDS on or otherwise requires it)
-# ERROR: Nothing RPROVIDES 'ROS_UNRESOLVED_DEP-python3-collada-pip' (but meta-ros2-rolling/generated-recipes/webots-ros2-desktop/webots-ros2-importer_0.0.3-1.bb RDEPENDS on or otherwise requires it)
+# ERROR: Nothing RPROVIDES 'ROS_UNRESOLVED_DEP-python-transforms3d-pip' (but meta-ros2-kilted/generated-recipes/webots-ros2-desktop/webots-ros2-core_0.0.3-1.bb RDEPENDS on or otherwise requires it)
+# ERROR: Nothing RPROVIDES 'ROS_UNRESOLVED_DEP-urdf2webots-pip' (but meta-ros2-kilted/generated-recipes/webots-ros2-desktop/webots-ros2-importer_0.0.3-1.bb RDEPENDS on or otherwise requires it)
+# ERROR: Nothing RPROVIDES 'ROS_UNRESOLVED_DEP-python3-collada-pip' (but meta-ros2-kilted/generated-recipes/webots-ros2-desktop/webots-ros2-importer_0.0.3-1.bb RDEPENDS on or otherwise requires it)
 ROS_WORLD_SKIP_GROUPS += "webots-python-modules"
 
 # recipes depending on gazebo-rosdev
@@ -199,6 +199,9 @@ ROS_WORLD_SKIP_GROUPS += "wireguard"
 
 # packages (like rtabmap) that use g2o
 ROS_WORLD_SKIP_GROUPS += "g2o"
+
+# packages that require kortexapi
+ROS_WORLD_SKIP_GROUPS += "kortexapi"
 
 # packages that require pyside2
 ROS_WORLD_SKIP_GROUPS += "pyside2"
@@ -507,3 +510,11 @@ ROS_UNRESOLVED_DEP-libnanoflann = "nanoflann"
 ROS_UNRESOLVED_DEP-libnanoflann-dev = "nanoflann"
 ROS_UNRESOLVED_DEP-python3-platformdirs = "python3-platformdirs"
 ROS_UNRESOLVED_DEP-python3-httpx = "python3-httpx"
+
+ROS_UNRESOLVED_DEP-libopencv-videoio = "opencv"
+ROS_UNRESOLVED_DEP-libopencv-imgproc = "opencv"
+ROS_UNRESOLVED_DEP-libopencv-core = "opencv"
+ROS_UNRESOLVED_DEP-libopencv-highgui = "opencv"
+ROS_UNRESOLVED_DEP-libopencv-imgcodecs = "opencv"
+
+ROS_UNRESOLVED_DEP-libexpected-dev = "tl-expected"

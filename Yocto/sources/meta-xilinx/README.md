@@ -5,13 +5,6 @@ Collection of layers to enable AMD Xilinx products.
 * **meta-microblaze**: layer containing the AMD Xilinx MicroBlaze architecture
 specific implementation, such as microblaze gcc tool and other tools.
 
-* **meta-xilinx-bsp**: layer containing the AMD Xilinx evaluation boards metadata
-such as eval boards machine configurations files, kernel configuration fragments,
-series configuration compiler(.scc) files etc.
-
-* **meta-xilinx-contrib**: layer containing contribution from open source developers
-for vendor specific boards which has AMD Xilinx devices or SoM's.
-
 * **meta-xilinx-core**: layer containing the AMD Xilinx hardware devices metadata
 such as tune files, generic, soc variant machine configurations, boot firmware
 components, kernel etc.
@@ -20,12 +13,7 @@ components, kernel etc.
 Standalone Toolchains metadata to build baremetal firmware and applications.
 
 * **meta-xilinx-standalone-sdt**: layer containing metadata to build
-all the boot images using lopper and system device tree without using the
-meta-xilinx-tools layer.
-
-* **meta-xilinx-vendor**: layer containing 3rd party vendor boards machine
-configurations files, boot firmware, kernel configuration fragments, .scc files,
-device tree etc.
+all the boot images using lopper and system device tree.
 
 * **meta-xilinx-multimedia**: layer contains AMD Xilinx specific multimedia packages
 including recipes for the fork of GStreamer.
@@ -46,6 +34,15 @@ Vivado and Vitis tools.
 
 * **meta-xilinx-virtualization**: layer containing metadata to build Xen target
 images.
+
+* **meta-amd-dpdk**: layer containing AMD additions to DPDK, the core patches
+and build options required by the AMD poll mode drivers.
+
+* **meta-amd-zephyr**: layer containing the amd-zephyr distro configuration
+and supporting recipes for AMD Zephyr RTOS targets.
+
+* **meta-amd-zephyr-bsp**: layer containing AMD Zephyr RTOS board machine
+configurations.
 
 > **See:** AMD Xilinx devices:
 	https://www.xilinx.com/products/silicon-devices.html

@@ -8,7 +8,9 @@ SRC_URI = "git://git.yoctoproject.org/prelink-cross;protocol=https;branch=master
 SRCREV = "ff2561c02ade96c5d4d56ddd4e27ff064840a176"
 PV = "1.0+git${SRCPV}"
 
-S = "${WORKDIR}/git"
+# The last tagged release was 20151030.  Track this as a git tree to
+# see if there are any updates
+UPSTREAM_CHECK_COMMITS = "1"
 
 inherit autotools native
 

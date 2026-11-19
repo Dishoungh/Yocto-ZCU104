@@ -1,5 +1,5 @@
 ..
- # Copyright (c) 2022-2024, Arm Limited.
+ # Copyright (c) 2022-2026, Arm Limited.
  #
  # SPDX-License-Identifier: MIT
 
@@ -18,6 +18,46 @@ including without limitation, Your software or Your Hardware designed or
 intended for safety-critical applications. Should Your Software or Your Hardware
 prove defective, you assume the entire cost of all necessary servicing, repair
 or correction.
+
+***********************
+Release notes - 2026.05
+***********************
+
+The same notes as the 2025.05 release still apply.
+
+***********************
+Release notes - 2025.12
+***********************
+
+The same notes as the 2025.05 release still apply.
+
+Known Issues or Limitations
+---------------------------
+
+- Corstone-1000 with Cortex-A320 FVP does not currently support Symmetric Multiprocessing
+- Corstone-1000 with Cortex-A320 FVP becomes unresponsive when the Linux kernel driver for the Ethos-U85 NPU loads automatically after a software reboot.
+
+***********************
+Release notes - 2025.05
+***********************
+
+Known Issues or Limitations
+---------------------------
+
+ - Crypto isolation is not supported in the Secure world of Corstone-1000. Additionally, clients in
+   the Normal world are not isolated from one another.Therefore, if an end user wants to add a new
+   Secure Partition (SP) (such as a software TPM) that accesses the Crypto service via the SE-Proxy,
+   they are responsible for implementing their own isolation mechanisms to ensure proper security boundaries.
+ - DSTREAM debug probe may experience unreliable USB connectivity when used with Arm DS for secure debug.
+   This issue is under active investigation, and we are working to identify and resolve compatibility issues in a future update.
+   As a more stable alternative, the ULINKpro debug probe is recommended for use with Corstone-1000 in secure debug scenarios.
+
+
+***********************
+Release notes - 2024.11
+***********************
+
+The same notes as the 2024.06 release still apply.
 
 ***********************
 Release notes - 2024.06
@@ -246,4 +286,4 @@ For all security issues, contact Arm by email at psirt@arm.com.
 
 --------------
 
-*Copyright (c) 2022-2023, Arm Limited. All rights reserved.*
+*Copyright (c) 2022-2026, Arm Limited. All rights reserved.*

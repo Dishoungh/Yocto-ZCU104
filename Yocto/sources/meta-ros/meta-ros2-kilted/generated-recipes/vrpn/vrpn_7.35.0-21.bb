@@ -18,7 +18,7 @@ ROS_BPN = "vrpn"
 
 ROS_BUILD_DEPENDS = ""
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     cmake-native \
 "
 
@@ -26,7 +26,7 @@ ROS_EXPORT_DEPENDS = ""
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     ament-cmake \
 "
 
@@ -44,7 +44,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/kilted/vrpn"
 SRC_URI = "git://github.com/ros2-gbp/vrpn-release;${ROS_BRANCH};protocol=https"
 SRCREV = "feebd3335300d7f6178d5bc233e0904639ae5662"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "cmake"
 

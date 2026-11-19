@@ -91,7 +91,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/mola_sm_loop_closure"
 SRC_URI = "git://github.com/ros2-gbp/mola_sm_loop_closure-release;${ROS_BRANCH};protocol=https"
 SRCREV = "6c531da79a9ce2dd62db2b689e26c12d8199445f"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

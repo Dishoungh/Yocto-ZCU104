@@ -1,4 +1,5 @@
 SUMMARY = "C library and tools for interacting with the linux GPIO character device"
+HOMEPAGE = "https://libgpiod.readthedocs.io/"
 RECIPE_MAINTAINER = "Bartosz Golaszewski <brgl@bgdev.pl>"
 
 inherit autotools pkgconfig ptest
@@ -52,9 +53,4 @@ do_install_ptest() {
     for tool in ${FILES:${PN}-tools}; do
         install ${B}/tools/.libs/$(basename $tool) ${D}${PTEST_PATH}/tests/
     done
-
-    if ${@bb.utils.contains('PACKAGECONFIG', 'cxx', 'true', 'false', d)}; then
-        install -m 0755 ${B}/bindings/cxx/tests/.libs/gpiod-cxx-test ${D}${PTEST_PATH}/tests/
-    fi
 }
-

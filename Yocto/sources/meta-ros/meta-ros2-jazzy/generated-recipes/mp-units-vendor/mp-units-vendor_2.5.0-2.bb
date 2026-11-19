@@ -16,25 +16,25 @@ LIC_FILES_CHKSUM = "file://package.xml;beginline=15;endline=15;md5=8c794bf9bb044
 ROS_CN = "mp_units_vendor"
 ROS_BPN = "mp_units_vendor"
 
-ROS_BUILD_DEPENDS = " \
+ROS_BUILD_DEPENDS = "\
     fmt \
     gsl \
 "
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     ament-cmake-native \
     ament-cmake-vendor-package-native \
     git-native \
 "
 
-ROS_EXPORT_DEPENDS = " \
+ROS_EXPORT_DEPENDS = "\
     fmt \
     gsl \
 "
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     fmt \
     gsl \
 "
@@ -53,7 +53,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/jazzy/mp_units_vendor"
 SRC_URI = "git://github.com/ros2-gbp/mp_units_vendor-release;${ROS_BRANCH};protocol=https"
 SRCREV = "7311b24d0b5d20d0e5860faf680131e0fe097b3f"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

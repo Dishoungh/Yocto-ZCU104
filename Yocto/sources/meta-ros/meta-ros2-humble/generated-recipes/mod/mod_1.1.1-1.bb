@@ -18,17 +18,17 @@ LIC_FILES_CHKSUM = "file://package.xml;beginline=10;endline=10;md5=b691248d2f70c
 ROS_CN = "mod"
 ROS_BPN = "mod"
 
-ROS_BUILD_DEPENDS = " \
+ROS_BUILD_DEPENDS = "\
     boost \
     libeigen \
     ompl \
 "
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     ament-cmake-native \
 "
 
-ROS_EXPORT_DEPENDS = " \
+ROS_EXPORT_DEPENDS = "\
     boost \
     libeigen \
     ompl \
@@ -36,7 +36,7 @@ ROS_EXPORT_DEPENDS = " \
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     boost \
     libeigen \
     ompl \
@@ -56,7 +56,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/humble/mod"
 SRC_URI = "git://github.com/OrebroUniversity/mod-release;${ROS_BRANCH};protocol=https"
 SRCREV = "94fb1a1c431797911bad37656a854e0a18dfaad7"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

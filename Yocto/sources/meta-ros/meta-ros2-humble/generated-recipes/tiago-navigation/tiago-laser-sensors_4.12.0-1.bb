@@ -20,7 +20,7 @@ ROS_BPN = "tiago_laser_sensors"
 
 ROS_BUILD_DEPENDS = ""
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     ament-cmake-auto-native \
 "
 
@@ -28,13 +28,13 @@ ROS_EXPORT_DEPENDS = ""
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     omni-base-laser-sensors \
     pmb2-laser-sensors \
 "
 
 # Currently informational only -- see http://www.ros.org/reps/rep-0149.html#dependency-tags.
-ROS_TEST_DEPENDS = " \
+ROS_TEST_DEPENDS = "\
     ament-lint-auto \
     ament-lint-common \
 "
@@ -46,11 +46,10 @@ DEPENDS += "${ROS_EXPORT_DEPENDS} ${ROS_BUILDTOOL_EXPORT_DEPENDS}"
 
 RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 
-# matches with: https://github.com/pal-gbp/tiago_navigation-release/archive/release/humble/tiago_laser_sensors/4.12.0-1.tar.gz
+# matches with: https://github.com/ros2-gbp/tiago_navigation-release/archive/release/humble/tiago_laser_sensors/4.12.0-1.tar.gz
 ROS_BRANCH ?= "branch=release/humble/tiago_laser_sensors"
-SRC_URI = "git://github.com/pal-gbp/tiago_navigation-release;${ROS_BRANCH};protocol=https"
+SRC_URI = "git://github.com/ros2-gbp/tiago_navigation-release;${ROS_BRANCH};protocol=https"
 SRCREV = "e354c9c56701dae008cfb69f059b38753ac5764f"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

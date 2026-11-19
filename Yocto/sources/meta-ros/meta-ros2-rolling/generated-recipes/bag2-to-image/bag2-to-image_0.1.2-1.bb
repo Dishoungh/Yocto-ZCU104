@@ -69,7 +69,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/bag2_to_image"
 SRC_URI = "git://github.com/ros2-gbp/bag2_to_image-release;${ROS_BRANCH};protocol=https"
 SRCREV = "bbd391a65d7eafb65c49e9f2b36b7aeca4c0e00c"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

@@ -49,7 +49,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/ackermann_nlmpc_msgs"
 SRC_URI = "git://github.com/ros2-gbp/ackmerann_nlmpc-release;${ROS_BRANCH};protocol=https"
 SRCREV = "e54180aa8c1e3f5b32fa1f0763c34a14fd0cfc7b"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

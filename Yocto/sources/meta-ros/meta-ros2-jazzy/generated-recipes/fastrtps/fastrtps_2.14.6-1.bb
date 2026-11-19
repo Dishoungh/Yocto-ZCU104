@@ -17,7 +17,7 @@ LIC_FILES_CHKSUM = "file://package.xml;beginline=11;endline=11;md5=da5a1be2927e3
 ROS_CN = "fastrtps"
 ROS_BPN = "fastrtps"
 
-ROS_BUILD_DEPENDS = " \
+ROS_BUILD_DEPENDS = "\
     asio \
     fastcdr \
     foonathan-memory-vendor \
@@ -26,11 +26,11 @@ ROS_BUILD_DEPENDS = " \
     python3 \
 "
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     cmake-native \
 "
 
-ROS_EXPORT_DEPENDS = " \
+ROS_EXPORT_DEPENDS = "\
     fastcdr \
     foonathan-memory-vendor \
     libtinyxml2 \
@@ -40,7 +40,7 @@ ROS_EXPORT_DEPENDS = " \
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     fastcdr \
     foonathan-memory-vendor \
     libtinyxml2 \
@@ -62,7 +62,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/jazzy/fastrtps"
 SRC_URI = "git://github.com/ros2-gbp/fastdds-release;${ROS_BRANCH};protocol=https"
 SRCREV = "95937373436642a87bbacb66fcbb3be550f33877"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "cmake"
 

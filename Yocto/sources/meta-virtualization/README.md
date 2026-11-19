@@ -1,27 +1,18 @@
 meta-virtualization
 ===================
 
-This layer provides support for building Xen, KVM, Libvirt, and associated
-packages necessary for constructing OE-based virtualized solutions.
+The meta-virtualization layer is the authoritative resource for virtualization
+technologies in OpenEmbedded / Yocto built distributions.  It provides support
+or both hypervisor-based virtualization (such as KVM, Xen, and QEMU) and
+system-level virtualization (Linux containers), along with the host and guest
+technologies required to build complete solutions ranging from embedded systems
+to full deep CNCF stack deployments.
 
 The bbappend files for some recipes (e.g. linux-yocto) in this layer need to
 have 'virtualization' in DISTRO_FEATURES to have effect. To enable them, add
 in configuration file the following line.
 
   DISTRO_FEATURES:append = " virtualization"
-
-If meta-virtualization is included, but virtualization is not enabled as a
-distro feature a warning is printed at parse time:
-
-    You have included the meta-virtualization layer, but
-    'virtualization' has not been enabled in your DISTRO_FEATURES. Some bbappend files
-    may not take effect. See the meta-virtualization README for details on enabling
-    virtualization support.
-
-If you know what you are doing, this warning can be disabled by setting the following
-variable in your configuration:
-
-  SKIP_META_VIRT_SANITY_CHECK = 1
 
 Depending on your use case, there are other distro features in meta-virtualization
 that may also be enabled:
@@ -35,6 +26,9 @@ that may also be enabled:
  - systemd: enable systemd services and unit files (for recipes for support)
  - sysvinit: enable sysvinit scripts (for recipes with support)
  - seccomp: enable seccomp support for packages that have the capability.
+ - vcontainer: enables vdkr/vpdmn virtual container runtime support, including
+   kernel config fragments (9p, squashfs, overlayfs) and busybox utilities
+   (base64, hexdump) required for container cross-install during image builds.
 
 Dependencies
 ------------

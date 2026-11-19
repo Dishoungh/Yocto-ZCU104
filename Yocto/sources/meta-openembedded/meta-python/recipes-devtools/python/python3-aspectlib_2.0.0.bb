@@ -8,23 +8,14 @@ HOMEPAGE = "https://github.com/ionelmc/python-aspectlib"
 LICENSE = "BSD-2-Clause"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=80721ace117fd1f814049ecb81c6be76"
 
+SRC_URI += "file://0001-python3-aspectlib-backport-fix-for-selftest.patch"
 SRC_URI[sha256sum] = "a4b461b9da0b531aebcb93efcde3de808a72c60226dd8d902c467d13faf7ce92"
 
-inherit ptest pypi setuptools3
-
-SRC_URI += "file://run-ptest \
-           "
-
-do_install_ptest() {
-    install -d ${D}${PTEST_PATH}/tests
-    cp -rf ${S}/tests/* ${D}${PTEST_PATH}/tests/
-}
+inherit ptest-python-pytest pypi setuptools3
 
 RDEPENDS:${PN}-ptest += "\
     python3-process-tests \
-    python3-pytest \
     python3-tornado \
-    python3-unittest-automake-output \
 "
 
 RDEPENDS:${PN} += " \

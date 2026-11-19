@@ -1,0 +1,18 @@
+SUMMARY = "Native-SDK packagegroup of host-side EDF tooling shipped in \
+the AMD Embedded Development Framework SDK installer."
+DESCRIPTION = "AMD Embedded Development Framework packages for native \
+SDK"
+
+PACKAGE_ARCH = "${MACHINE_ARCH}"
+
+inherit packagegroup
+inherit_defer nativesdk
+
+PACKAGEGROUP_DISABLE_COMPLEMENTARY = "1"
+
+AMD-EDF_NATIVESDK_PACKAGES = " \
+	nativesdk-bmaptool \
+        nativesdk-flashstrip \
+        nativesdk-wic \
+        "
+RDEPENDS:${PN} = "${AMD-EDF_NATIVESDK_PACKAGES}"

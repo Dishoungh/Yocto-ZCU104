@@ -15,7 +15,7 @@ LIC_FILES_CHKSUM = "file://package.xml;beginline=12;endline=12;md5=58e54c03ca7f8
 ROS_CN = "qml6_ros2_plugin"
 ROS_BPN = "qml6_ros2_plugin"
 
-ROS_BUILD_DEPENDS = " \
+ROS_BUILD_DEPENDS = "\
     ${ROS_UNRESOLVED_DEP-libqt6-multimedia} \
     ament-index-cpp \
     image-transport \
@@ -29,11 +29,11 @@ ROS_BUILD_DEPENDS = " \
     yaml-cpp \
 "
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     ament-cmake-native \
 "
 
-ROS_EXPORT_DEPENDS = " \
+ROS_EXPORT_DEPENDS = "\
     ${ROS_UNRESOLVED_DEP-libqt6-multimedia} \
     ament-index-cpp \
     image-transport \
@@ -48,7 +48,7 @@ ROS_EXPORT_DEPENDS = " \
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     ${ROS_UNRESOLVED_DEP-libqt6-multimedia} \
     ament-index-cpp \
     image-transport \
@@ -61,7 +61,7 @@ ROS_EXEC_DEPENDS = " \
 "
 
 # Currently informational only -- see http://www.ros.org/reps/rep-0149.html#dependency-tags.
-ROS_TEST_DEPENDS = " \
+ROS_TEST_DEPENDS = "\
     ${ROS_UNRESOLVED_DEP-qml6-module-qtqml-workerscript} \
     ${ROS_UNRESOLVED_DEP-qml6-module-qtquick} \
     ament-cmake-gtest \
@@ -82,7 +82,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/humble/qml6_ros2_plugin"
 SRC_URI = "git://github.com/ros2-gbp/qml6_ros2_plugin-release;${ROS_BRANCH};protocol=https"
 SRCREV = "8d0ff605f4088c557fe1e6774a30080cdd343ed7"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

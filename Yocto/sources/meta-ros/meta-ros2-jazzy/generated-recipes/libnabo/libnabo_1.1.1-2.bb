@@ -16,12 +16,12 @@ LIC_FILES_CHKSUM = "file://package.xml;beginline=10;endline=10;md5=7573035454910
 ROS_CN = "libnabo"
 ROS_BPN = "libnabo"
 
-ROS_BUILD_DEPENDS = " \
+ROS_BUILD_DEPENDS = "\
     boost \
     libeigen \
 "
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     cmake-native \
 "
 
@@ -29,7 +29,7 @@ ROS_EXPORT_DEPENDS = ""
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     boost \
     libeigen \
 "
@@ -48,7 +48,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/jazzy/libnabo"
 SRC_URI = "git://github.com/ros2-gbp/libnabo-release;${ROS_BRANCH};protocol=https"
 SRCREV = "160592c7ea514f53d953d86d718910a908cbfd21"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "cmake"
 

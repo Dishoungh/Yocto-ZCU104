@@ -17,7 +17,7 @@ ROS_BPN = "slider_publisher"
 
 ROS_BUILD_DEPENDS = ""
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     ament-cmake-native \
 "
 
@@ -25,7 +25,7 @@ ROS_EXPORT_DEPENDS = ""
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     python3-numpy \
     python3-scipy \
     rqt-gui-py \
@@ -45,7 +45,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/kilted/slider_publisher"
 SRC_URI = "git://github.com/ros2-gbp/slider_publisher-release;${ROS_BRANCH};protocol=https"
 SRCREV = "d9d432235c92643478fbb1c136ca9bb7ad01b2ae"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

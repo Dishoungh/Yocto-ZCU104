@@ -52,7 +52,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/mola_imu_preintegration"
 SRC_URI = "git://github.com/ros2-gbp/mola_imu_preintegration-release;${ROS_BRANCH};protocol=https"
 SRCREV = "e2bbed01faa55544d2123d12f51e214892e66f6f"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "cmake"
 

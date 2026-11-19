@@ -62,7 +62,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/system_webview"
 SRC_URI = "git://github.com/ros2-gbp/system_webview-release;${ROS_BRANCH};protocol=https"
 SRCREV = "07161052a487a7d58d34e75f9313bedc195d0c6e"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

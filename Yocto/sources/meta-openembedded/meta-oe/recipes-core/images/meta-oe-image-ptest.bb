@@ -26,8 +26,9 @@ IMAGE_ROOTFS_EXTRA_SPACE:virtclass-mcextend-poco = "1024288"
 
 # ptests need more memory than standard to avoid the OOM killer
 QB_MEM = "-m 1024"
-# If a particular ptest needs more memroy, it can be customized:
+# If a particular ptest needs more memory, it can be customized:
 #QB_MEM:virtclass-mcextend-<pn> = "-m 4096"
+QB_MEM:virtclass-mcextend-tbb = "-m 2048"
 
 TEST_SUITES = "ping ssh parselogs ptest"
 

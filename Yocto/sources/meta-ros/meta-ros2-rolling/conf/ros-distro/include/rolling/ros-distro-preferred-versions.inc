@@ -9,12 +9,13 @@
 # REP-2000 specifies 1.12.1 for humble and iron and 1.14.0 for jazzy
 # This is necessary as with ROS1 many recipes fail to build
 # as documented in https://github.com/ros/meta-ros/pull/936
+# The head of the tree should be used for rolling
 PREFERRED_VERSION_pcl = "1.14.1"
 
 PREFERRED_VERSION_sdformat = "16.0.1"
 
 # required for python3-scipy
-PREFERRED_VERSION_python3-gast = "0.5.4"
+PREFERRED_VERSION_python3-gast = "0.6.0"
 
 # python-pygraphviz needed a version < 13
 PREFERRED_VERSION_graphviz = "12.2.1"
@@ -38,3 +39,7 @@ PREFERRED_VERSION_gz-sim = "10.1.1"
 PREFERRED_VERSION_gz-tools = "2.0.3"
 PREFERRED_VERSION_gz-transport = "15.0.2"
 PREFERRED_VERSION_gz-utils = "4.0.0"
+
+PREFERRED_VERSION_xsimd = "13.0.0"
+PREFERRED_VERSION_xtensor = "0.27.1"
+PREFERRED_VERSION_xtl = "0.8.0"

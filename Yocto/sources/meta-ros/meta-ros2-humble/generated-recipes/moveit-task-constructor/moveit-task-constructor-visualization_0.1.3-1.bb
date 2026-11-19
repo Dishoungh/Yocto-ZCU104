@@ -16,7 +16,7 @@ LIC_FILES_CHKSUM = "file://package.xml;beginline=6;endline=6;md5=75730354549103a
 ROS_CN = "moveit_task_constructor"
 ROS_BPN = "moveit_task_constructor_visualization"
 
-ROS_BUILD_DEPENDS = " \
+ROS_BUILD_DEPENDS = "\
     fmt \
     moveit-core \
     moveit-ros-visualization \
@@ -27,11 +27,11 @@ ROS_BUILD_DEPENDS = " \
     rviz2 \
 "
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     ament-cmake-native \
 "
 
-ROS_EXPORT_DEPENDS = " \
+ROS_EXPORT_DEPENDS = "\
     fmt \
     moveit-core \
     moveit-ros-visualization \
@@ -43,7 +43,7 @@ ROS_EXPORT_DEPENDS = " \
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     fmt \
     moveit-core \
     moveit-ros-visualization \
@@ -54,7 +54,7 @@ ROS_EXEC_DEPENDS = " \
 "
 
 # Currently informational only -- see http://www.ros.org/reps/rep-0149.html#dependency-tags.
-ROS_TEST_DEPENDS = " \
+ROS_TEST_DEPENDS = "\
     ament-cmake-gmock \
     ament-cmake-gtest \
     launch \
@@ -74,7 +74,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/humble/moveit_task_constructor_visualization"
 SRC_URI = "git://github.com/ros2-gbp/moveit_task_constructor-release;${ROS_BRANCH};protocol=https"
 SRCREV = "c14ba08d51f9819473ffd7a7af64a48d362f62a3"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

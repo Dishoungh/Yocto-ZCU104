@@ -62,7 +62,8 @@
         "OUTPUTDIR": [ { "value": "../../../../../../simple-zcu104.gen/sources_1/bd/simple_bd/ip/simple_bd_axi_gpio_0_2" } ],
         "SELECTEDSIMMODEL": [ { "value": "" } ],
         "SHAREDDIR": [ { "value": "../../ipshared" } ],
-        "SWVERSION": [ { "value": "2026.1" } ],
+        "SWPRODUCT": [ { "value": "Vivado" } ],
+        "SWVERSION": [ { "value": "2026.2" } ],
         "SYNTHESISFLOW": [ { "value": "OUT_OF_CONTEXT" } ]
       }
     },
@@ -359,5 +360,5 @@
       }
     }
   },
-  "checksum": "ea75b7c3"
+  "checksum": "4ad1893c"
 }

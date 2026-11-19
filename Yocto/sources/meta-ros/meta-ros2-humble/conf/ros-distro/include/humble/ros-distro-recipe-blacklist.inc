@@ -200,11 +200,7 @@ SKIP_RECIPE[webots-ros2-universal-robot] ?= "${@bb.utils.contains_any('ROS_WORLD
 SKIP_RECIPE[wiimote] ?= "${@bb.utils.contains('ROS_WORLD_SKIP_GROUPS', 'cwiid', 'Depends on unavailable ROS_UNRESOLVED_DEP-cwiid-dev', '', d)}"
 SKIP_RECIPE[zenoh-bridge-dds] ?= "${@bb.utils.contains_any('ROS_WORLD_SKIP_GROUPS', ['clang', 'cargo'], 'clang: depends on clang which requires meta-clang layer; cargo: depends on cargo which requires meta-rust layer (or oe-core[honister] or newer)', '', d)}"
 
-# Renamed to fuse-ros in recipes-bbappends/fuse to avoid conflict with
-# meta-filesystems/recipes-support/fuse/fuse_2.9.9.bb
-# And renamed fuse-doc to fuse-ros-doc to avoid conflict with PN-doc package created by fuse recipe
-BBMASK +=  "generated-recipes/fuse/fuse_.*.bb"
-BBMASK +=  "generated-recipes/fuse/fuse-doc_.*.bb"
+BBMASK += "generated-recipes/libcamera/libcamera_.*.bb"
 
 # meta-ros provides a recipe for octomap to use instead of the generated one
 BBMASK += "generated-recipes/octomap/octomap_.*.bb"

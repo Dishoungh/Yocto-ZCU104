@@ -7,8 +7,6 @@ LIC_FILES_CHKSUM = "file://COPYING.LIB;md5=55ca817ccb7d5b5b66355690e9abc605 \
 
 SRC_URI = "git://github.com/gdraheim/zziplib;protocol=https;branch=master"
 
-S = "${WORKDIR}/git"
-
 SRCREV = "57d5394a2a36b00c65d7979676e18bca14e94be0"
 
 DEPENDS = "zlib libsdl2"

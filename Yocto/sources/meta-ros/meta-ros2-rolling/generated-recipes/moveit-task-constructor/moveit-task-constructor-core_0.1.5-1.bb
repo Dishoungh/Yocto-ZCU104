@@ -89,7 +89,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/moveit_task_constructor_core"
 SRC_URI = "git://github.com/ros2-gbp/moveit_task_constructor-release;${ROS_BRANCH};protocol=https"
 SRCREV = "3517b510dd9f82eb998933de0f08cacadeb3e815"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

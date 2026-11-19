@@ -13,8 +13,8 @@ SRC_URI = "file://peek.c \
            file://poke.c \
            file://Makefile \
           "
-S = "${WORKDIR}"
-CFLAGS:prepend = "-I ${S}/include"
+S = "${UNPACKDIR}"
+CFLAGS:prepend = "-I ${S}/include "
 do_compile() {
         oe_runmake
 }
@@ -24,4 +24,3 @@ do_install() {
         install -m 0755 ${S}/poke ${D}${bindir}
 
 }
-

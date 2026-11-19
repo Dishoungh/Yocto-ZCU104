@@ -14,6 +14,7 @@ import re
 import yaml
 import common_utils
 import yaml_utils
+import lopper_utils
 import logging
 import glob
 import multiconfigs
@@ -22,17 +23,17 @@ logger = logging.getLogger('Gen-Machineconf')
 
 
 start_menu = '''
-mainmenu "{0}System Configuration"
+mainmenu "System Configuration"
 config SUBSYSTEM_TYPE_LINUX
         bool
         default y
-        select SYSTEM_{1}
+        select SYSTEM_{0}
 
-config SYSTEM_{1}
-        bool "{1} Configuration"
+config SYSTEM_{0}
+        bool "{0} Configuration"
         help
-          {1} Configuration for the project.
-          All these config options will be in {2}/config
+          {0} Configuration for the project.
+          All these config options will be in {1}/config
 '''
 
 socvariant_menu = '''
@@ -42,15 +43,16 @@ config SUBSYSTEM_VARIANT_{0}{1}
         help
 '''
 
-Kconfig_sdt = '''
-config SUBSYSTEM_SDT_FLOW
+mbv_xlen_menu = '''
+config SUBSYSTEM_MICROBLAZE_V_XLEN_{0}
         bool
         default y
         help
+          Auto-detected MicroBlaze-V register width (XLEN={0}).
 '''
 
-Kconfig_plnx = '''
-config SUBSYSTEM_DISTRO_PETALINUX
+Kconfig_sdt = '''
+config SUBSYSTEM_SDT_FLOW
         bool
         default y
         help
@@ -92,13 +94,15 @@ def DetectSocVariant(device_id):
     return soc_variant
 
 
-def DetectSocFamily(proc_type):
+def DetectSocFamily(proc_type, device_id=''):
     soc_family = ''
     if re.search('.*a78.*', proc_type):
         if proc_type.startswith('psx_'):
             return 'versal'
         return 'versal-2ve-2vm'
     elif re.search('.*a72.*', proc_type):
+        if device_id.startswith('xc2vp'):
+            return 'versal-2vp'
         return 'versal'
     elif re.search('.*a53.*', proc_type):
         return 'zynqmp'
@@ -106,8 +110,6 @@ def DetectSocFamily(proc_type):
         return 'zynq'
     elif re.search('microblaze_riscv', proc_type):
         return 'microblaze-v'
-    elif re.search('microblaze', proc_type):
-        return 'microblaze'
     return proc_type
 
 
@@ -116,6 +118,30 @@ def GenMachineScriptsPath():
     genscriptspath = os.path.join(os.path.dirname(scriptpath),
                                   'gen-machine-scripts')
     return genscriptspath
+
+_MBVXlenDone = False
+def GetMBVXlen(work, dts_path, hw_file):
+    '''Auto-detect the MicroBlaze-V RISC-V -march (tune features) and register
+    width (XLEN) from the design by running the microblaze-riscv lop and reading
+    cflags.yaml. Returns a tuple (m_arch, xlen): m_arch is the -march string
+    (e.g. "rv64imafdc", or '' if not found) and xlen is 32 or 64 (default 32).'''
+    global _MBVXlenDone
+    if not _MBVXlenDone:
+        lopper_utils.RunLopperUsingDomainFile(['lop-microblaze-riscv.dts'],
+                                              work, dts_path, hw_file)
+        _MBVXlenDone = True
+    cflags_file = os.path.join(work, 'cflags.yaml')
+    if not os.path.isfile(cflags_file):
+        raise Exception('cflags file does not exist: %s, required to detect the '
+                        'MicroBlaze-V tune features and register width' % cflags_file)
+    cflags_data = yaml_utils.ReadYaml(cflags_file) or {}
+    march_match = re.search(r'-march=(\S+)', cflags_data.get('cflags', ''))
+    m_arch = march_match.group(1) if march_match else ''
+    xlen_match = re.match(r'rv(\d+)', m_arch)
+    if not xlen_match:
+        logger.warning('Unable to detect MicroBlaze-V -march, defaulting to 32-bit')
+        return m_arch, 32
+    return m_arch, int(xlen_match.group(1))
 
 
 def ConvertMCTargetsToKconfig(bbmctargets, multiconfig_min):
@@ -164,22 +190,18 @@ def GenKconfigProj(args, system_conffile, hw_info, MCObject=None):
     project_cfgdir = os.path.join(args.output, 'configs')
     Kconfig = os.path.join(project_cfgdir, 'Kconfig')
     Kconfig_syshw = os.path.join(project_cfgdir, 'Kconfig.syshw')
-    template_cfgfile = os.path.join(
-        genmachine_scripts, 'configs/config_%s' % args.soc_family)
     Kconfig_files = glob.glob(os.path.join(
                         genmachine_scripts, 'configs', 'Kconfig.*'))
 
     if not os.path.isfile(Kconfig_syshw):
         raise Exception('%s is not found in tool' % Kconfig_syshw)
 
-    if not os.path.isfile(system_conffile):
-        common_utils.CopyFile(template_cfgfile, system_conffile)
-
-    if not common_utils.ValidateHashFile(args.output, 'HW_FILE', args.hw_file):
-        # When multiple xsa/sdt files configured with same memory ip with different
+    if common_utils.FileChanged(args.output, 'HW_FILE', args.hw_file):
+        common_utils.CommitFileHash(args.output, 'HW_FILE', args.hw_file)
+        # When multiple SDT files configured with same memory ip with different
         # size offsets mconf/conf will use the old configs instead of new
         # to fix that removing old MEMORY related configs from sysconfig
-        # for the first time with every new XSA configured.
+        # for the first time with every new SDT configured.
         common_utils.RemoveConfigs('CONFIG_SUBSYSTEM_MEMORY_', system_conffile)
 
     if not MCObject and 'cpu_info_dict' in hw_info:
@@ -206,6 +228,19 @@ def GenKconfigProj(args, system_conffile, hw_info, MCObject=None):
         Kconfig_BBMCTargets = ConvertMCTargetsToKconfig(
             bbmctargets, multiconfig_min)
 
+    # Generate the per-domain Serial Settings menu. This needs the multiconfig
+    # target list (known here) and the SDT serial IPs (from sys_hw_data.yaml).
+    # The menu is injected into the Subsystem Hardware Settings menu of
+    # Kconfig.syshw via the @@serialmenustr@@ placeholder.
+    import kconfig_syshw
+    Kconfig_SerialMenu = ''
+    syshw_file = os.path.join(args.output, 'sys_hw_data.yaml')
+    if os.path.exists(syshw_file) and 'proc_type' in hw_info:
+        Kconfig_SerialMenu = kconfig_syshw.GenSerialDomainsKconfig(
+            syshw_file, hw_info['proc_type'], bbmctargets)
+    common_utils.ReplaceStrFromFile(
+                Kconfig_syshw, '@@serialmenustr@@', Kconfig_SerialMenu)
+
     for Kconfig_file in Kconfig_files:
         common_utils.CopyFile(Kconfig_file, project_cfgdir)
         common_utils.ReplaceStrFromFile(
@@ -216,16 +251,17 @@ def GenKconfigProj(args, system_conffile, hw_info, MCObject=None):
                     '@@multiconfigmenustr@@', Kconfig_BBMCTargets)
 
     Kconfig_soc_family = args.soc_family.upper()
-    Kconfig_str = start_menu.format('PetaLinux ' if args.petalinux else '',
-                                    Kconfig_soc_family, args.output)
+    Kconfig_str = start_menu.format(Kconfig_soc_family, args.output)
     if args.soc_variant:
         Kconfig_soc_variant = args.soc_variant.upper()
         Kconfig_str += socvariant_menu.format(
             Kconfig_soc_family, Kconfig_soc_variant)
-    if Kconfig_BBMCTargets:
+    if args.soc_family == 'microblaze-v':
+        _m_arch, mbv_xlen = GetMBVXlen(args.work, os.getcwd(), args.hw_file)
+        Kconfig_str += mbv_xlen_menu.format(mbv_xlen)
+    # Emit the SDT flow config if the user requested it (via --hw-flow sdt)
+    if getattr(args, 'hw_flow', '') == 'sdt':
         Kconfig_str += Kconfig_sdt
-    if args.petalinux:
-        Kconfig_str += Kconfig_plnx
     Kconfig_str += '\nsource %s/Kconfig.main\n' % project_cfgdir
 
     with open(Kconfig, 'w') as kconfig_f:
@@ -259,7 +295,7 @@ def PreProcessSysConf(args, system_conffile, hw_info):
         common_utils.UpdateConfigValue('CONFIG_YOCTO_ADD_OVERRIDES',
                                        '"%s"' % args.machine_overrides, system_conffile)
     if hasattr(args, 'dts_path') and args.dts_path:
-        common_utils.UpdateConfigValue('CONFIG_SUBSYSTEM_DT_XSCT_WORKSPACE',
+        common_utils.UpdateConfigValue('CONFIG_SUBSYSTEM_DT_WORKSPACE',
                                        '"%s"' % args.dts_path, system_conffile)
 
     # Read the args.gen_pl_overlay and update sysconfig
@@ -321,7 +357,45 @@ def PrintSystemConfiguration(args, model, device_id, cpu_info_dict=None):
                 cpu, _cpu.replace(',', ' '),
                 cpu_info_dict[cpu].get('core')))
 
-def GenerateConfiguration(args, hw_info, system_conffile, plnx_syshw_file, MCObject=None):
+def GetFilesToTrack(args, system_conffile):
+    '''Single source of truth for every input whose *content* affects the
+    generated output. Returns a mapping of .statistics macro -> list of paths,
+    used both for change detection (AnyFileChanged) and for recording hashes
+    (CommitHashes):
+      - HW_FILE:     the system device-tree (hardware description).
+      - SYSTEM_CONF: the generated project config file.
+      - INPUT_FILES: template YAML, domain files (from
+                     CONFIG_YOCTO_MC_DOMAIN_FILEPATH) and custom DTSI files.
+    PDI/bitstream, ELF and psu_init inputs are intentionally excluded because
+    only their paths (not their content) are embedded into the generated
+    machine configuration, so their content cannot change the output.'''
+    input_files = []
+    if getattr(args, 'template', None):
+        input_files.append(args.template)
+    # Domain files may come from menuconfig as well as the CLI, so read them
+    # from the project config (the source of truth) rather than args.
+    domain_file_cfg = common_utils.GetConfigValue(
+        'CONFIG_YOCTO_MC_DOMAIN_FILEPATH', system_conffile)
+    for _file in domain_file_cfg.split():
+        input_files.append(common_utils.ExpandFilePath(_file))
+    # Custom DTSI files are baked into the generated DTS, so their content
+    # matters. Their paths live in the project config as CONFIG_*_DTSI values.
+    if os.path.exists(system_conffile):
+        with open(system_conffile) as conf_f:
+            for line in conf_f:
+                match = re.match(
+                    r'^(CONFIG_YOCTO_BBMC_\w+_DTSI)="?(.*?)"?$', line.strip())
+                if match:
+                    for dtsi in match.group(2).split():
+                        input_files.append(common_utils.ExpandFilePath(dtsi))
+    return {
+        'HW_FILE': [args.hw_file],
+        'SYSTEM_CONF': [system_conffile],
+        'INPUT_FILES': input_files,
+    }
+
+
+def GenerateConfiguration(args, hw_info, system_conffile, syshw_file, MCObject=None):
     import yocto_machine
     import update_buildconf
 
@@ -329,12 +403,16 @@ def GenerateConfiguration(args, hw_info, system_conffile, plnx_syshw_file, MCObj
 
     MultiConfDict = {}
     GenMultiConf = True
-    # Dont re-trigger the multiconfigs if no changes in project file
-    if common_utils.ValidateHashFile(args.output, 'HW_FILE', args.hw_file, update=False) and \
-            common_utils.ValidateHashFile(args.output, 'SYSTEM_CONF', system_conffile, update=False) and \
-            os.path.exists(plnx_syshw_file) and \
+    files_to_track = GetFilesToTrack(args, system_conffile)
+    files_changed = common_utils.AnyFileChanged(args.output, files_to_track)
+    # Dont re-trigger the multiconfigs if no changes in any tracked input file
+    if not files_changed and \
+            os.path.exists(syshw_file) and \
             (hasattr(args, 'dts_path') and os.path.exists(args.dts_path)):
         GenMultiConf = False
+        logger.info('No changes detected in tracked input files, '
+                    'skipping configuration regeneration '
+                    '(use --force to regenerate all configurations)')
 
     if GenMultiConf and 'cpu_info_dict' in hw_info:
         if hasattr(args, 'dts_path') and args.dts_path:
@@ -355,21 +433,15 @@ def GenerateConfiguration(args, hw_info, system_conffile, plnx_syshw_file, MCObj
         if MCObject:
             MultiConfDict = MCObject.GenerateMultiConfigs()
 
-    if args.petalinux:
-        # Layers should be added before generating machine conf files
-        update_buildconf.AddUserLayers(args)
-
     machine_conf_file = yocto_machine.GenerateYoctoMachine(
-        args, system_conffile, plnx_syshw_file, MultiConfDict)
-
-    if args.petalinux:
-        import plnx_machine
-
-        plnx_conf_file = plnx_machine.GeneratePlnxConfig(
-            args, machine_conf_file)
-        update_buildconf.UpdateLocalConf(
-            args, plnx_conf_file, machine_conf_file)
+        args, system_conffile, syshw_file, MultiConfDict)
 
     update_buildconf.GenLocalConf(args.localconf,
                                   machine_conf_file,
-                                  system_conffile, args.petalinux)
+                                  system_conffile)
+
+    # Record hashes only when something changed; on an unchanged run the stored
+    # hashes already match, so re-committing would just re-hash every input and
+    # rewrite .statistics for no reason.
+    if files_changed:
+        common_utils.CommitHashes(args.output, files_to_track)

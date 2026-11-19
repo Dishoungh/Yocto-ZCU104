@@ -15,44 +15,44 @@ LIC_FILES_CHKSUM = "file://package.xml;beginline=8;endline=8;md5=82f0323c08605e5
 ROS_CN = "navigation2"
 ROS_BPN = "nav2_common"
 
-ROS_BUILD_DEPENDS = " \
-    ${ROS_UNRESOLVED_DEP-python3-types-pyyaml} \
+ROS_BUILD_DEPENDS = "\
     ament-cmake-python \
     launch \
     launch-ros \
     osrf-pycommon \
     python3-pyyaml \
+    python3-types-pyyaml \
     rclpy \
 "
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     ament-cmake-core-native \
 "
 
-ROS_EXPORT_DEPENDS = " \
-    ${ROS_UNRESOLVED_DEP-python3-types-pyyaml} \
+ROS_EXPORT_DEPENDS = "\
     launch \
     launch-ros \
     osrf-pycommon \
     python3-pyyaml \
+    python3-types-pyyaml \
     rclpy \
 "
 
-ROS_BUILDTOOL_EXPORT_DEPENDS = " \
+ROS_BUILDTOOL_EXPORT_DEPENDS = "\
     ament-cmake-core-native \
 "
 
-ROS_EXEC_DEPENDS = " \
-    ${ROS_UNRESOLVED_DEP-python3-types-pyyaml} \
+ROS_EXEC_DEPENDS = "\
     launch \
     launch-ros \
     osrf-pycommon \
     python3-pyyaml \
+    python3-types-pyyaml \
     rclpy \
 "
 
 # Currently informational only -- see http://www.ros.org/reps/rep-0149.html#dependency-tags.
-ROS_TEST_DEPENDS = " \
+ROS_TEST_DEPENDS = "\
     ament-cmake-pytest \
     ament-cmake-test \
     python3-pytest \
@@ -69,7 +69,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/kilted/nav2_common"
 SRC_URI = "git://github.com/ros2-gbp/navigation2-release;${ROS_BRANCH};protocol=https"
 SRCREV = "b59a127bba33c6e21970bdf6d29c505bc9816397"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

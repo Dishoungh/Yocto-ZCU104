@@ -10,15 +10,17 @@ BRANCH ?= "master"
 
 SRCREV = "05710ec5032be4c8edafb4109d4d908d31243906"
 
-SRC_URI = "git://git.linaro.org/power/pm-qa.git;protocol=https;branch=${BRANCH}"
+SRC_URI = " \
+    git://git.linaro.org/power/pm-qa.git;protocol=https;branch=${BRANCH} \
+    file://0001-fix-build-with-gcc-15-Wincompatible-pointer-types-er.patch \
+"
 
-S = "${WORKDIR}/git"
 
 CFLAGS += "-pthread"
 
 do_compile () {
-    # Find all the .c files in this project and build them.
-    for x in `find . -name "*.c"`
+    # Find all the .c files in this project skip any directory named .pc and build them.
+    for x in `find . -path '*/.pc' -prune -o -type f -name '*.c' -print`
     do
         util=`echo ${x} | sed s/.c$//`
         oe_runmake ${util}
@@ -30,7 +32,7 @@ do_install () {
     install -d ${D}${libdir}/${BPN}
 
     # Install the compiled binaries that were built in the previous step
-    for x in `find . -name "*.c"`
+    for x in `find . -path '*/.pc' -prune -o -type f -name '*.c' -print`
     do
         util=`echo ${x} | sed s/.c$//`
         util_basename=`basename ${util}`
@@ -63,7 +65,7 @@ do_install () {
         install -m 0755 $script ${D}${bindir}/${script_basename}
     done
 }
-RDEPENDS:${PN} +="bash"
+RDEPENDS:${PN} += "bash"
 
 # http://errors.yoctoproject.org/Errors/Details/186956/
 COMPATIBLE_HOST:libc-musl = 'null'

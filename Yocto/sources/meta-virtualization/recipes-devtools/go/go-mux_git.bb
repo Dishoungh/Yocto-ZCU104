@@ -9,11 +9,10 @@ SRCNAME = "mux"
 PKG_NAME = "github.com/gorilla/${SRCNAME}"
 SRC_URI = "git://${PKG_NAME}.git;branch=main;protocol=https"
 
-SRCREV = "85123bf20e069b156415b871dea10517f6a8938a"
+SRCREV = "b4617d0b9670ad14039b2739167fd35a60f557c5"
+PV = "1.8.1+git"
 
 inherit meta-virt-depreciated-warning
-
-S = "${WORKDIR}/git"
 
 do_configure[noexec] = "1"
 do_compile[noexec] = "1"

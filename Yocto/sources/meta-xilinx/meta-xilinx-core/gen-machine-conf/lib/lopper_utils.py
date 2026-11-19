@@ -9,9 +9,144 @@
 
 import logging
 import os
+import re
+import shlex
 import common_utils
+import yaml_utils
 
 logger = logging.getLogger('Gen-Machineconf')
+
+# Tracks whether the all-devices YAML (sdt_all_devices.yaml) has been generated
+# in this run. RunLopperGenDomainDTS runs per domain, so generate it once and
+# reuse it for the remaining domains.
+_sdt_devices_generated = False
+
+
+def _GetSerialConsoleInfo(ip_name, ipinfo_file):
+    ''' Return (earlycon, tty_prefix) for a serial IP from sdt_ipinfo.yaml.
+    A serial IP may report a SoC-specific ip_name (e.g. a versal-net
+    psx_sbsauart node maps to the canonical sbsauart entry); such variants
+    are declared explicitly via the 'ip_name_aliases' list in the canonical
+    entry. Defaults to ('', 'ttyPS') when the IP is unknown. '''
+    ipinfo = yaml_utils.ReadYaml(ipinfo_file) if ipinfo_file else {}
+    entry = ipinfo.get(ip_name) if ip_name else None
+    if not entry and ip_name:
+        for val in ipinfo.values():
+            if not isinstance(val, dict) or val.get('device_type') != 'serial':
+                continue
+            if ip_name in (val.get('ip_name_aliases') or []):
+                entry = val
+                break
+    if not isinstance(entry, dict):
+        return ('', 'ttyPS')
+    return (entry.get('earlycon', ''), entry.get('console_prefix', 'ttyPS'))
+
+
+def _GetSerialSelection(mcname, system_conffile):
+    ''' Return the serial choice value selected for the given domain.
+    Linux/U-Boot uses the legacy 'CONFIG_SUBSYSTEM_SERIAL_' names; every other
+    multiconfig domain uses 'CONFIG_SUBSYSTEM_<MC>_SERIAL_'. The returned value
+    is the choice token (e.g. 'SERIAL0', 'PSV_SBSAUART_0', 'FROM_SDT'). '''
+    if mcname in ('', 'linux'):
+        prefix = 'CONFIG_SUBSYSTEM_SERIAL_'
+    else:
+        prefix = 'CONFIG_SUBSYSTEM_%s_SERIAL_' % mcname.upper().replace('-', '_')
+    return common_utils.GetConfigValue(prefix, system_conffile, 'choice',
+                                       '_SELECT=y')
+
+
+def GenSerialChosenDtsi(outdir, dts_path, mcname, system_conffile, syshw_file,
+                        ipinfo_file, hw_file, is_linux=False, is_zephyr=False):
+    ''' Generate a per-domain '<mcname>-serial-chosen.dtsi' overlay that sets
+    the /chosen serial console for the user-selected UART, merge it into the
+    SDT using lopper and return the path to the resulting base DTS.
+
+    When no override is needed (selection is 'From SDT'/'manual'/unset, or the
+    slave can not be resolved) the original hw_file is returned unchanged. '''
+    if not mcname:
+        mcname = 'linux'
+    selection = _GetSerialSelection(mcname, system_conffile)
+    # 'From SDT'/'manual'/unset -> leave the SDT chosen node untouched.
+    if not selection or selection in ('FROM_SDT', 'MANUAL'):
+        return hw_file
+
+    # Resolve the selected serial slave from the syshw data, stopping at the
+    # first match instead of building a full slave map.
+    serial_slave = selection.lower()
+    serial_data = None
+    hwdata = common_utils.GetSyshwData(syshw_file)
+    for slave_name, slave_data in common_utils.IterSyshwSlaves(hwdata, 'serial'):
+        if re.sub('_bankless$', '', slave_name) == serial_slave:
+            serial_data = slave_data
+            break
+
+    if not serial_data:
+        logger.warning('No serial slave %s in %s; skipping chosen dtsi for %s'
+                       % (serial_slave, syshw_file, mcname))
+        return hw_file
+
+    ip_name = serial_data.get('ip_name', '')
+    baseaddr = serial_data.get('baseaddr', '')
+    # earlycon expects a hex address; normalize int/decimal-string values.
+    if baseaddr != '':
+        try:
+            baseaddr = hex(int(str(baseaddr), 0))
+        except (ValueError, TypeError):
+            pass
+    # Use the syshw 'serialN' alias for the /chosen stdout-path (take the
+    # first if several); fall back to a 'serialN' built from the slave suffix.
+    aliases = serial_data.get('aliases', []) or []
+    if aliases:
+        serial_alias = str(aliases[0])
+    else:
+        serial_digits = re.findall('[0-9]+', serial_slave)
+        serial_alias = 'serial%s' % (serial_digits[-1] if serial_digits else '0')
+    # Only the Linux/U-Boot domain carries a baudrate choice; default 115200.
+    baudrate = common_utils.GetConfigValue(
+        'CONFIG_SUBSYSTEM_SERIAL_%s_BAUDRATE_' % selection, system_conffile,
+        'choice', '=y') or '115200'
+    earlycon, tty_prefix = _GetSerialConsoleInfo(ip_name, ipinfo_file)
+    # Prefer the full 'tty_device' name captured in the syshw data (e.g.
+    # 'ttyAMA0'); it already encodes both the console prefix and the correct
+    # index. Fall back to the ipinfo console prefix plus the index taken from
+    # the serial alias when the syshw data does not provide it.
+    tty_device = str(serial_data.get('tty_device', '') or '')
+    if not tty_device:
+        index_digits = re.findall('[0-9]+', serial_alias)
+        serial_index = index_digits[-1] if index_digits else '0'
+        tty_device = '%s%s' % (tty_prefix, serial_index)
+    # Single console definition reused by stdout-path and bootargs so every
+    # chosen property stays in sync with the selected UART.
+    console = 'console=%s,%s' % (tty_device, baudrate)
+
+    chosen_lines = ['/ {', '\tchosen {',
+                    '\t\tstdout-path = "%s:%sn8";' % (serial_alias, baudrate)]
+    # Replace the SDT-inherited bootargs with one that matches the selected
+    # console. earlycon is a Linux-only kernel parameter; non-Linux domains
+    # get just the console= so their /chosen node stays consistent instead of
+    # carrying the stale SDT bootargs.
+    bootargs = ''
+    if is_linux and earlycon and baseaddr:
+        bootargs = 'earlycon=%s,%s ' % (earlycon, baseaddr)
+    bootargs += console
+    chosen_lines.append('\t\tbootargs = "%s";' % bootargs)
+    if is_zephyr:
+        chosen_lines.append('\t\tzephyr,console = "%s";' % serial_alias)
+        chosen_lines.append('\t\tzephyr,shell-uart = "%s";' % serial_alias)
+    chosen_lines += ['\t};', '};', '']
+    chosen = '\n'.join(chosen_lines)
+
+    dtsi_path = os.path.join(outdir, '%s-serial-chosen.dtsi' % mcname)
+    common_utils.AddStrToFile(dtsi_path, chosen, mode='w')
+    logger.debug('Generated serial chosen dtsi %s for %s' % (dtsi_path, mcname))
+
+    # Merge the chosen dtsi into the SDT using lopper and return the new base.
+    serial_dts_file = os.path.join(outdir, '%s-serial.dts' % mcname)
+    logger.debug('Generating DTS %s with serial chosen dtsi %s'
+                 % (serial_dts_file, dtsi_path))
+    RunLopperUsingDomainFile([dtsi_path], outdir, dts_path, hw_file,
+                             serial_dts_file)
+    return serial_dts_file
 
 
 def IncludeCustomDtsi(outdir, mcname, dts_file, system_conffile):
@@ -48,8 +183,11 @@ def IncludeCustomDtsi(outdir, mcname, dts_file, system_conffile):
         common_utils.AddStrToFile(dts_file, f'#include "{domain_dtsi_path}"\n', mode='a+')
     if dtsi_files:
         logger.debug(f'Generating {dts_file} including {dtsi_files}')
+    # Prune the /domains node from the final linux dts
+    if mcname == 'linux':
+        RunLopperUsingDomainFile(['lop-prune-domains.dts'], outdir, outdir, dts_file, dts_file)
+    else:
         RunLopperUsingDomainFile([], outdir, outdir, dts_file, dts_file)
-
 
 def RunLopperGenDomainDTS(outdir, dts_path, hw_file, dts_file, domain_name,
                           domain_yamls, system_conffile):
@@ -67,25 +205,44 @@ def RunLopperGenDomainDTS(outdir, dts_path, hw_file, dts_file, domain_name,
     """
     lopper, lopper_dir, lops_dir, embeddedsw = common_utils.GetLopperUtilsPath()
     domain_yamls_str = ' -i '.join(domain_yamls)
-    domain_args = "-x '*.yaml'"
+    domain_args = '--auto'
+    # Run domain_access if config domain_access is enabled
+    domain_access_enabled = common_utils.GetConfigValue('CONFIG_SUBSYSTEM_DT_DOMAIN_ACCESS',
+                                                         system_conffile)
+    if domain_access_enabled:
+        # Generate the all-devices YAML from the SDT and merge it alongside the
+        # domain files so domain_access can resolve device references against
+        # the full device inventory. Generate it once per run and reuse it.
+        global _sdt_devices_generated
+        sdt_devices_yaml = os.path.join(outdir, 'sdt_all_devices.yaml')
+        if not _sdt_devices_generated or not os.path.isfile(sdt_devices_yaml):
+            logger.debug(f'Generating SDT all-devices YAML {sdt_devices_yaml}')
+            # Make infrastructure available to domain globs by default, while
+            # allowing projects to restrict the included categories.
+            infrastructure = common_utils.GetConfigValue(
+                'CONFIG_SUBSYSTEM_DT_INCLUDE_INFRASTRUCTURE', system_conffile).strip() or 'all'
+            cmd = f'LOPPER_DTC_FLAGS="-b 0 -@" {lopper} -O {outdir} -f --enhanced \
+                    {hw_file} - -- sdt_devices \
+                    --include-infrastructure {shlex.quote(infrastructure)} -o {sdt_devices_yaml}'
+            common_utils.RunCmd(cmd, dts_path, shell=True)
+        # Merge the all-devices YAML first, ahead of the domain files.
+        domain_yamls_str = f'{sdt_devices_yaml} -i {domain_yamls_str}'
+        _sdt_devices_generated = True
     # Append all the yaml files to SDT
     yaml_dts_file = dts_file.replace('.dts', '-yaml.dts')
     logger.debug(f'Generating DTS {yaml_dts_file} with specified yaml files {domain_yamls}')
-    cmd = f'LOPPER_DTC_FLAGS="-b 0 -@" {lopper} -O {outdir} -f --enhanced \
+    cmd = f'LOPPER_DTC_FLAGS="-b 0 -@" {lopper} -O {outdir} -f --enhanced --emit-embedded-overlays \
             {domain_args} -i {domain_yamls_str} {hw_file} {yaml_dts_file}'
     common_utils.RunCmd(cmd, dts_path, shell=True)
 
     # Update chosen node from /domains to /root
     yaml_chosen_dts_file = dts_file.replace('.dts', '-chosen.dts')
     logger.debug(f'Generating DTS {yaml_chosen_dts_file} to update chosen node')
-    cmd = f'LOPPER_DTC_FLAGS="-b 0 -@" {lopper} -O {outdir} -f --enhanced \
+    cmd = f'LOPPER_DTC_FLAGS="-b 0 -@" {lopper} -O {outdir} -f --enhanced --emit-embedded-overlays \
             -i lop-domain-chosen.dts -t {domain_name} {yaml_dts_file} {yaml_chosen_dts_file}'
     common_utils.RunCmd(cmd, dts_path, shell=True)
     yaml_dts_file = yaml_chosen_dts_file
 
-    # Run domain_access if config domain_access is enabled
-    domain_access_enabled = common_utils.GetConfigValue('CONFIG_SUBSYSTEM_DT_DOMAIN_ACCESS',
-                                                         system_conffile)
     if domain_access_enabled:
         logger.debug(f'Generating DTS {dts_file} with {yaml_dts_file} using domain_access')
         cmd = f'LOPPER_DTC_FLAGS="-b 0 -@" {lopper} -O {outdir} -f --enhanced \
@@ -97,14 +254,17 @@ def RunLopperGenDomainDTS(outdir, dts_path, hw_file, dts_file, domain_name,
 
 
 def RunLopperUsingDomainFile(domain_files, outdir, dts_path, hw_file,
-                             dts_file='', lopper_args='', subcommand_args=''):
+                             dts_file='', lopper_args='', subcommand_args='',
+                             run_dir=''):
     """
     Generic lopper execution with domain files.
 
     Executes the lopper tool with specified domain files and optional subcommands. This is a
     flexible wrapper that handles both absolute and relative domain file paths, automatically
     resolving relative paths within the lopper lops directory. Supports enhanced mode with
-    device tree compiler flags and can execute additional lopper subcommands as needed.
+    device tree compiler flags and can execute additional lopper subcommands as needed. The
+    optional run_dir selects the command working directory for assists that emit relative
+    side artifacts; dts_path remains the default.
     """
     lopper, lopper_dir, lops_dir, embeddedsw = common_utils.GetLopperUtilsPath()
     domain_args = ''
@@ -120,8 +280,41 @@ def RunLopperUsingDomainFile(domain_files, outdir, dts_path, hw_file,
     if subcommand_args != '':
         cmd += ' -- %s' % (subcommand_args)
 
-    stdout = common_utils.RunCmd(cmd, dts_path, shell=True)
+    stdout = common_utils.RunCmd(cmd, run_dir or dts_path, shell=True)
     return stdout
+
+
+def LopperAssistFailed(result):
+    """Return whether Lopper reported a failed assist with a zero exit code."""
+    if result is None:
+        return False
+    output = result if isinstance(result, (list, tuple)) else [result]
+    return any('the assist returned false' in str(item)
+               for item in output if item)
+
+
+def ReportInvalidPhandles(result, dts_file):
+    """Re-emit captured lopper invalid-phandle warnings."""
+    if result is None:
+        return 0
+
+    output = result if isinstance(result, (list, tuple)) else [result]
+    warnings = [line.strip() for item in output if item
+                for line in str(item).splitlines()
+                if 'invalid_phandle' in line]
+    for warning in dict.fromkeys(warnings):
+        logger.warning('%s' % warning)
+    references = set()
+    for warning in warnings:
+        match = re.search(r'invalid_phandle: property:? (\S+)(?: \(([^)]+)\)| in (\S+))',
+                          warning)
+        references.add((match.group(1), match.group(2) or match.group(3))
+                       if match else warning)
+    if references:
+        logger.warning('%d invalid phandle reference(s) detected while generating %s; '
+                       'fix the dangling references in the input SDT.' %
+                       (len(references), dts_file))
+    return len(references)
 
 
 def RunLopperGenLinuxDts(outdir, dts_path, domain_files, hw_file, dts_file, subcommand_args, lopper_args=''):
@@ -139,9 +332,10 @@ def RunLopperGenLinuxDts(outdir, dts_path, domain_files, hw_file, dts_file, subc
             domain_args += ' -i %s' % os.path.join(lops_dir, domain)
         else:
             domain_args += ' -i %s' % domain
-    cmd = 'LOPPER_DTC_FLAGS="-b 0 -@" %s --enhanced -O %s %s %s %s %s -- %s' % (
+    cmd = 'LOPPER_DTC_FLAGS="-b 0 -@" %s --enhanced -W invalid_phandle --symbols -O %s %s %s %s %s -- %s' % (
         lopper, outdir, lopper_args, domain_args, hw_file, dts_file, subcommand_args)
     stdout = common_utils.RunCmd(cmd, dts_path, shell=True)
+    ReportInvalidPhandles(stdout, dts_file)
     return stdout
 
 

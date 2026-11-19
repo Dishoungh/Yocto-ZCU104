@@ -55,7 +55,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/mola_input_paris_luco_dataset"
 SRC_URI = "git://github.com/ros2-gbp/mola-release;${ROS_BRANCH};protocol=https"
 SRCREV = "26d56d58309b0fec337e99ebd047cb72e31237b8"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "cmake"
 

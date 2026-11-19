@@ -63,7 +63,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/parameter_expression"
 SRC_URI = "git://github.com/ros2-gbp/parameter_expression-release;${ROS_BRANCH};protocol=https"
 SRCREV = "42d29cc137e124a6b5f8b14df1d4a08ce40d9e00"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

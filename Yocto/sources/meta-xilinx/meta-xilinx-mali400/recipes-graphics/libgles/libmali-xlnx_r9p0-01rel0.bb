@@ -15,9 +15,9 @@ PROVIDES += "virtual/libgles1 virtual/libgles2 virtual/egl virtual/libgbm"
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
 REPO ?= "git://github.com/Xilinx/mali-userspace-binaries.git;protocol=https"
-BRANCH ?= "xlnx_rel_v2024.2"
-SRCREV ?= "644dc96597172e3cf15aea63b4ee947d421810aa"
-BRANCHARG = "${@['nobranch=1', 'branch=${BRANCH}'][d.getVar('BRANCH', True) != '']}"
+BRANCH ?= "xlnx_rel_v2026.2"
+SRCREV ?= "13dee33ded558d0b623cb99483f109dec0bc0d83"
+BRANCHARG = "${@['nobranch=1', 'branch=${BRANCH}'][d.getVar('BRANCH') != '']}"
 
 SRC_URI = " \
     ${REPO};${BRANCHARG} \
@@ -30,7 +30,6 @@ SRC_URI = " \
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
-S = "${WORKDIR}/git"
 
 # If were switching at runtime, we would need all RDEPENDS needed for all backends available
 X11RDEPENDS = "libxdamage libxext libx11 libdrm libxfixes"
@@ -79,10 +78,10 @@ do_install() {
     install -m 0644 ${S}/${PV}/glesHeaders/KHR/*.h ${D}${includedir}/KHR/
 
     install -d ${D}${libdir}/pkgconfig
-    install -m 0644 ${WORKDIR}/egl.pc ${D}${libdir}/pkgconfig/egl.pc
-    install -m 0644 ${WORKDIR}/glesv2.pc ${D}${libdir}/pkgconfig/glesv2.pc
-    install -m 0644 ${WORKDIR}/glesv1.pc ${D}${libdir}/pkgconfig/glesv1.pc
-    install -m 0644 ${WORKDIR}/glesv1_cm.pc ${D}${libdir}/pkgconfig/glesv1_cm.pc
+    install -m 0644 ${UNPACKDIR}/egl.pc ${D}${libdir}/pkgconfig/egl.pc
+    install -m 0644 ${UNPACKDIR}/glesv2.pc ${D}${libdir}/pkgconfig/glesv2.pc
+    install -m 0644 ${UNPACKDIR}/glesv1.pc ${D}${libdir}/pkgconfig/glesv1.pc
+    install -m 0644 ${UNPACKDIR}/glesv1_cm.pc ${D}${libdir}/pkgconfig/glesv1_cm.pc
 
     install -d ${D}${libdir}
     install -d ${D}${includedir}
@@ -95,7 +94,7 @@ do_install() {
 
     # install gbm
     install -m 0644 ${S}/${PV}/glesHeaders/GBM/gbm.h ${D}${includedir}/
-    install -m 0644 ${WORKDIR}/gbm.pc ${D}${libdir}/pkgconfig/gbm.pc
+    install -m 0644 ${UNPACKDIR}/gbm.pc ${D}${libdir}/pkgconfig/gbm.pc
 
     if [ "${USE_FB}" = "yes" ]; then
         install -Dm 0644 ${S}/${PV}/${ARCH_PLATFORM_DIR}/fbdev/${MONOLITHIC_LIBMALI} ${D}${libdir}/fbdev/${MONOLITHIC_LIBMALI}

@@ -69,7 +69,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/libcamera"
 SRC_URI = "git://github.com/ros2-gbp/libcamera-release;${ROS_BRANCH};protocol=https"
 SRCREV = "7a9b3e295964020d3a1b4222c6b8cb90ddd97a57"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "meson"
 

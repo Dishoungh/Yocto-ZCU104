@@ -22,7 +22,6 @@ SRC_URI = " \
 	file://0001-Makefile.am-Dont-include-buildpath.patch \
 "
 SRCREV = "bc623acf9e7488dc105e4b00069d57e303e2616b"
-S = "${WORKDIR}/git"
 
 CVE_PRODUCT = "udisks"
 

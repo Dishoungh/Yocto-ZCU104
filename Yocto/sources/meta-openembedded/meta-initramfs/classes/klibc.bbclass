@@ -9,8 +9,17 @@ CC:append:armv7ve = " ${@' -mfloat-abi=${TUNE_CCARGS_MFLOAT}' if (d.getVar('TUNE
 CC:append:armv7a = " ${@' -mfloat-abi=${TUNE_CCARGS_MFLOAT}' if (d.getVar('TUNE_CCARGS_MFLOAT') != '') else ''}"
 
 # klcc uses own optimizations by default. See klcc(1) man file.
-export CFLAGS="${TUNE_CCARGS} ${DEBUG_PREFIX_MAP}"
-export CPPFLAGS="${TUNE_CCARGS}"
-export LDFLAGS="${TUNE_CCARGS}"
+CFLAGS = "${TUNE_CCARGS} ${DEBUG_PREFIX_MAP}"
+CFLAGS[export] = "1"
+
+CPPFLAGS = "${TUNE_CCARGS}"
+CPPFLAGS[export] = "1"
+
+LDFLAGS = "${TUNE_CCARGS}"
+# Linking with compiler-rt on arm results in
+# libclang_rt.builtins-armhf.a(divmoddi4.c.o): in function `__divmoddi4':
+#/usr/src/debug/compiler-rt/20.1.8/compiler-rt/lib/builtins/divmoddi4.c:(.text.__divmoddi4+0x7a): undefined reference to `__stack_chk_fail'
+LDFLAGS:append:toolchain-clang:libc-klibc:arm = " --rtlib=libgcc --unwindlib=libgcc"
+LDFLAGS[export] = "1"
 
 OVERRIDES =. "libc-klibc:"

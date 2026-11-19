@@ -3,7 +3,7 @@ INHERIT += "xilinx-deprecated"
 
 # Default Xilinx BSP Machine settings
 
-MACHINE_FEATURES_BACKFILL_CONSIDERED += "rtc"
+MACHINE_FEATURES_OPTED_OUT += "rtc"
 
 # File System Configuration
 IMAGE_FSTYPES ?= "tar.gz cpio cpio.gz cpio.gz.u-boot"
@@ -33,7 +33,6 @@ UBOOT_ELF ?= "u-boot.elf"
 XSERVER ?= " \
 	xserver-xorg \
 	xf86-input-evdev \
-	xf86-input-mouse \
 	xf86-video-fbdev \
 	${XSERVER_EXT} \
 	"
@@ -112,7 +111,7 @@ IMAGE_BOOT_FILES ?= "${@'boot.bin ' if d.getVar('SOC_ON_DISK_BOOT_BIN') == '1' e
 IMAGE_EFI_BOOT_FILES ?= "${@'boot.bin' if d.getVar('SOC_ON_DISK_BOOT_BIN') == '1' else ''}"
 
 # These dependencies are SOC specific, and only apply if building with
-# XSCT or SDT modes
+# SDT mode
 SOC_EXTRA_IMAGEDEPENDS[microblaze] = "virtual/bitstream"
 SOC_EXTRA_IMAGEDEPENDS[microblaze-v] = ""
 SOC_EXTRA_IMAGEDEPENDS[zynq] = "virtual/boot-bin"
@@ -120,6 +119,7 @@ SOC_EXTRA_IMAGEDEPENDS[zynqmp] = "virtual/boot-bin"
 SOC_EXTRA_IMAGEDEPENDS[versal] = "virtual/boot-bin virtual/cdo"
 SOC_EXTRA_IMAGEDEPENDS[versal-net] = "virtual/boot-bin virtual/cdo"
 SOC_EXTRA_IMAGEDEPENDS[versal-2ve-2vm] = "virtual/boot-bin virtual/cdo"
+SOC_EXTRA_IMAGEDEPENDS[versal-2vp] = "virtual/boot-bin virtual/cdo"
 SOC_EXTRA_IMAGEDEPENDS = "${@d.getVarFlag('SOC_EXTRA_IMAGEDEPENDS', d.getVar('SOC_FAMILY') or '') or '' if d.getVar('XILINX_WITH_ESW') else ''}"
 
 EXTRA_IMAGEDEPENDS += "${SOC_EXTRA_IMAGEDEPENDS}"

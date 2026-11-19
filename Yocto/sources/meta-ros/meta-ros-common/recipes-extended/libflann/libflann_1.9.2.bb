@@ -8,7 +8,6 @@ SRCREV = "c50f296b0b27e14667d272b37acc63f949b305c4"
 ROS_BRANCH ?= "branch=master"
 SRC_URI = "git://github.com/mariusmuja/flann;${ROS_BRANCH};protocol=https"
 
-S = "${WORKDIR}/git"
 
 inherit cmake pkgconfig
 
@@ -18,7 +17,6 @@ DEPENDS = " \
 "
 
 PACKAGECONFIG ??= " \
-    openmp \
     tests \
 "
 
@@ -46,5 +44,4 @@ EXTRA_OECMAKE = "\
 do_install:append() {
     sed -i -e "s#-L${RECIPE_SYSROOT}${libdir};##g" ${D}${libdir}/pkgconfig/flann.pc
     sed -i -e "s#${RECIPE_SYSROOT}${libdir}/##g" ${D}${libdir}/cmake/flann/flann-targets.cmake
-    sed -i -e "s#${RECIPE_SYSROOT}${libdir}/##g" ${D}${libdir}/cmake/flann/flann-targets-relwithdebinfo.cmake
 }

@@ -6,10 +6,25 @@ COMPATIBLE_HOST = 'i686-.*-linux|(x86_64.*).*-linux|aarch64.*-linux|arm-.*-linux
 inherit setuptools3 update-rc.d systemd deploy
 require xen-blktap.inc
 
+SRC_URI += "file://10-ether.network \
+            file://10-xenbr0.netdev \
+            file://10-xenbr0.network"
+
+VIRT_NETWORKING_FILES = "${UNPACKDIR}/10-ether.network \
+                         ${UNPACKDIR}/10-xenbr0.netdev \
+			 ${UNPACKDIR}/10-xenbr0.network"
+inherit virt_networking
+
+QEMU_SYSTEM ?= "qemu-system-i386"
+# The qemu-firware package is only available if "vmsep" is in distro features
+QEMU_FIRMWARE ?= "${@bb.utils.contains('DISTRO_FEATURES', 'vmsep', 'qemu-firmware', '', d)}"
+QEMU_SYSTEM_RDEPENDS ?= "${QEMU_SYSTEM} ${QEMU_FIRMWARE}"
+
 RDEPENDS:${PN} = "\
     bash perl xz \
     ${PN}-console \
     ${PN}-libxenguest \
+    ${PN}-libxenmanage \
     ${PN}-libxenlight \
     ${PN}-libxenvchan \
     ${PN}-libxenctrl \
@@ -26,6 +41,8 @@ RDEPENDS:${PN} = "\
     ${PN}-xenstore \
     virtual-xenstored \
     ${PN}-xl \
+    ${QEMU_SYSTEM_RDEPENDS} \
+    ${PN}-net-conf \
     "
 
 RDEPENDS:${PN}-dev = ""
@@ -33,7 +50,7 @@ RDEPENDS:${PN}-dev = ""
 RRECOMMENDS:${PN} = " \
     qemu \
     ${@bb.utils.contains('DISTRO_FEATURES', 'vmsep', 'qemu-x86_64 qemu-i386', '', d)} \
-    ${@bb.utils.contains('XEN_TARGET_ARCH', 'x86_64', 'seabios ipxe vgabios', '', d)} \
+    ${@bb.utils.contains('XEN_TARGET_ARCH', 'x86_64', 'seabios ipxe', '', d)} \
     ${@bb.utils.contains('PACKAGECONFIG', 'externalblktap', '', '${BLKTAP_RRECOMMENDS}', d)} \
     ${PN}-flask \
     ${PN}-hvmloader \
@@ -160,6 +177,8 @@ PACKAGES = " \
     ${PN}-libxengnttab-dev \
     ${PN}-libxenguest \
     ${PN}-libxenguest-dev \
+    ${PN}-libxenmanage \
+    ${PN}-libxenmanage-dev \
     ${PN}-libxenhypfs \
     ${PN}-libxenhypfs-dev \
     ${PN}-libxenlight \
@@ -258,6 +277,7 @@ FILES:${PN}-doc = "\
 
 FILES:${PN}-staticdev += "\
     ${libdir}/libxenguest.a \
+    ${libdir}/libxenmanage.a \
     ${libdir}/libxenlight.a \
     ${libdir}/libxenvchan.a \
     ${libdir}/libxenctrl.a \
@@ -307,6 +327,15 @@ FILES:${PN}-libxengnttab-dev = " \
     ${libdir}/pkgconfig/xengnttab.pc \
     ${datadir}/pkgconfig/xengnttab.pc \
     "
+
+FILES:${PN}-libxenmanage = "${libdir}/libxenmanage.so.*"
+FILES:${PN}-libxenmanage-dev = " \
+    ${libdir}/libxenmanage.so \
+    ${libdir}/pkgconfig/xenmanage.pc \
+    ${datadir}/pkgconfig/xenmanage.pc \
+    "
+# libxenmanage is only in xen-4.21+
+ALLOW_EMPTY:${PN}-libxenmanage = "1"
 
 FILES:${PN}-libxenguest = "${libdir}/libxenguest.so.*"
 FILES:${PN}-libxenguest-dev = " \
@@ -615,6 +644,7 @@ FILES:${PN}-xen-watchdog = "\
     ${sbindir}/xenwatchdogd \
     ${sysconfdir}/init.d/xen-watchdog \
     ${systemd_unitdir}/system/xen-watchdog.service \
+    ${systemd_unitdir}/system-sleep/xen-watchdog-sleep.sh \
     "
 
 FILES:${PN}-xl = "\
@@ -699,20 +729,30 @@ FILES:${PN}-test += "\
     ${libdir}/xen/bin/test-cpu-policy \
     ${libdir}/xen/bin/test-tsx \
     ${libdir}/xen/bin/test-paging-mempool \
+    ${libdir}/xen/tests/test-xenstore \
+    ${libdir}/xen/tests/test-rangeset \
+    ${libdir}/xen/tests/test-resource \
+    ${libdir}/xen/tests/test-domid \
+    ${libdir}/xen/tests/test-paging-mempool \
+    ${libdir}/xen/tests/test_vpci \
+    ${libdir}/xen/tests/test-pdx-offset \
+    ${libdir}/xen/tests/test-pdx-mask \
+    ${libdir}/xen/tests/test-cpu-policy \
+    ${libdir}/xen/tests/test-tsx \
     "
 
 # test-xenstore and test-resource currently only exist in 4.16
 # test-cpu-policy and test-tsx only exist in 4.16 for x86
 ALLOW_EMPTY:${PN}-test = "1"
 
-FILES:${PN}-xen-mceinj +="\
+FILES:${PN}-xen-mceinj += "\
     ${sbindir}/xen-mceinj \
     "
 
 # xen-mceinj is only built for x86 4.16, so allow empty package
 ALLOW_EMPTY:${PN}-xen-mceinj = "1"
 
-FILES:${PN}-xen-vmtrace +="\
+FILES:${PN}-xen-vmtrace += "\
     ${sbindir}/xen-vmtrace \
     "
 
@@ -748,13 +788,12 @@ SYSTEMD_SERVICE:${PN}-xencommons = " \
     "
 SYSTEMD_SERVICE:${PN}-xendomains = "xendomains.service"
 
-QEMU_SYSTEM ?= "qemu-system-i386"
-
 EXTRA_OECONF += " \
     --with-systemd=${systemd_unitdir}/system \
     --with-initddir=${INIT_D_DIR} \
     --with-sysconfig-leaf-dir=default \
     --with-system-qemu=${bindir}/${QEMU_SYSTEM} \
+    --disable-rombios \
     "
 
 do_configure() {
@@ -796,6 +835,9 @@ do_install() {
         ${localstatedir}/lib/xen \
         "
 
+    # a host tool that is unused
+    rm -rf ${D}${libdir}/xen/tests/test_x86_emulator
+
     # install volatiles using populate_volatiles mechanism
     install -d ${D}${sysconfdir}/default/volatiles
     for i in $VOLATILE_DIRS; do
@@ -816,15 +858,15 @@ do_install() {
     fi
 
     if [ -e ${D}${systemd_unitdir}/system/xen-qemu-dom0-disk-backend.service ]; then
-        sed -i 's#ExecStart=.*qemu-system-i386\(.*\)$#ExecStart=/usr/bin/qemu-system-i386\1#' \
+        sed -i 's#ExecStart=.*${QEMU_SYSTEM}\(.*\)$#ExecStart=/usr/bin/${QEMU_SYSTEM}\1#' \
             ${D}${systemd_unitdir}/system/xen-qemu-dom0-disk-backend.service
     fi
 
     if ${@bb.utils.contains('DISTRO_FEATURES','systemd','true','false',d)}; then
         rm -f ${D}/${sysconfdir}/init.d/xencommons
     else
-        # fixup default path to qemu-system-i386
-        sed -i 's#\(test -z "$QEMU_XEN" && QEMU_XEN=\).*$#\1"/usr/bin/qemu-system-i386"#' ${D}/etc/init.d/xencommons
+        # fixup default path to ${QEMU_SYSTEM}
+        sed -i 's#\(test -z "$QEMU_XEN" && QEMU_XEN=\).*$#\1"/usr/bin/${QEMU_SYSTEM}"#' ${D}/etc/init.d/xencommons
 
         # remove the uncondiontally installed systemd service files
         rm -f ${D}/${systemd_unitdir}/system/xen-qemu-dom0-disk-backend.service

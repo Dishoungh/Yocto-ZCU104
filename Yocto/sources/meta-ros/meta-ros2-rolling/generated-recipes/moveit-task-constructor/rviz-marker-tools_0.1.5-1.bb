@@ -69,7 +69,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/rviz_marker_tools"
 SRC_URI = "git://github.com/ros2-gbp/moveit_task_constructor-release;${ROS_BRANCH};protocol=https"
 SRCREV = "e56dc8c99798e1e9b76db74c62810ba1a0100e85"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

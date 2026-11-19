@@ -1,5 +1,16 @@
 # Copyright (c) 2021 LG Electronics, Inc.
 
+FILESEXTRAPATHS:prepend := "${THISDIR}/${BPN}:"
+SRC_URI += "file://remove-ament-target-dependencies.patch \
+            file://remove-boost-system.patch \
+            file://add-bullet-dependency.patch"
+
+# rosidl-adapter is unlisted dependency, this fixes a linking error:
+# ld: cannot find -ldefault_request_adapter_parameters: No such file or directory
+ROS_BUILD_DEPENDS = " \
+    rosidl-adapter \
+"
+
 # ERROR: moveit-ros-planning-2.1.0-1-r0 do_package_qa: QA Issue:
 # non -dev/-dbg/nativesdk- package contains symlink .so: moveit-ros-planning path '/work/raspberrypi4-webos-linux-gnueabi/moveit-ros-planning/2.1.0-1-r0/packages-split/moveit-ros-planning/usr/lib/libmoveit_default_planning_request_adapter_plugins.so'
 # non -dev/-dbg/nativesdk- package contains symlink .so: moveit-ros-planning path '/work/raspberrypi4-webos-linux-gnueabi/moveit-ros-planning/2.1.0-1-r0/packages-split/moveit-ros-planning/usr/lib/libmoveit_kinematics_plugin_loader.so'
@@ -13,3 +24,9 @@
 # non -dev/-dbg/nativesdk- package contains symlink .so: moveit-ros-planning path '/work/raspberrypi4-webos-linux-gnueabi/moveit-ros-planning/2.1.0-1-r0/packages-split/moveit-ros-planning/usr/lib/libmoveit_trajectory_execution_manager.so'
 # [dev-so]
 inherit ros_insane_dev_so
+
+do_install:append() {
+    # Fix for QA warning [buildpaths]
+    # Remove ${RECIPE_SYSROOT}/usr/include added by the Boost components
+    sed -i -e "s#${RECIPE_SYSROOT}${includedir};##g" ${D}${ros_datadir}/moveit_ros_planning/cmake/moveit_ros_planningTargetsExport.cmake
+}

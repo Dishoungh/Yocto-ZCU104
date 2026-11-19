@@ -13,7 +13,9 @@ BRANCH ?= "main"
 
 # Sources, by default allow for the use of SRCREV pointing to orphaned tags/commits
 BRANCHARG = "${@['nobranch=1', 'branch=${BRANCH}'][d.getVar('BRANCH', True) != '']}"
-SRC_URI = "${REPO};${BRANCHARG}"
+
+# force scarthgap to use a wrynose like "git" dir
+SRC_URI = "${REPO};${BRANCHARG};destsuffix=${BP}"
 
 # Skip processing of this recipe if it is not explicitly specified as the
 # PREFERRED_PROVIDER for open-amp. This avoids network access required by
@@ -25,7 +27,9 @@ python () {
         raise bb.parse.SkipRecipe("Set PREFERRED_PROVIDER_open-amp to %s to enable it" % (d.getVar("PN")))
 }
 
-S = "${WORKDIR}/git"
+# force scrathgap to be similar to wrynose and later
+inherit openamp-unpack-compat
+S = "${UNPACKDIR}/${BP}"
 
 DEPENDS = "libmetal"
 
@@ -38,6 +42,7 @@ EXTRA_OECMAKE = " \
 	-DLIB_INSTALL_DIR=${libdir} \
 	-DLIBEXEC_INSTALL_DIR=${libexecdir} \
 	-DMACHINE=${OPENAMP_MACHINE} \
+	-DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
 	"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
@@ -45,7 +50,22 @@ PACKAGE_ARCH = "${MACHINE_ARCH}"
 # by default enable proxy apps
 OPENAMP_PROXY ?= "1"
 
+# by default use IPI for polling
+OPENAMP_SHMEM_POLL ?= "0"
+
 EXTRA_OECMAKE:append = " ${@'-DWITH_PROXY=on -DWITH_PROXY_APPS=on' if d.getVar('OPENAMP_PROXY') == '1' else ''}"
+
+#set rpmsg no ipi if applicable
+python rpmsg_no_ipi_setup() {
+    if d.getVar("OPENAMP_SHMEM_POLL") == "1":
+        toolchain_file_path = d.getVar("WORKDIR") + "/toolchain.cmake"
+        toolchain_file = open(toolchain_file_path, "a") # a for append
+        toolchain_file.write(" add_definitions(\" -DRPMSG_NO_IPI=ON \") ")
+}
+
+
+# only add definition after toolchain file has been generated
+do_generate_toolchain_file[postfuncs] += "rpmsg_no_ipi_setup"
 
 ALLOW_EMPTY:${PN}-demos = "1"
 PACKAGES:append = " ${PN}-demos"

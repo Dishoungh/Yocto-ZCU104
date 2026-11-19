@@ -16,8 +16,14 @@ RDEPENDS:${PN} = "\
     curiosity-rover-demo\
     ros-trick-bridge\
 "
+# Temporarily removed from packagegroup
 #    canadarm-gazebo
+#    canadarm-moveit-config
 #    curiosity-gazebo
+#    lunar-pole-exploration-rover
+#    lunar-sun-gz-plugin
+#    lunar-terrain-gz-bringup
+#    lunar-terrain-gz-worlds
+#    nav2-demo-rviz
 #    trick-canadarm-moveit-config
 #    trick-ros2-control
-#    canadarm-moveit-config

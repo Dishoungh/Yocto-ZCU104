@@ -18,7 +18,7 @@ ROS_BPN = "ewellix_moveit_config"
 
 ROS_BUILD_DEPENDS = ""
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     ament-cmake-native \
 "
 
@@ -26,7 +26,7 @@ ROS_EXPORT_DEPENDS = ""
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     ewellix-description \
     joint-state-publisher \
     joint-state-publisher-gui \
@@ -53,7 +53,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/jazzy/ewellix_moveit_config"
 SRC_URI = "git://github.com/clearpath-gbp/ewellix_lift_common-release;${ROS_BRANCH};protocol=https"
 SRCREV = "fcb70550e6d8126b84e5129794fc37bd7b0fcab5"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

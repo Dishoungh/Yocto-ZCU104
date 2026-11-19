@@ -79,7 +79,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/qml_ros2_plugin"
 SRC_URI = "git://github.com/ros2-gbp/qml_ros2_plugin-release;${ROS_BRANCH};protocol=https"
 SRCREV = "4116475e77fecf4ee49ed47f0cbbcd1216f7a4ee"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

@@ -53,7 +53,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/toppra"
 SRC_URI = "git://github.com/ros2-gbp/toppra-release;${ROS_BRANCH};protocol=https"
 SRCREV = "3bd6828849fda9117a663d4605fb54b3e420514b"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

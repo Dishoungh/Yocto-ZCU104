@@ -1,7 +1,8 @@
 # Copyright (c) 2024 Wind River Systems, Inc.
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/${BPN}:"
-SRC_URI += "file://repackage-lely-core.patch \
+SRC_URI += "file://use-system-lely-core.patch \
+            file://skip-compile-cogen.patch \
             file://add-target.patch"
 
 DEPENDS += "lely-core lely-core-native"
@@ -28,7 +29,7 @@ FILES:python3-cogen = " \
 # QA Issue: lely-core-libraries: /usr/bin/cogen maximum shebang size exceeded, the maximum size is 128. [shebang-size]
 # QA Issue: /usr/bin/cogen contained in package lely-core-libraries requires .../python3, but no providers found in RDEPENDS:lely-core-libraries? [file-rdeps]
 do_install:append() {
-    # Modify the Python scripts to use the runtime path to Python 
+    # Modify the Python scripts to use the runtime path to Python
     sed -i -e '1s|^#!.*|#!/usr/bin/env python3|' ${D}${ros_bindir}/cogen
     sed -i -e '1s|^#!.*|#!/usr/bin/env python3|' ${D}${ros_libdir}/cogen/cogen
 }

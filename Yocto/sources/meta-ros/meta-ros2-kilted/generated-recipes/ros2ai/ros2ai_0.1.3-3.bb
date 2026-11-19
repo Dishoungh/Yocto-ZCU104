@@ -26,15 +26,15 @@ ROS_EXPORT_DEPENDS = ""
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     ${ROS_UNRESOLVED_DEP-python3-openai-pip} \
-    ${ROS_UNRESOLVED_DEP-python3-validators} \
     curl \
+    python3-validators \
     ros2cli \
 "
 
 # Currently informational only -- see http://www.ros.org/reps/rep-0149.html#dependency-tags.
-ROS_TEST_DEPENDS = " \
+ROS_TEST_DEPENDS = "\
     ament-copyright \
     ament-flake8 \
     ament-pep257 \
@@ -61,7 +61,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/kilted/ros2ai"
 SRC_URI = "git://github.com/ros2-gbp/ros2ai-release;${ROS_BRANCH};protocol=https"
 SRCREV = "99090884f4a7803c02030a310749b711ea4dd5c3"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_python"
 

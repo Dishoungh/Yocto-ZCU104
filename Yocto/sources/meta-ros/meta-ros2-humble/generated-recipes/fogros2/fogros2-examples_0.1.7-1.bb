@@ -18,24 +18,24 @@ LIC_FILES_CHKSUM = "file://package.xml;beginline=21;endline=21;md5=12c26a18c7f49
 ROS_CN = "fogros2"
 ROS_BPN = "fogros2_examples"
 
-ROS_BUILD_DEPENDS = " \
+ROS_BUILD_DEPENDS = "\
     fogros2 \
 "
 
 ROS_BUILDTOOL_DEPENDS = ""
 
-ROS_EXPORT_DEPENDS = " \
+ROS_EXPORT_DEPENDS = "\
     fogros2 \
 "
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     fogros2 \
 "
 
 # Currently informational only -- see http://www.ros.org/reps/rep-0149.html#dependency-tags.
-ROS_TEST_DEPENDS = " \
+ROS_TEST_DEPENDS = "\
     ament-copyright \
     ament-flake8 \
     ament-pep257 \
@@ -53,7 +53,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/humble/fogros2_examples"
 SRC_URI = "git://github.com/ros2-gbp/fogros2-release;${ROS_BRANCH};protocol=https"
 SRCREV = "a1afb6b4adc434fc77a89b93e8fc98aac6c9a54b"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_python"
 

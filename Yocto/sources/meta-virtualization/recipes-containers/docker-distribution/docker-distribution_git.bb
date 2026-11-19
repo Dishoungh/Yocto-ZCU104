@@ -3,18 +3,16 @@ SUMMARY = "The Docker toolset to pack, ship, store, and deliver content"
 LICENSE = "Apache-2.0"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=d2794c0df5b907fdace235a619d80314"
 
-SRCREV_distribution= "d607c6ccb9372e05556624f973119a23d3a42987"
-SRC_URI = "git://github.com/docker/distribution.git;branch=release/2.8;name=distribution;destsuffix=git/src/github.com/docker/distribution;protocol=https \
+SRCREV_distribution = "bd2137921581321923800d654f31436ccf61b36b"
+SRC_URI = "git://github.com/docker/distribution.git;branch=main;name=distribution;destsuffix=git/src/github.com/distribution/distribution/v3;protocol=https \
            file://docker-registry.service \
            file://0001-build-use-to-use-cross-go-compiler.patch \
-           file://0001-panicwrap-Use-dup3-on-riscv64-linux.patch \
-           file://0001-Fix-registry-token-authentication-bug.patch \
           "
 
 PACKAGES =+ "docker-registry"
 
-PV = "v2.8.3+git"
-S = "${WORKDIR}/git/src/github.com/docker/distribution"
+PV = "3.0.0"
+S = "${UNPACKDIR}/git/src/github.com/distribution/distribution/v3"
 
 GO_IMPORT = "import"
 
@@ -22,11 +20,11 @@ inherit goarch go systemd
 
 # This disables seccomp and apparmor, which are on by default in the
 # go package. 
-EXTRA_OEMAKE="BUILDTAGS=''"
+EXTRA_OEMAKE = "BUILDTAGS=''"
 
 do_compile() {
 	export GOARCH="${TARGET_GOARCH}"
-	export GOPATH="${WORKDIR}/git/"
+	export GOPATH="${UNPACKDIR}/git/"
 	export GOROOT="${STAGING_LIBDIR}/go"
 	# Pass the needed cflags/ldflags so that cgo
 	# can find the needed headers files and libraries
@@ -41,6 +39,8 @@ do_compile() {
 
 	cd ${S}
 
+	# See https://github.com/distribution/distribution/issues/4627
+	sed -i -e 's#+unknown##' version/version.go
 	oe_runmake binaries
 }
 
@@ -50,7 +50,7 @@ do_install() {
 
 	if ${@bb.utils.contains('DISTRO_FEATURES','systemd','true','false',d)}; then
 	    install -d ${D}${systemd_unitdir}/system
-	    install -m 644 ${WORKDIR}/docker-registry.service ${D}/${systemd_unitdir}/system
+	    install -m 644 ${UNPACKDIR}/docker-registry.service ${D}/${systemd_unitdir}/system
 	fi
 
 	install -d ${D}/${sysconfdir}/docker-distribution/registry/
@@ -75,3 +75,4 @@ SYSTEMD_AUTO_ENABLE:docker-registry = "enable"
 RDEPENDS:${PN}-ptest:remove = "${PN}"
 
 CVE_PRODUCT = "docker_registry"
+BBCLASSEXTEND = "native"

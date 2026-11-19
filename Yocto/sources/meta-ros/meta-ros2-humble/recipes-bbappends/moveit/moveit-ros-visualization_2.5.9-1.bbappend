@@ -1,4 +1,9 @@
-# Copyright (c) 2023 Wind River Systems, Inc.
+# Copyright (c) 2023-2026 Wind River Systems, Inc.
+
+FILESEXTRAPATHS:prepend := "${THISDIR}/${BPN}:"
+SRC_URI += "file://remove-ament-target-dependencies.patch \
+            file://remove-boost-system.patch \
+            file://add-bullet-dependency.patch"
 
 ROS_BUILD_DEPENDS += " \
     rviz-default-plugins \
@@ -13,6 +18,12 @@ ROS_BUILDTOOL_DEPENDS += " \
 # CMake Error at motion_planning_rviz_plugin/CMakeLists.txt:8 (qt5_wrap_ui):
 #   Unknown CMake command "qt5_wrap_ui".
 inherit ${@bb.utils.contains_any('ROS_WORLD_SKIP_GROUPS', ['qt5', 'qt5-widgets'], '', 'cmake_qt5', d)}
+
+do_install:append() {
+    # Fix for QA warning [buildpaths]
+    # Remove ${RECIPE_SYSROOT}/usr/include added by the Boost components
+    sed -i -e "s#${RECIPE_SYSROOT}${includedir};##g" ${D}${ros_datadir}/moveit_ros_visualization/cmake/moveit_ros_visualizationTargetsExport.cmake
+}
 
 # QA Issue: non -dev/-dbg/nativesdk- package moveit-ros-visualization contains symlink .so
 FILES:${PN}-dev =+ "${ros_libdir}/lib*${SOLIBSDEV}"

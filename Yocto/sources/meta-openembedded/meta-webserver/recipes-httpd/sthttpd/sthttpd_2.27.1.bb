@@ -16,9 +16,10 @@ SRC_URI = "git://github.com/blueness/${BPN};branch=master;protocol=https \
 UPSTREAM_CHECK_URI = "https://github.com/blueness/sthttpd/releases/"
 UPSTREAM_CHECK_REGEX = "v(?P<pver>\d+(\.\d+)+).tar.gz"
 
-S = "${WORKDIR}/git"
 
 inherit autotools update-rc.d systemd update-alternatives
+
+CACHED_CONFIGUREVARS += "ac_cv_prog_cc_c23=no"
 
 ALTERNATIVE_PRIORITY = "100"
 ALTERNATIVE:${PN}-doc = "htpasswd.1"
@@ -37,14 +38,14 @@ do_configure:prepend () {
 
 do_install:append () {
     install -d ${D}${sysconfdir}/init.d
-    install -c -m 755 ${WORKDIR}/init ${D}${sysconfdir}/init.d/thttpd
-    install -c -m 755 ${WORKDIR}/thttpd.conf ${D}${sysconfdir}
+    install -c -m 755 ${UNPACKDIR}/init ${D}${sysconfdir}/init.d/thttpd
+    install -c -m 755 ${UNPACKDIR}/thttpd.conf ${D}${sysconfdir}
     sed -i -e 's,@@CONFFILE,${sysconfdir}/thttpd.conf,g' ${D}${sysconfdir}/init.d/thttpd
     sed -i -e 's,@@SRVDIR,${SRV_DIR},g' ${D}${sysconfdir}/thttpd.conf
     sed -i 's!/usr/sbin/!${sbindir}/!g' ${D}${sysconfdir}/init.d/thttpd
 
     install -d ${D}${systemd_unitdir}/system
-    install -m 0644 ${WORKDIR}/thttpd.service ${D}${systemd_unitdir}/system
+    install -m 0644 ${UNPACKDIR}/thttpd.service ${D}${systemd_unitdir}/system
     sed -i 's!/usr/sbin/!${sbindir}/!g' ${D}${systemd_unitdir}/system/thttpd.service
     sed -i 's!/var/!${localstatedir}/!g' ${D}${systemd_unitdir}/system/thttpd.service
     sed -i -e 's,@@CONFFILE,${sysconfdir}/thttpd.conf,g' ${D}${systemd_unitdir}/system/thttpd.service
@@ -57,5 +58,3 @@ SYSTEMD_SERVICE:${PN} = "thttpd.service"
 
 FILES:${PN} += "${SRV_DIR}"
 FILES:${PN}-dbg += "${SRV_DIR}/cgi-bin/.debug"
-
-CVE_STATUS[CVE-2017-10671] = "fixed-version: No action required. The current version (2.27.1) is not affected by the CVE."

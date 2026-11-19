@@ -44,7 +44,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/joint_state_publisher_gui"
 SRC_URI = "git://github.com/ros2-gbp/joint_state_publisher-release;${ROS_BRANCH};protocol=https"
 SRCREV = "45ede8e0cb722d5298afb0cb45d62064a6e4709f"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_python"
 

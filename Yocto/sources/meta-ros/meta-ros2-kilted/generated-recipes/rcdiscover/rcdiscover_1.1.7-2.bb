@@ -18,7 +18,7 @@ ROS_BPN = "rcdiscover"
 
 ROS_BUILD_DEPENDS = ""
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     cmake-native \
 "
 
@@ -42,7 +42,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/kilted/rcdiscover"
 SRC_URI = "git://github.com/ros2-gbp/rcdiscover-release;${ROS_BRANCH};protocol=https"
 SRCREV = "d98c6f0a1a6e0038c51f39f611dede71791dfbaf"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "cmake"
 

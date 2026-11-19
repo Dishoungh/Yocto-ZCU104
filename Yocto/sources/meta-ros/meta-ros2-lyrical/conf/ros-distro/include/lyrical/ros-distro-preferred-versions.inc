@@ -1,0 +1,45 @@
+# lyrical/ros-distro-preferred-versions.inc
+#
+# Copyright (c) 2020 LG Electronics, Inc.
+
+# Set PREFERRED_VERSION_<PN> here for non-platform packages for which the layers provide multiple versions and to override those
+# set in ros-distro-platform-preferred-versions.inc .
+
+# REP-0003 specifies 1.10.1 for noetic
+# REP-2000 specifies 1.12.1 for humble and iron and 1.14.0 for jazzy
+# This is necessary as with ROS1 many recipes fail to build
+# as documented in https://github.com/ros/meta-ros/pull/936
+# The head of the tree should be used for lyrical
+PREFERRED_VERSION_pcl = "1.14.1"
+
+PREFERRED_VERSION_sdformat = "16.1.0"
+
+# required for python3-scipy
+PREFERRED_VERSION_python3-gast = "0.6.0"
+
+# python-pygraphviz needed a version < 13
+PREFERRED_VERSION_graphviz = "12.2.1"
+
+PREFERRED_VERSION_dartsim = "6.16.6"
+
+PREFERRED_VERSION_ogre-next = "3.0.0"
+
+PREFERRED_VERSION_gz-cmake = "5.1.1"
+PREFERRED_VERSION_gz-common = "7.3.0"
+PREFERRED_VERSION_gz-fuel_tools = "11.0.0"
+PREFERRED_VERSION_gz-gui = "10.0.0"
+PREFERRED_VERSION_gz-launch = "9.0.1"
+PREFERRED_VERSION_gz-math = "9.2.0"
+PREFERRED_VERSION_gz-msgs = "12.0.2"
+PREFERRED_VERSION_gz-physics = "9.4.0"
+PREFERRED_VERSION_gz-plugin = "4.0.0"
+PREFERRED_VERSION_gz-rendering = "10.0.2"
+PREFERRED_VERSION_gz-sensors = "10.0.2"
+PREFERRED_VERSION_gz-sim = "10.5.0"
+PREFERRED_VERSION_gz-tools = "2.0.3"
+PREFERRED_VERSION_gz-transport = "15.1.0"
+PREFERRED_VERSION_gz-utils = "4.0.0"
+
+PREFERRED_VERSION_xsimd = "13.2.0"
+PREFERRED_VERSION_xtensor = "0.27.1"
+PREFERRED_VERSION_xtl = "0.8.0"

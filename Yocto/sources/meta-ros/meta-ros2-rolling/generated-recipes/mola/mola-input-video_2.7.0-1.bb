@@ -55,7 +55,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/mola_input_video"
 SRC_URI = "git://github.com/ros2-gbp/mola-release;${ROS_BRANCH};protocol=https"
 SRCREV = "bcd905f39517a034d3a54bc04c8aa43880d3b6a7"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "cmake"
 

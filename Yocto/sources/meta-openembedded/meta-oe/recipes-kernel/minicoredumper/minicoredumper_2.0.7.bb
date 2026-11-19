@@ -1,5 +1,6 @@
 SUMMARY = "minicoredumper provides an alternate core dump facility for Linux \
 to allow minimal and customized crash dumps"
+HOMEPAGE = "https://www.linutronix.de/minicoredumper/"
 LICENSE = " LGPL-2.1-only & BSD-2-Clause"
 LIC_FILES_CHKSUM = "file://COPYING;md5=71827c617ec7b45a0dd23658347cc1e9 \
                     file://COPYING.BSD;md5=b915ac80d5236d6aa659cb986daf00e5 \
@@ -16,9 +17,10 @@ SRC_URI = "git://github.com/diamon/minicoredumper;protocol=https;branch=master \
            file://minicoredumper.init \
            file://run-ptest \
            file://0001-corestripper-Fix-uninitialized-warning.patch \
+           file://0002-Fix-2038-year-problem-in-timestamp-handling.patch \
+           file://0001-coreinject-fix-assignment-of-const-qualified-type.patch \
            "
 
-S = "${WORKDIR}/git"
 
 SYSTEMD_SERVICE:${PN} = "minicoredumper.service"
 SYSTEMD_AUTO_ENABLE = "enable"
@@ -36,9 +38,9 @@ do_install:append() {
     cp -rf ${S}/etc/* ${D}/${sysconfdir}/
 
     install -d ${D}${systemd_system_unitdir}
-    install -m 0644 ${WORKDIR}/minicoredumper.service ${D}${systemd_system_unitdir}
+    install -m 0644 ${UNPACKDIR}/minicoredumper.service ${D}${systemd_system_unitdir}
     install -d ${D}${sysconfdir}/init.d
-    install -m 0755 ${WORKDIR}/minicoredumper.init ${D}${sysconfdir}/init.d/minicoredumper
+    install -m 0755 ${UNPACKDIR}/minicoredumper.init ${D}${sysconfdir}/init.d/minicoredumper
 
     # correct path of minicoredumper
     sed -i -e s:/usr/bin/minicoredumper:${sbindir}/minicoredumper:g ${D}${sysconfdir}/init.d/minicoredumper

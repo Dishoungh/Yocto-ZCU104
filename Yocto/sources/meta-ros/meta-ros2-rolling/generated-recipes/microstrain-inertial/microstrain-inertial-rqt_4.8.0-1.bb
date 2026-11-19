@@ -63,7 +63,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/microstrain_inertial_rqt"
 SRC_URI = "git://github.com/ros2-gbp/microstrain_inertial-release;${ROS_BRANCH};protocol=https"
 SRCREV = "f3061e4b643394101b6e8adfc12c151881244a98"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_python"
 

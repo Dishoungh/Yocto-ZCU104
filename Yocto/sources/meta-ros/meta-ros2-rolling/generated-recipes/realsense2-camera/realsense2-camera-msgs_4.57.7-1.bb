@@ -56,7 +56,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/realsense2_camera_msgs"
 SRC_URI = "git://github.com/ros2-gbp/realsense-ros-release;${ROS_BRANCH};protocol=https"
 SRCREV = "9f989e34916a0e04e5aae34e19ec2e06c2962ad3"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

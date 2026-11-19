@@ -35,6 +35,9 @@ MACHINEOVERRIDES .= ":sdkmingw32"
 TESTSDK_CLASS_NAME = "oeqa.sdkmingw.testsdk.TestSDKMinGW"
 TESTSDKEXT_CLASS_NAME = ""
 
+# Directory that contains testcases
+TESTSDK_CASE_DIRS = "sdkmingw"
+
 WINDMC:mingw32 = "${HOST_PREFIX}windmc"
 WINDRES:mingw32 = "${HOST_PREFIX}windres --include-dir=${STAGING_INCDIR}"
 RC:mingw32 = "${WINDRES}"
@@ -54,5 +57,11 @@ DISABLE_STATIC:mingw32 = ""
 # disable security flags
 GCCPIE:mingw32 = ""
 
+# qemu cannot run Windows PE executables, disable meson exe wrapper
+EXEWRAPPER_ENABLED:mingw32 = "False"
+
 # wine and wineserver are required to test MinGW SDKs
 HOSTTOOLS_NONFATAL += "wine wineserver"
+
+# handle symlinks
+INHERIT += "mingw_sdk_handle_symlink"

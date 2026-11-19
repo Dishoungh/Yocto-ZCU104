@@ -56,7 +56,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/play_motion2_msgs"
 SRC_URI = "git://github.com/ros2-gbp/play_motion2-release;${ROS_BRANCH};protocol=https"
 SRCREV = "0ac41a12287d1a7a88fb0c66abcc0cd3b1e3eee0"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

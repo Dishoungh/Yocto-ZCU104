@@ -22,9 +22,9 @@ SRC_URI = "https://downloads.isc.org/isc/dhcp/4.4.3-P1/dhcp-4.4.3-P1.tar.gz \
 SRC_URI[sha256sum] = "0ac416bb55997ca8632174fd10737fd61cdb8dba2752160a335775bc21dc73c7"
 
 UPSTREAM_CHECK_URI = "http://ftp.isc.org/isc/dhcp/"
-UPSTREAM_CHECK_REGEX = "(?P<pver>\d+\.\d+\.(\d+?))/"
+UPSTREAM_CHECK_REGEX = "(?P<pver>(\d+(\.\d+)+)(-P\d+)?)"
 
-S = "${WORKDIR}/dhcp-4.4.3-P1"
+S = "${UNPACKDIR}/dhcp-4.4.3-P1"
 
 inherit autotools-brokensep systemd pkgconfig
 
@@ -39,7 +39,7 @@ BIND_EXTRA_CONFIG = "\
         --host=${HOST_SYS} \
         --target=${TARGET_SYS} \
 "
-
+CACHED_CONFIGUREVARS += "ac_cv_prog_cc_c23=no"
 EXTRA_OECONF = "--with-bind-extra-config="${BIND_EXTRA_CONFIG}" \
                 --enable-paranoia \
                 --disable-static \
@@ -53,16 +53,16 @@ do_configure:prepend () {
 }
 
 do_install:append () {
-    install -Dm 0644 ${WORKDIR}/default-relay ${D}${sysconfdir}/default/dhcp-relay
+    install -Dm 0644 ${UNPACKDIR}/default-relay ${D}${sysconfdir}/default/dhcp-relay
 
     if ${@bb.utils.contains('DISTRO_FEATURES','systemd','true','false',d)}; then
         install -d ${D}${systemd_unitdir}/system
-        install -m 0644 ${WORKDIR}/dhcrelay.service ${D}${systemd_unitdir}/system
+        install -m 0644 ${UNPACKDIR}/dhcrelay.service ${D}${systemd_unitdir}/system
         sed -i -e 's,@SBINDIR@,${sbindir},g' ${D}${systemd_unitdir}/system/dhcrelay.service
         sed -i -e 's,@SYSCONFDIR@,${sysconfdir},g' ${D}${systemd_unitdir}/system/dhcrelay.service
     else
         install -d ${D}${sysconfdir}/init.d
-        install -m 0755 ${WORKDIR}/init-relay ${D}${sysconfdir}/init.d/dhcp-relay
+        install -m 0755 ${UNPACKDIR}/init-relay ${D}${sysconfdir}/init.d/dhcp-relay
     fi
 }
 

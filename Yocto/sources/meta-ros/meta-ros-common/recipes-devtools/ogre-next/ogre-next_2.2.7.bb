@@ -19,7 +19,6 @@ SRC_URI = "git://github.com/OGRECave/ogre-next.git;protocol=https;branch=master 
 
 SRCREV = "bc6377730ddebf98dce9d3c71bbbc611dcc4b48f"
 
-S = "${WORKDIR}/git"
 
 inherit cmake features_check pkgconfig
 
@@ -78,7 +77,7 @@ do_configure:append() {
     #   git/RenderSystems/GL3Plus/src/windowing/GLX/OgreGLXWindow.cpp:720:9: error: 'PFNGLXSWAPINTERVALMESAPROC' 
     #       was not declared in this scope; did you mean 'PFNGLXSWAPINTERVALEXTPROC'?
     #   git/RenderSystems/GL3Plus/src/windowing/GLX/OgreGLXWindow.cpp:721:9: error: '_glXSwapInterval
-    rm ${S}/RenderSystems/GL3Plus/include/GL/glxext.h
+    rm -f ${S}/RenderSystems/GL3Plus/include/GL/glxext.h
 }
 
 FILES:${PN}-dev += "${libdir}/OGRE-Next/cmake ${libdir}/OGRE-Next/*${SOLIBSDEV}"

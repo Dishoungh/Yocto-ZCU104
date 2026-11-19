@@ -2,13 +2,13 @@
 
 This project will *thoroughly* document from **start to finish** creating a simple project in Vivado to making a simple INITRAMFS image in AMD's new [Embedded Development Framework (Yocto flow)](https://xilinx-wiki.atlassian.net/wiki/spaces/A/pages/3250585601/AMD+Embedded+Development+Framework+EDF). The purpose of this is to be a reference model for Yocto-based projects moving forward as I've been so used to the old PetaLinux flow.
 
-**Warning: PetaLinux is planned to be officially deprecated after the 2026.2 release**
+**Warning: 2026.2 is stated to be the final release for PetaLinux**
 
 ## Overview
 
-- Project Version: 2026.1
-- OS Version: Alma Linux 9.8
-- Yocto Upstream Version: Scarthgap LTS (v5.0)
+- Project Version: 2026.2
+- OS Version: Alma Linux 9.9
+- Yocto Upstream Version: Wrynose LTS (v6.0)
 - FPGA: [AMD Zynq Ultrascale+ MPSoC ZCU104](https://www.amd.com/en/products/adaptive-socs-and-fpgas/evaluation-boards/zcu104.html)
 
 ## What's New?
@@ -32,24 +32,24 @@ AMD has made some pretty controversial changes starting with 2026.1, namely thei
         - In case if it's not: `$ sudo localectl set-locale LANGE=en_US.UTF-8`
 
 - Vivado Install
-    - Go to [Vivado Downloads](https://www.amd.com/en/support/downloads/adaptive-socs-and-fpgas/development-tools/2026-1.html)
+    - Go to [Vivado Downloads](https://www.amd.com/en/support/downloads/adaptive-socs-and-fpgas/development-tools/2026-2.html)
         - ![Vivado Installer](./IMG/Vivado_Download.png)
     - `$ sudo mkdir -p /opt/AMD`
     - `$ sudo chown -R $USER:$USER /opt/AMD`
-    - `$ chmod +x ~/Downloads/FPGAs_AdaptiveSoCs_Unified_SDI_2026.1_0616_1700_Lin64.bin`
+    - `$ chmod +x ~/Downloads/FPGAs_AdaptiveSoCs_Unified_SDI_2026.2_1109_1430_Lin64.bin`
     - Install Vivado with the Self Extracting Installer
         - **Warning: AMD Account Required!!!**
-        - `$ ~/Downloads/FPGAs_AdaptiveSoCs_Unified_SDI_2026.1_0616_1700_Lin64.bin`
-    - Vivado is installed under: */opt/AMD/2026.1/Vivado*
+        - `$ ~/Downloads/FPGAs_AdaptiveSoCs_Unified_SDI_2026.2_1109_1430_Lin64.bin`
+    - Vivado is installed under: */opt/AMD/2026.2/Vivado*
 
 - Yocto Artifacts (Downloads + Sstate Cache)
     - Go to [Embedded Software](https://www.amd.com/en/support/downloads/adaptive-socs-and-fpgas/embedded-software.html)
         - ![Yocto Artifacts](./IMG/Yocto_Artifacts.png)
         - **Warning: AMD Account Required!!!**
-    - `$ mkdir -p /opt/AMD/2026.1/Yocto/sstate-cache`
-    - `$ tar -xpvf ~/Downloads/downloads_2026.1_06060014.tar.gz -C /opt/AMD/2026.1/Yocto`
-    - `$ tar -xpvf ~/Downloads/sstate_aarch64_2026.1_06060014.tar.gz -C /opt/AMD/2026.1/Yocto/sstate-cache`
-
+    - `$ mkdir -p /opt/AMD/2026.2/Yocto/sstate-cache`
+    - `$ tar -xpvf ~/Downloads/downloads_2026.2_11071215.tar.gz -C /opt/AMD/2026.2/Yocto`
+    - `$ tar -xpvf ~/Downloads/sstate_aarch64_2026.2_11071215.tar.gz -C /opt/AMD/2026.2/Yocto/sstate-cache`
+    
 - License Acquisition
     - Go to [AMD's Vivado License Page](https://account.amd.com/en/forms/license/license-form.html)
         - **Warning: AMD Account Required!!!**
@@ -61,12 +61,35 @@ AMD has made some pretty controversial changes starting with 2026.1, namely thei
     - Fill out the License Form and you should get an email associated with your AMD Account with your .lic file.
     - Download the .lic file that was emailed to you and save it.
     - Source Vivado and run Vivado License Manager
-        - `$ source /opt/AMD/2026.1/Vivado/settings64.sh`
+        - `$ source /opt/AMD/2026.2/Vivado/settings64.sh`
         - `$ vlm`
     - After opening the License Manager, go to the Load License tab, and click "Copy License..."
         - ![Load License](./IMG/Load-License.png)
     - Select the .lic file you just saved and your license should now be applied
         - **Warning: Free licenses seem to only last for a year, so you must renew your license anually to keep using the free version of Vivado**
+
+- Tar Upgrade
+    - Read [this archived e-mail](https://www.mail-archive.com/openembedded-core@lists.openembedded.org/msg214999.html) for context of why we need to do this.
+    - **Warning: As of November 17th, 2026, RHEL has not updated their mirrors to host v1.35 of the `tar` package yet. Thus, we will need to manually build v1.35 from source**
+    - Grab tar v1.35 from one of the [GNU mirrors](https://ftp.wayne.edu/gnu/tar/). GNU has quite a bit of mirrors so if a tarball is not downloading or fetching quick enough, just pick another one.
+        - `$ cd ~/Downloads`
+        - `$ wget https://ftp.gnu.org/gnu/tar/tar-1.35.tar.xz`
+        - `$ tar -xvf ./tar-1.35.tar.xz`
+        - `$ cd ./tar-1.35`
+        - `$ ./configure`
+        - `$ make`
+        - `$ sudo dnf remove tar`
+        - `$ sudo make install`
+    - Once v1.35+ is hosted on official RHEL servers, uninstall the source-built tar and install the package-managed tar:
+        - `$ cd ~/Downloads/tar-1.35`
+        - `$ sudo make uninstall`
+        - `$ sudo rm -v /usr/bin/tar`
+        - `$ sudo dnf install tar`
+
+- Install AMD's buildtools for `gen-machine-conf`
+    - `$ cd ~/Downloads`
+    - `$ wget https://edf.amd.com/sswreleases/rel-v2026.2/sdkupdate/buildtools`
+    - `$ ./buildtools -d /opt/AMD/2026.2/Yocto`
 
 - Optional: Visual Studio Code
     - `$ sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc`
@@ -87,8 +110,8 @@ AMD has made some pretty controversial changes starting with 2026.1, namely thei
 After installing everything I need, open Vivado.
 
 - `$ cd ~/workspace/Yocto-ZCU104/Vivado`
-- `$ source /opt/AMD/2026.1/Vivado/settings64.sh`
-- `$ vivado`
+- `$ source /opt/AMD/2026.2/Vivado/settings64.sh`
+- `$ vivado ./simple-zcu104.xpr`
 
 I'm going to start with the PL design using Vivado. The PL design will be pretty simple. It will only use the LEDs, push buttons, and DIP switches included into the ZCU104 via AXI GPIO.
 
@@ -141,7 +164,6 @@ With the `repo sync` command, we now should have everything for EDF. However, I'
 - `$ rm -v ./sources/*/.git`
 - `$ rm -rfv ./sources/*/.github`
 - `$ rm -v ./sources/meta-xilinx/meta-xilinx-core/gen-machine-conf/.git`
-- `$ rm -v ./sources/{meta-ros,meta-xilinx}/.gitmodules`
 
 ### Sourcing Yocto Development
 
@@ -155,7 +177,7 @@ Let's create our own layer to put our own modifications and applications:
 - `bitbake-layers create-layer ../sources/meta-custom`
 - `bitbake-layers add-layer ../sources/meta-custom`
 
-Now I want to do some extra things. I want to create a "reference" *bblayers.conf* and *local.onf*:
+Now I want to do some extra things. I want to create a "reference" *bblayers.conf* and *local.conf*:
 - bblayers.conf: BitBake uses this to find the paths of all the available layers
 - local.conf: Our top level Yocto configuration file
 
@@ -225,12 +247,15 @@ BBLAYERS ?= " \
 
 ```
 # Source and Sstate mirror settings
-AMD-EDF_VERSION = "26.06"
+AMD-EDF_VERSION ??= "26.11"
 
-BB_NO_NETWORK = "1"
-INHERIT += "own-mirrors"
-SOURCE_MIRROR_URL = "file:///opt/AMD/2026.1/Yocto/downloads"
-SSTATE_MIRRORS = "file://.* file:///opt/AMD/2026.1/Yocto/sstate-cache/PATH"
+PREMIRRORS:prepend = "\
+http://.*/.* file:///opt/AMD/2026.2/Yocto/downloads \
+https://.*/.* file:///opt/AMD/2026.2/Yocto/downloads \
+http://.*/.* http://downloads.yoctoproject.org/mirror/sources/ \
+https://.*/.* https://downloads.yoctoproject.org/mirror/sources/"
+
+SSTATE_MIRRORS = "file://.* file:///opt/Xilinx/2025.2/Yocto/sstate-cache/PATH"
 ```
 
 6. Edit edf-init-build-env
@@ -239,6 +264,7 @@ SSTATE_MIRRORS = "file://.* file:///opt/AMD/2026.1/Yocto/sstate-cache/PATH"
 rm -v $ROOT/build/conf/{bblayers.conf,local.conf}
 ln -sv $ROOT/reference-bblayers.conf $ROOT/build/conf/bblayers.conf
 ln -sv $ROOT/reference-local.conf $ROOT/build/conf/local.conf
+source /opt/AMD/2026.2/Yocto/environment-setup-x86_64-petalinux-linux
 ```
 
 7. `$ cd ../ && source ./edf-init-build-env`
@@ -427,7 +453,7 @@ We now have our device tree accounted for! Now let's configure the kernel to bui
 - `$ bitbake virtual/kernel -c diffconfig`
     - This command will generate a diffconfig.
     - Merge the diffconfig into *../sources/meta-custom/recipes-kernel/linux-xlnx/files/kernel.cfg*
-- `$ vim ../sources/meta-custom/recipes-kernel/linux-xlnx_%.bbappend`
+- `$ vim ../sources/meta-custom/recipes-kernel/linux-xlnx/linux-xlnx_%.bbappend`
 
 ```
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
@@ -443,25 +469,26 @@ I will do the same thing for U-Boot, but I will not only configure U-Boot, but I
 
 
 - `$ mkdir -p ../sources/meta-custom/recipes-bsp/u-boot/files`
-- `$ touch ../sources/meta-custom/recipes-bsp/u-boot/u-boot-edf-scr_%.bbappend`
+- `$ touch ../sources/meta-custom/recipes-bsp/u-boot/u-boot-xlnx-scr.bbappend`
 - `$ touch ../sources/meta-custom/recipes-bsp/u-boot/u-boot-xlnx_%.bbappend`
 - `$ touch ../sources/meta-custom/recipes-bsp/u-boot/files/custom.boot.cmd`
-- `$ touch ../sources/meta-custom/recipes-bsp/u-boot/files/platform-top.h`
 - `$ touch ../sources/meta-custom/recipes-bsp/u-boot/files/u-boot.cfg`
 - `$ bitbake virtual/bootloader -c menuconfig`
-    - CONFIG_BOOT_SCRIPT_OFFSET=0x03280000
     - CONFIG_SYS_BOOTM_LEN=0x12c00000
+    - CONFIG_BOOT_SCRIPT_OFFSET=0x03280000
+    - CONFIG_HAVE_SYS_MONITOR_BASE=y
+    - CONFIG_SYS_MONITOR_BASE=0x8000000
     - CONFIG_QSPI_BOOT=y
     - CONFIG_SD_BOOT=y
     - CONFIG_SD_BOOT_QSPI=y
     - CONFIG_BOOTDELAY=0
+    - # CONFIG_CMD_IMLS is not set
+    - CONFIG_CMD_FLASH=y
     - CONFIG_ENV_IS_DEFAULT=y
-    - \# CONFIG_ENV_IS_IN_FAT is not set
-    - \# CONFIG_ENV_IS_IN_NAND is not set
-    - \# CONFIG_ENV_IS_IN_SPI_FLASH is not set
-    - CONFIG_NET_RANDOM_ETHADDR=n
-    - CONFIG_SPI_FLASH_BAR=n
-    - CONFIG_MTD_NOR_FLASH=y
+    - # CONFIG_ENV_IS_IN_FAT is not set
+    - # CONFIG_ENV_IS_IN_NAND is not set
+    - # CONFIG_ENV_IS_IN_SPI_FLASH is not set
+    - # CONFIG_NET_RANDOM_ETHADDR is not set
 
 - `$ bitbake virtual/bootloader -c diffconfig`
     - After this command, you will be given a path for a .cfg file. Merge the differences from that .cfg and place them into: *../sources/meta-custom/recipes-bsp/u-boot/files/u-boot.cfg*
@@ -503,7 +530,7 @@ do
 done
 ```
 
-- `$ vim ../sources/meta-custom/recipes-bsp/u-boot/u-boot-edf-scr_%.bbappend`
+- `$ vim ../sources/meta-custom/recipes-bsp/u-boot/u-boot-xlnx-scr.bbappend`
 
 ```
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
@@ -512,7 +539,7 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 SRC_URI += "file://custom.boot.cmd"
 
 do_compile:append() {
-    mkimage -A arm -T script -C none -n "Custom U-Boot Script" -d "${WORKDIR}/custom.boot.cmd" boot.scr
+    mkimage -A arm -T script -C none -n "Custom U-Boot Script" -d "${UNPACKDIR}/custom.boot.cmd" boot.scr
 }
 ```
 
@@ -556,7 +583,7 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 SRC_URI += "file://custom-motd"
 
 do_install:append() {
-    install ${WORKDIR}/custom-motd ${D}${sysconfdir}/motd
+    install ${UNPACKDIR}/custom-motd ${D}${sysconfdir}/motd
 }
 ```
 
@@ -582,7 +609,7 @@ SRC_URI += "file://70-persistent-net.rules"
 
 do_install:append() {
     install -d ${D}${sysconfdir}/udev/rules.d
-    install -m 0644 ${WORKDIR}/70-persistent-net.rules ${D}${sysconfdir}/udev/rules.d/
+    install -m 0644 ${UNPACKDIR}/70-persistent-net.rules ${D}${sysconfdir}/udev/rules.d/
 }
 ```
 
@@ -614,7 +641,7 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 SRC_URI += "file://interfaces"
 
 do_install:append() {
-    install -m 0644 ${WORKDIR}/interfaces ${D}${sysconfdir}/network/interfaces
+    install -m 0644 ${UNPACKDIR}/interfaces ${D}${sysconfdir}/network/interfaces
 }
 ```
 
@@ -670,7 +697,7 @@ LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda
 SRC_URI += "file://tcp-server.c"
 SRC_URI += "file://Makefile"
 
-S = "${WORKDIR}"
+S = "${UNPACKDIR}"
 
 # Dependencies
 
@@ -710,7 +737,7 @@ WantedBy=multi-user.target
 ```
 
 - `$ vim ../sources/meta-custom/recipes-apps/bootscript/files/bootscript.sh`
-	- **NOTE: It will be better to set the IP address like this:
+	- **NOTE: It will be better to set the IP address like this:**
  		- `ip addr del 192.168.1.10/24 dev end0`
    		- `ip addr add 192.168.1.(X)/24 dev end0`
 
@@ -737,7 +764,7 @@ tcp-server
 exit 0
 ```
 
-- `$ vim ../sources/meta-custom/recipes-apps/tcp-server/bootscript.bb`
+- `$ vim ../sources/meta-custom/recipes-apps/bootscript/bootscript.bb`
 
 ```
 #
@@ -758,7 +785,7 @@ SYSTEMD_AUTO_ENABLE:${PN} = "enable"
 
 RDEPENDS:${PN} = "bash"
 
-S = "${WORKDIR}"
+S = "${UNPACKDIR}"
 
 SRC_URI += "file://bootscript.service"
 SRC_URI += "file://bootscript.sh"
@@ -786,8 +813,8 @@ INITRAMFS_IMAGE = "core-image-minimal"
 INITRAMFS_IMAGE_NAME = "${INITRAMFS_IMAGE}-${MACHINE}.rootfs"
 INITRAMFS_MAXSIZE = "524288"
 IMAGE_FSTYPES = "${INITRAMFS_FSTYPES}"
-KERNEL_CLASSES:append = " kernel-fitimage"
-KERNEL_IMAGETYPES:append = " fitImage vmlinux"
+KERNEL_CLASSES += "kernel-fit-extra-artifacts"
+PREFERRED_PROVIDER_virtual/kernel = "linux-xlnx"
 
 # Rootfs Settings
 INIT_MANAGER = "systemd"
@@ -795,8 +822,8 @@ NETWORK_MANAGER = "networkmanager"
 DISTRO_FEATURES:append = " timezone"
 PACKAGE_INSTALL = ""
 
-IMAGE_FEATURES = "debug-tweaks allow-root-login allow-empty-password empty-root-password serial-autologin-root"
-EXTRA_USERS_PARAMS = "usermod -p '\$1\$i4MnFtkW\$rsHJIwcPZgJAhriYMmKbR0' root;"
+IMAGE_FEATURES = "allow-root-login allow-empty-password empty-root-password serial-autologin-root"
+EXTRA_USERS_PARAMS = "usermod -p '\$1\$NdGrWAeq\$MNcNo3i8/M5lJ.NnmjYTR.' root;"
 PACKAGE_INSTALL:append = " dropbear"
 
 PACKAGE_INSTALL:append = " base-files"
@@ -821,12 +848,11 @@ PACKAGE_INSTALL:append = " packagegroup-core-boot"
 PACKAGE_INSTALL:append = " shadow"
 PACKAGE_INSTALL:append = " shadow-securetty"
 PACKAGE_INSTALL:append = " systemd"
-PACKAGE_INSTALL:append = " systemd-compat-units"
 PACKAGE_INSTALL:append = " tcp-server"
 PACKAGE_INSTALL:append = " tzdata"
 PACKAGE_INSTALL:append = " tzdata-americas"
 PACKAGE_INSTALL:append = " u-boot-tools-xlnx"
-PACKAGE_INSTALL:append = " u-boot-edf-scr"
+PACKAGE_INSTALL:append = " u-boot-xlnx-scr"
 PACKAGE_INSTALL:append = " udev-extraconf"
 PACKAGE_INSTALL:append = " uio-test"
 ```
@@ -838,49 +864,12 @@ For the root password, Poky only accepts encrypted passwords. This is done in th
     	- Now put this line in the local.conf: `EXTRA_USERS_PARAMS = "usermod -p '\$1\$pKP1spiZ\$4iZbQK3.b4hdNPCuMTeFD0' root;"`
     		- **Notice how each dollar sign is escaped. Keep that in mind!** 
 
-### Adding Package to Local Downloads
-
-In some cases, a fetching error can occur when a particular package that the build requires doesn't exist in the Downloads cache we set up earlier.
-
-- ![Fetching Error](./IMG/Fetching-Error.png)
-
-To fix this, you need to grab the package from the [official Yocto Project downloads mirror](https://downloads.yoctoproject.org/mirror/sources/). In this example, I need to get bind-9.18.41.tar.xz. Just search for that file and download it in */opt/AMD/2026.1/Yocto/downloads*.
-
-Rebuild and the package should be fetchable now.
-
 ### Building Project
 
 We're now done configuring everything and it's time for a build:
 
 - `$ bitbake core-image-minimal`
 
-**Note: Depending on how powerful the computer is, it will take a long while for the build to complete. It took roughly 20 minutes for me to build this.**
-
-### Packaging Images
-
-Now that the project is built, we need 4 files:
-
-1. BOOT.BIN: Packages the bitstream, FSBL (First-Stage Bootloader), U-Boot (Second-Stage Bootloader), ATF (ARM Trusted Firmware), PMUFW (Power Management Unit Firmware) into a binary.
-2. boot.scr: This is our U-Boot boot script that is derived from our .cmd file that we created in the [U-Boot Configuration section](#u-boot-configuration).
-3. image.ub: This is the FIT image that contains the kernel image and the rootfs bundled with it as that is our INITRAMFS
-4. zynqmp_fsbl.elf: This is the executable of our FSBL (This is mainly only useful for flashing but we're not flashing for this demo)
-
-To get the files:
-
-- `$ mkdir ../extracted-images`
-- `$ cp -Lv ./tmp/deploy/images/zcu104/BOOT-zcu104.bin ../extracted-images/BOOT.BIN`
-- `$ cp -v ./tmp/deploy/images/zcu104/boot.scr ../extracted-images/boot.scr`
-- `$ cp -Lv ./tmp/deploy/images/zcu104/fitImage ../extracted-images/image.ub`
-- `$ cp -v ./tmp/deploy/images/zcu104/fsbl-zcu104.elf ../extracted-images/zynqmp_fsbl.elf`
+**The build was successful; however, the build failed to produce a fitImage file as I've been able to do in the past. I need to figure out how to get this working on Wrynose**
 
 
-### Boot Process
-
-Copy the following files into SD card (*formatted in FAT32*):
-- BOOT.BIN
-- boot.scr
-- image.ub
-
-SD boot works!!!
-
-**TODO: Need to test this with QSPI boot**

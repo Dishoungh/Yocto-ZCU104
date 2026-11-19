@@ -61,7 +61,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/rcl_logging_syslog"
 SRC_URI = "git://github.com/ros2-gbp/rcl_logging_syslog-release;${ROS_BRANCH};protocol=https"
 SRCREV = "842206b9c3256cfac112aa2cb8c6cd519399c278"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

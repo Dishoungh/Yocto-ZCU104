@@ -19,7 +19,7 @@ ROS_BPN = "talos_description_inertial"
 
 ROS_BUILD_DEPENDS = ""
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     ament-cmake-auto-native \
     ament-cmake-python-native \
 "
@@ -28,7 +28,7 @@ ROS_EXPORT_DEPENDS = ""
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     xacro \
 "
 
@@ -42,11 +42,10 @@ DEPENDS += "${ROS_EXPORT_DEPENDS} ${ROS_BUILDTOOL_EXPORT_DEPENDS}"
 
 RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 
-# matches with: https://github.com/pal-gbp/talos_robot-release/archive/release/humble/talos_description_inertial/2.10.3-1.tar.gz
+# matches with: https://github.com/ros2-gbp/talos_robot-release/archive/release/humble/talos_description_inertial/2.10.3-1.tar.gz
 ROS_BRANCH ?= "branch=release/humble/talos_description_inertial"
-SRC_URI = "git://github.com/pal-gbp/talos_robot-release;${ROS_BRANCH};protocol=https"
+SRC_URI = "git://github.com/ros2-gbp/talos_robot-release;${ROS_BRANCH};protocol=https"
 SRCREV = "da3f4fd3889ab992958b9769dfac0a12bf07bc09"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

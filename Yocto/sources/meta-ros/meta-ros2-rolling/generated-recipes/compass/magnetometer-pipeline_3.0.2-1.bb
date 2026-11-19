@@ -74,7 +74,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/magnetometer_pipeline"
 SRC_URI = "git://github.com/ros2-gbp/compass-release;${ROS_BRANCH};protocol=https"
 SRCREV = "ad0dfa0022a9ca48b02973d43fe4a88ae7dbf78a"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

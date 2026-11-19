@@ -68,7 +68,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/ffw_bringup"
 SRC_URI = "git://github.com/ros2-gbp/ai_worker-release;${ROS_BRANCH};protocol=https"
 SRCREV = "941a576bdf575a26c71b387152937862cb4f5c64"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_python"
 

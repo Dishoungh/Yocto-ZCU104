@@ -15,6 +15,9 @@ LIC_FILES_CHKSUM = "file://LICENSE.LGPL;md5=8c0138a8701f0e1282f5c8b2c7d39114 \
 SRC_URI = "https://github.com/openlink/iODBC/releases/download/v${PV}/${BP}.tar.gz"
 SRC_URI[sha256sum] = "3898b32d07961360f6f2cf36db36036b719a230e476469258a80f32243e845fa"
 
+UPSTREAM_CHECK_URI = "https://github.com/openlink/iODBC/releases"
+UPSTREAM_CHECK_REGEX = "(?P<pver>\d+(\.\d+)+)"
+
 inherit autotools
 
 EXTRA_OECONF += " --prefix=/usr/local \
@@ -28,3 +31,9 @@ EXTRA_OECONF += " --prefix=/usr/local \
 
 inherit multilib_script
 MULTILIB_SCRIPTS = "${PN}:${bindir}/iodbc-config"
+
+# avoid http://errors.yoctoproject.org/Errors/Details/852861/
+CFLAGS += "-std=gnu17"
+# http://errors.yoctoproject.org/Errors/Details/853276/
+# libiodbc-3.52.16/iodbcinst/unicode.c:1565:16: error: initialization of 'ucs4_t *' {aka 'unsigned int *'} from incompatible pointer type 'wchar_t *' {aka 'long int *'} [-Wincompatible-pointer-types]
+CFLAGS += "-Wno-error=incompatible-pointer-types"

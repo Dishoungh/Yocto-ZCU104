@@ -60,7 +60,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/simple_actions"
 SRC_URI = "git://github.com/ros2-gbp/simple_actions-release;${ROS_BRANCH};protocol=https"
 SRCREV = "40c21e98d150af2efc46d94222b92cd0234e056d"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

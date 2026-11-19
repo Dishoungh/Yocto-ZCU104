@@ -1,1 +1,3 @@
-LICENSE = "Apache-2.0 & BSD-3-Clause"
+# Copyright (c) 2025 Wind River Systems, Inc.
+
+LICENSE = "BSD-3-Clause"

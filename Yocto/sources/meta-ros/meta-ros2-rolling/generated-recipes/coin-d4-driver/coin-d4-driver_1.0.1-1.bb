@@ -59,7 +59,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/coin_d4_driver"
 SRC_URI = "git://github.com/ros2-gbp/coin_d4_driver-release;${ROS_BRANCH};protocol=https"
 SRCREV = "1ea7da05363e190ce9fb847bea6d5f458a09e888"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

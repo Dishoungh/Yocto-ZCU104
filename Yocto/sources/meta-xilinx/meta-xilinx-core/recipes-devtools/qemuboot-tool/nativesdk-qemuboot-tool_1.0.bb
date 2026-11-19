@@ -10,7 +10,7 @@ LIC_FILES_CHKSUM = "file://${LAYERPATH_xilinx}/scripts/qemuboot-tool;beginline=5
 
 SRC_URI = "file://${LAYERPATH_xilinx}/scripts/qemuboot-tool"
 
-S = "${WORKDIR}"
+S = "${UNPACKDIR}"
 
 inherit nativesdk
 
@@ -20,5 +20,5 @@ do_compile() {
 
 do_install() {
 	install -d ${D}${bindir}
-	install -m 0755 ${WORKDIR}${LAYERPATH_xilinx}/scripts/* ${D}${bindir}/
+	install -m 0755 ${UNPACKDIR}${LAYERPATH_xilinx}/scripts/* ${D}${bindir}/
 }

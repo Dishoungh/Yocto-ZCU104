@@ -1,0 +1,92 @@
+# meta-amd-hybrid
+
+This layer enables AMD x86 and FPGA hybrid platforms.
+
+For detailed steps on setting up the EDF Yocto environment, including host requirements, layer configuration, and build instructions, refer to the [AMD EDF Documentation](https://edf.docs.amd.com/).
+
+## Layer structure
+
+This repository is split into two sub-layers, following Yocto layer guidelines:
+
+- `meta-amd-hybrid-bsp` (collection `amd-hybrid-bsp`): board support - machine `.conf`, machine/domain YAML, device trees, multiconfigs and `recipes-bsp`.
+- `meta-amd-hybrid-core` (collection `amd-hybrid-core`): machine-independent content - image, kernel and library recipes/bbappends (`recipes-core`, `recipes-kernel`, `recipes-libraries`).
+
+Add both to `bblayers.conf` (core before bsp):
+
+```
+  ##OEROOT##/../meta-amd-hybrid/meta-amd-hybrid-core \
+  ##OEROOT##/../meta-amd-hybrid/meta-amd-hybrid-bsp \
+```
+
+## Buildable machines and images
+
+The following MACHINE and build target combinations are possible to build artifacts in SDT flow for
+the hybrid platforms:
+
+| Machine             | Target             | Description            | DISTRO         |
+|---------------------|--------------------|------------------------|----------------|
+| emb-plus-ve2302-amr | emb-plus-apu-image | APU image              | amd-edf-small  |
+| emb-plus-ve2302-amr | emb-plus-ospi-amr  | OSPI image             | amd-edf        |
+| alveo-v80-amr       | emb-plus-apu-image | APU image              | amd-edf        |
+| alveo-v80-amr       | emb-plus-ospi-amr  | OSPI image             | amd-edf        |
+
+> **NOTE:** `DISTRO=amd-edf-small` is required only for the AMR APU to reduce the APU image size.
+
+**Usage examples:**
+
+For AMR APU Image (requires `amd-edf-small` distro):
+```
+DISTRO=amd-edf-small MACHINE=emb-plus-ve2302-amr bitbake emb-plus-apu-image
+```
+
+For V80 APU Image (uses default `amd-edf` distro):
+```
+MACHINE=alveo-v80-amr bitbake emb-plus-apu-image
+```
+
+For OSPI Image (uses default `amd-edf` distro):
+```
+MACHINE=emb-plus-ve2302-amr bitbake emb-plus-ospi-amr
+MACHINE=alveo-v80-amr bitbake emb-plus-ospi-amr
+```
+
+## Maintainers, Patches/Submissions, Community
+
+Please send any patches, pull requests, comments or questions for this layer to
+the [meta-xilinx mailing list](https://lists.yoctoproject.org/g/meta-xilinx):
+
+	meta-xilinx@lists.yoctoproject.org
+
+When sending patches, please make sure the email subject line includes
+`[meta-amd-hybrid][<BRANCH_NAME>][PATCH]` and cc'ing the maintainers.
+
+For more details follow the OE community patch submission guidelines, as described in:
+
+https://www.openembedded.org/wiki/Commit_Patch_Message_Guidelines
+https://www.openembedded.org/wiki/How_to_submit_a_patch_to_OpenEmbedded
+
+`git send-email --to meta-xilinx@lists.yoctoproject.org *.patch`
+
+> **Note:** When creating patches, please use below format. To follow best practice,
+> if you have more than one patch use `--cover-letter` option while generating the
+> patches. Edit the `0000-cover-letter.patch` and change the title and top of the
+> body as appropriate.
+
+**Syntax:**
+`git format-patch -s --subject "meta-amd-hybrid][<BRANCH_NAME>][PATCH" -1`
+
+**Example:**
+`git format-patch -s --subject "meta-amd-hybrid][rel-v2026.2][PATCH" -1`
+
+**Maintainers:**
+
+	Mark Hatle <mark.hatle@amd.com>
+	Sandeep Gundlupet Raju <sandeep.gundlupet-raju@amd.com>
+	John Toomey <john.toomey@amd.com>
+	Trevor Woerner <trevor.woerner@amd.com>
+---
+
+## License
+
+Copyright (C) 2024-2026, Advanced Micro Devices, Inc.\
+SPDX-License-Identifier: MIT

@@ -18,29 +18,29 @@ LIC_FILES_CHKSUM = "file://package.xml;beginline=10;endline=10;md5=630c1fb14dbd3
 ROS_CN = "gazebo_model_attachment_plugin"
 ROS_BPN = "gazebo_model_attachment_plugin_msgs"
 
-ROS_BUILD_DEPENDS = " \
+ROS_BUILD_DEPENDS = "\
     ament-cmake-cpplint \
     rclcpp \
     rosidl-default-generators \
     std-msgs \
 "
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     ament-cmake-native \
     ament-cmake-python-native \
 "
 
-ROS_EXPORT_DEPENDS = " \
+ROS_EXPORT_DEPENDS = "\
     ament-cmake-cpplint \
     rclcpp \
     std-msgs \
 "
 
-ROS_BUILDTOOL_EXPORT_DEPENDS = " \
+ROS_BUILDTOOL_EXPORT_DEPENDS = "\
     ament-cmake-cppcheck-native \
 "
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     ament-cmake-cpplint \
     rclcpp \
     rclpy \
@@ -49,7 +49,7 @@ ROS_EXEC_DEPENDS = " \
 "
 
 # Currently informational only -- see http://www.ros.org/reps/rep-0149.html#dependency-tags.
-ROS_TEST_DEPENDS = " \
+ROS_TEST_DEPENDS = "\
     ament-cmake-cpplint \
     launch-testing-ament-cmake \
     ros2launch \
@@ -66,7 +66,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/humble/gazebo_model_attachment_plugin_msgs"
 SRC_URI = "git://github.com/ros2-gbp/boeing_gazebo_model_attachement_plugin-release;${ROS_BRANCH};protocol=https"
 SRCREV = "d6fc5995054bc293323829f89d049f788d3a64ef"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

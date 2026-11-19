@@ -20,10 +20,10 @@ Signed-off-by: Martin Jansa <martin.jansa@lge.com>
  CMakeModules/FindPython.cmake | 8 +++++++-
  1 file changed, 7 insertions(+), 1 deletion(-)
 
-Index: git/CMakeModules/FindPython.cmake
+Index: ompl-1.7.0-2/CMakeModules/FindPython.cmake
 ===================================================================
---- git.orig/CMakeModules/FindPython.cmake
-+++ git/CMakeModules/FindPython.cmake
+--- ompl-1.7.0-2.orig/CMakeModules/FindPython.cmake
++++ ompl-1.7.0-2/CMakeModules/FindPython.cmake
 @@ -226,10 +226,16 @@ endmacro(find_boost_numpy)
  macro(install_python)
      if (PYTHON_FOUND)
@@ -36,9 +36,9 @@ Index: git/CMakeModules/FindPython.cmake
          foreach(script ${install_python_PROGRAMS})
              file(READ ${script} _contents)
 -            string(REPLACE "#!/usr/bin/env python3" "#!${PYTHON_EXEC}" _fixed "${_contents}")
-+            string(REPLACE "#!/usr/bin/env python3" "${install_python_shebang}" _fixed "${_contents}")
++            string(REPLACE "#!/usr/bin/env python" "${install_python_shebang}" _fixed "${_contents}")
              get_filename_component(_realscript "${script}" NAME)
-+            message(INFO "Changing the shebang in ${PROJECT_BINARY_DIR}/${install_python_DESTINATION}/${_realscript} from '#!/usr/bin/env python3' to '${install_python_shebang}'")
++            message(INFO "Changing the shebang in ${PROJECT_BINARY_DIR}/${install_python_DESTINATION}/${_realscript} from '#!/usr/bin/env python' to '${install_python_shebang}'")
              file(WRITE "${PROJECT_BINARY_DIR}/${install_python_DESTINATION}/${_realscript}" "${_fixed}")
              install(PROGRAMS "${PROJECT_BINARY_DIR}/${install_python_DESTINATION}/${_realscript}"
                  DESTINATION "${install_python_DESTINATION}"

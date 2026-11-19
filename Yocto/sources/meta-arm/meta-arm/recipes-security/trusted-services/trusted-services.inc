@@ -13,8 +13,8 @@ require trusted-services-src.inc
 
 # By default bitbake includes only ${S} (i.e git/trusted-services) in the maps.
 # We also need to include the TS dependencies source trees.
-DEBUG_PREFIX_MAP:append = "-fmacro-prefix-map=${WORKDIR}/git=/usr/src/debug/${PN}/${EXTENDPE}${PV}-${PR} \
- -fdebug-prefix-map=${WORKDIR}/git=/usr/src/debug/${PN}/${EXTENDPE}${PV}-${PR} \
+DEBUG_PREFIX_MAP:append = "-fmacro-prefix-map=${UNPACKDIR}=${TARGET_DBGSRC_DIR} \
+ -fdebug-prefix-map=${UNPACKDIR}=${TARGET_DBGSRC_DIR} \
 "
 
 TS_PLATFORM ?= "ts/mock"
@@ -28,13 +28,13 @@ SYSROOT_DIRS += "/usr/${TS_ENV} /usr/opteesp /usr/arm-linux"
 # TS cmake files use find_file() to search through source code and build dirs.
 # Yocto cmake class limits CMAKE_FIND_ROOT_PATH and find_file() fails.
 # Include the source tree and build dirs into searchable path.
-OECMAKE_EXTRA_ROOT_PATH = "${WORKDIR}/git/ ${WORKDIR}/build/"
+OECMAKE_EXTRA_ROOT_PATH = "${S}/ ${B}"
 
 EXTRA_OECMAKE += '-DLIBGCC_LOCATE_CFLAGS="--sysroot=${STAGING_DIR_HOST}" \
                   -DCROSS_COMPILE="${TARGET_PREFIX}" \
                   -DTS_PLATFORM="${TS_PLATFORM}" \
                  '
-export CROSS_COMPILE="${TARGET_PREFIX}"
+export CROSS_COMPILE = "${TARGET_PREFIX}"
 
 # Default TS installation path
 TS_INSTALL = "/usr/${TS_ENV}"
@@ -54,5 +54,8 @@ EXTRA_OECMAKE += "${@get_ts_toolchain_option(d)}"
 
 # Paths to pre-built dependencies required by some TS SPs/tools
 EXTRA_OECMAKE += "-Dlibts_ROOT=${STAGING_DIR_HOST}${TS_INSTALL}/lib/cmake/libts/ \
-                  -DNEWLIB_INSTALL_DIR=${STAGING_DIR_HOST}/usr/opteesp/newlib \
+                  -Dlibpsats_ROOT=${STAGING_DIR_HOST}${TS_INSTALL}/lib/cmake/libpsats/ \
                  "
+
+INSANE_SKIP:${PN} += "buildpaths"
+INSANE_SKIP:${PN}-dbg += "buildpaths"

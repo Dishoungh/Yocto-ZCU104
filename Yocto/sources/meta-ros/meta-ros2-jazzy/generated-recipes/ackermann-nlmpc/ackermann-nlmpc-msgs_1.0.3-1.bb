@@ -15,22 +15,22 @@ LIC_FILES_CHKSUM = "file://package.xml;beginline=8;endline=8;md5=9c2b4f259ad099b
 ROS_CN = "ackermann_nlmpc"
 ROS_BPN = "ackermann_nlmpc_msgs"
 
-ROS_BUILD_DEPENDS = " \
+ROS_BUILD_DEPENDS = "\
     std-msgs \
 "
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     ament-cmake-native \
     rosidl-default-generators-native \
 "
 
-ROS_EXPORT_DEPENDS = " \
+ROS_EXPORT_DEPENDS = "\
     std-msgs \
 "
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     rosidl-default-runtime \
     std-msgs \
 "
@@ -49,7 +49,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/jazzy/ackermann_nlmpc_msgs"
 SRC_URI = "git://github.com/ros2-gbp/ackmerann_nlmpc-release;${ROS_BRANCH};protocol=https"
 SRCREV = "0bd5de339f77bf9869350461a621118948863e71"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

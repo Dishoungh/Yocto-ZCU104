@@ -16,7 +16,7 @@ LIC_FILES_CHKSUM = "file://package.xml;beginline=13;endline=13;md5=82f0323c08605
 ROS_CN = "smacc2"
 ROS_BPN = "smacc2"
 
-ROS_BUILD_DEPENDS = " \
+ROS_BUILD_DEPENDS = "\
     boost \
     lttng-ust \
     rcl \
@@ -28,11 +28,11 @@ ROS_BUILD_DEPENDS = " \
     tracetools-trace \
 "
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     ament-cmake-native \
 "
 
-ROS_EXPORT_DEPENDS = " \
+ROS_EXPORT_DEPENDS = "\
     lttng-ust \
     rcl \
     rclcpp \
@@ -45,7 +45,7 @@ ROS_EXPORT_DEPENDS = " \
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     boost \
     lttng-ust \
     rcl \
@@ -71,7 +71,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/humble/smacc2"
 SRC_URI = "git://github.com/robosoft-ai/SMACC2-release;${ROS_BRANCH};protocol=https"
 SRCREV = "c4edfde9159cec56a1b33f84cdba49812d00455e"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

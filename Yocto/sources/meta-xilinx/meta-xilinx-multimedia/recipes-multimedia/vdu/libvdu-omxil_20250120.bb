@@ -10,13 +10,12 @@ BRANCH ?= "master"
 REPO   ?= "git://github.com/Xilinx/vdu-omx-il.git;protocol=https"
 SRCREV ?= "4126404dfce767870a672f07804d880106d6d5e2"
 
-BRANCHARG = "${@['nobranch=1', 'branch=${BRANCH}'][d.getVar('BRANCH', True) != '']}"
+BRANCHARG = "${@['nobranch=1', 'branch=${BRANCH}'][d.getVar('BRANCH') != '']}"
 SRC_URI = "${REPO};${BRANCHARG}"
 
-S = "${WORKDIR}/git"
-B = "${WORKDIR}/git"
+B = "${S}"
 
-inherit autotools features_check
+inherit features_check
 
 REQUIRED_MACHINE_FEATURES = "vdu"
 
@@ -25,7 +24,7 @@ PACKAGE_ARCH = "${MACHINE_ARCH}"
 DEPENDS = "vdu-ctrlsw"
 RDEPENDS:${PN} = "libvdu-ctrlsw"
 
-EXTERNAL_INCLUDE="${STAGING_INCDIR}/vdu-ctrl-sw/include"
+EXTERNAL_INCLUDE = "${STAGING_INCDIR}/vdu-ctrl-sw/include"
 
 do_compile[dirs] = "${S}"
 do_install[dirs] = "${S}"
@@ -36,6 +35,9 @@ EXTRA_OEMAKE = " \
     INSTALL_PATH=${D}${bindir} \
     INCLUDE_INST_PATH=${D}${includedir} \
     "
+do_install() {
+    oe_runmake install
+}
 
 do_install:append() {
     install -d ${D}${libdir}

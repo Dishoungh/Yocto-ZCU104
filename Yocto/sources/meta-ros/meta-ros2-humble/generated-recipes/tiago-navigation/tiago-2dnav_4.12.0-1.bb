@@ -20,7 +20,7 @@ ROS_BPN = "tiago_2dnav"
 
 ROS_BUILD_DEPENDS = ""
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     ament-cmake-auto-native \
 "
 
@@ -28,13 +28,13 @@ ROS_EXPORT_DEPENDS = ""
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     omni-base-2dnav \
     pmb2-2dnav \
 "
 
 # Currently informational only -- see http://www.ros.org/reps/rep-0149.html#dependency-tags.
-ROS_TEST_DEPENDS = " \
+ROS_TEST_DEPENDS = "\
     ament-lint-auto \
     ament-lint-common \
 "
@@ -46,11 +46,10 @@ DEPENDS += "${ROS_EXPORT_DEPENDS} ${ROS_BUILDTOOL_EXPORT_DEPENDS}"
 
 RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 
-# matches with: https://github.com/pal-gbp/tiago_navigation-release/archive/release/humble/tiago_2dnav/4.12.0-1.tar.gz
+# matches with: https://github.com/ros2-gbp/tiago_navigation-release/archive/release/humble/tiago_2dnav/4.12.0-1.tar.gz
 ROS_BRANCH ?= "branch=release/humble/tiago_2dnav"
-SRC_URI = "git://github.com/pal-gbp/tiago_navigation-release;${ROS_BRANCH};protocol=https"
+SRC_URI = "git://github.com/ros2-gbp/tiago_navigation-release;${ROS_BRANCH};protocol=https"
 SRCREV = "de6caea2da5abdd308c2565283a2ba9b38c26e6a"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

@@ -23,3 +23,5 @@ LICENSE = "MIT"
 
 # Send console messages to xen console
 APPEND += "console=hvc0"
+
+IMAGE_FSTYPES = "tar.bz2 ext4 ext4.qcow2"

@@ -83,7 +83,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/simple_grasping"
 SRC_URI = "git://github.com/ros2-gbp/simple_grasping-release;${ROS_BRANCH};protocol=https"
 SRCREV = "84d79ce163dad5cd1bbe9c84662aa188e4ea66b4"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

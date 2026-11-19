@@ -6,7 +6,7 @@ inherit ros_distro_humble
 inherit ros_superflore_generated
 
 DESCRIPTION = "<p>URDF and xacro description package for Kortex robots</p>     <p>This package contains configuration data, 3D models and launch files for Kortex arms and supported grippers</p>"
-AUTHOR = " <avannobel@kinova.ca>"
+AUTHOR = "<avannobel@kinova.ca>"
 ROS_AUTHOR = "Alexandre Vannobel <avannobel@kinova.ca>"
 HOMEPAGE = "https://wiki.ros.org"
 SECTION = "devel"
@@ -18,7 +18,7 @@ ROS_BPN = "kortex_description"
 
 ROS_BUILD_DEPENDS = ""
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     ament-cmake-native \
 "
 
@@ -26,7 +26,7 @@ ROS_EXPORT_DEPENDS = ""
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     joint-state-publisher \
     joint-state-publisher-gui \
     joint-trajectory-controller \
@@ -51,7 +51,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/humble/kortex_description"
 SRC_URI = "git://github.com/ros2-gbp/ros2_kortex-release;${ROS_BRANCH};protocol=https"
 SRCREV = "70fbbad1639a45bdccad5a3dcc7443247d4ebea9"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

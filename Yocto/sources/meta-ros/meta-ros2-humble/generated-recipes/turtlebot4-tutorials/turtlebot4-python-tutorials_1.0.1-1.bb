@@ -17,7 +17,7 @@ LIC_FILES_CHKSUM = "file://package.xml;beginline=8;endline=8;md5=3dce4ba60d7e51e
 ROS_CN = "turtlebot4_tutorials"
 ROS_BPN = "turtlebot4_python_tutorials"
 
-ROS_BUILD_DEPENDS = " \
+ROS_BUILD_DEPENDS = "\
     irobot-create-msgs \
     rclpy \
     turtlebot4-navigation \
@@ -25,7 +25,7 @@ ROS_BUILD_DEPENDS = " \
 
 ROS_BUILDTOOL_DEPENDS = ""
 
-ROS_EXPORT_DEPENDS = " \
+ROS_EXPORT_DEPENDS = "\
     irobot-create-msgs \
     rclpy \
     turtlebot4-navigation \
@@ -33,14 +33,14 @@ ROS_EXPORT_DEPENDS = " \
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     irobot-create-msgs \
     rclpy \
     turtlebot4-navigation \
 "
 
 # Currently informational only -- see http://www.ros.org/reps/rep-0149.html#dependency-tags.
-ROS_TEST_DEPENDS = " \
+ROS_TEST_DEPENDS = "\
     ament-copyright \
     ament-flake8 \
     ament-pep257 \
@@ -58,7 +58,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/humble/turtlebot4_python_tutorials"
 SRC_URI = "git://github.com/ros2-gbp/turtlebot4_tutorials-release;${ROS_BRANCH};protocol=https"
 SRCREV = "53ea006c711b24fc901f1513cb571afe6d012694"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_python"
 

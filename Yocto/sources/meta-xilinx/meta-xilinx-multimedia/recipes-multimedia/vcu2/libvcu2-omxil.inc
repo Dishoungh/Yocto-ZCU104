@@ -7,10 +7,9 @@ PV .= "+git"
 
 REPO ?= "git://github.com/Xilinx/vcu2-omx-il.git;protocol=https"
 
-BRANCHARG = "${@['nobranch=1', 'branch=${BRANCH}'][d.getVar('BRANCH', True) != '']}"
+BRANCHARG = "${@['nobranch=1', 'branch=${BRANCH}'][d.getVar('BRANCH') != '']}"
 SRC_URI = "${REPO};${BRANCHARG}"
 
-S  = "${WORKDIR}/git"
 
 inherit features_check
 
@@ -21,7 +20,7 @@ PACKAGE_ARCH = "${MACHINE_ARCH}"
 DEPENDS = "vcu2-ctrlsw"
 RDEPENDS:${PN} = "libvcu2-ctrlsw"
 
-EXTERNAL_INCLUDE="${STAGING_INCDIR}/vcu2-ctrl-sw/include"
+EXTERNAL_INCLUDE = "${STAGING_INCDIR}/vcu2-ctrl-sw/include"
 
 EXTRA_OEMAKE = " \
     CC='${CC}' CXX='${CXX} ${CXXFLAGS}' \

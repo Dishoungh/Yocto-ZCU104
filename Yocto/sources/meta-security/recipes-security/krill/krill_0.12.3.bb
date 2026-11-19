@@ -15,7 +15,6 @@ include krill-crates.inc
 UPSTREAM_CHECK_URI = "https://github.com/NLnetLabs/${BPN}/releases"
 UPSTREAM_CHECK_GITTAGREGEX = "v(?P<pver>\d+(\.\d+)+)"
 
-S = "${WORKDIR}/git"
 CARGO_SRC_DIR = ""
 
 inherit pkgconfig useradd systemd cargo cargo-update-recipe-crates
@@ -26,6 +25,7 @@ do_install:append () {
 
     install -m 664 ${S}/defaults/krill.conf ${D}${sysconfdir}/.
     install ${S}/defaults/* ${D}${datadir}/krill/.
+    find  ${D}${bindir}/ -name "krill*"  -exec sed -i -e 's#${CARGO_HOME}/bitbake##g' {} +
 }
 
 KRILL_UID ?= "krill"
@@ -37,6 +37,7 @@ USERADD_PARAM:${PN} = "--system -g ${KRILL_GID} --home-dir  \
                        /var/lib/krill/ --no-create-home  \
                        --shell /sbin/nologin ${BPN}"
 
-FILES:${PN} += "{sysconfdir}/defaults ${datadir}"
+FILES:${PN} += "${sysconfdir}/defaults ${datadir}"
+INSANE_SKIP:${PN} = "already-stripped"
 
 COMPATIBLE_HOST = "(i.86|x86_64|aarch64).*-linux"

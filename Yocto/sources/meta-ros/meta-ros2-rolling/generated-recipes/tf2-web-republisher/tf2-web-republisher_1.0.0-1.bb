@@ -68,7 +68,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/tf2_web_republisher"
 SRC_URI = "git://github.com/ros2-gbp/tf2_web_republisher-release;${ROS_BRANCH};protocol=https"
 SRCREV = "5025a85a0d7d4befa0896d76d6879e8bb6eb0a24"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

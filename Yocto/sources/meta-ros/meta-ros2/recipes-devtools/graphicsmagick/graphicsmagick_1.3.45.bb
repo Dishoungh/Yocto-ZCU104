@@ -8,7 +8,7 @@ SRC_URI = "${SOURCEFORGE_MIRROR}/${BPN}/GraphicsMagick-${PV}.tar.xz \
 
 SRC_URI[sha256sum] = "dcea5167414f7c805557de2d7a47a9b3147bcbf617b91f5f0f4afe5e6543026b"
 
-S = "${WORKDIR}/GraphicsMagick-${PV}"
+S = "${UNPACKDIR}/GraphicsMagick-${PV}"
 
 inherit autotools
 

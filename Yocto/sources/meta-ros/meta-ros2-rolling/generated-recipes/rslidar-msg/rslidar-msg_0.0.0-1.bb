@@ -57,7 +57,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/rslidar_msg"
 SRC_URI = "git://github.com/ros2-gbp/rslidar_msg-release;${ROS_BRANCH};protocol=https"
 SRCREV = "c6bd231fe597e787630796c3aec6cd53f10a534b"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

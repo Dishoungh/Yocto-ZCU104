@@ -78,7 +78,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/persist_parameter_server"
 SRC_URI = "git://github.com/ros2-gbp/persist_parameter_server-release;${ROS_BRANCH};protocol=https"
 SRCREV = "5766b33ded2d0ab12322d071a3fd8b577cdd9ab4"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

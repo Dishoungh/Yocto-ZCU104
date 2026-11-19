@@ -46,7 +46,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/greenwave_monitor_interfaces"
 SRC_URI = "git://github.com/ros2-gbp/greenwave_monitor-release;${ROS_BRANCH};protocol=https"
 SRCREV = "f266817992880461e05f331333d052f934adf0b2"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

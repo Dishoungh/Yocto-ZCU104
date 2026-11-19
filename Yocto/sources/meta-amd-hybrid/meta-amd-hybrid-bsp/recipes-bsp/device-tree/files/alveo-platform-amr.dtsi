@@ -1,0 +1,52 @@
+/*
+ * SPDX-License-Identifier: GPL-2.0-only
+ *
+ * dtsi for ALveo V80 AMR platform
+ *
+ * Copyright (C) 2026, Advanced Micro Devices, Inc.  All rights reserved.
+ *
+ */
+
+/* Workaround deleting the DIMM(ddr4_1) and HBM memory nodes that are causing the kernel to hang */
+
+/ {
+        /delete-node/ memory@4000000000;
+        /delete-node/ memory@60000000000;
+};
+
+&serial0 {
+        status = "disabled";
+};
+
+&ttc0 {
+        status = "disabled";
+};
+
+&ttc1 {
+        status = "disabled";
+};
+
+&ospi {
+        status = "disabled";
+};
+
+&i2c2 {
+        status = "disabled";
+};
+
+&gpio1 {
+        status = "disabled";
+};
+
+&sdhci0 {
+        status = "disabled";
+};
+
+/* AMC apu_mem_dram: 0x1C800000, 1592MB, ending at 0x80000000. */
+&axi_noc_mc_ddr4_0_ddr_memory {
+        reg = <0x0 0x1c800000 0x0 0x63800000>;
+};
+
+&serial1 {
+	/delete-property/ power-domains;
+};

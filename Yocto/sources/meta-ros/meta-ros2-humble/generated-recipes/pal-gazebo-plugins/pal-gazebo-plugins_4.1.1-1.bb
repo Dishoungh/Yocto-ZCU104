@@ -18,7 +18,7 @@ LIC_FILES_CHKSUM = "file://package.xml;beginline=12;endline=12;md5=12c26a18c7f49
 ROS_CN = "pal_gazebo_plugins"
 ROS_BPN = "pal_gazebo_plugins"
 
-ROS_BUILD_DEPENDS = " \
+ROS_BUILD_DEPENDS = "\
     control-toolbox \
     gazebo-msgs \
     gazebo-ros \
@@ -29,11 +29,11 @@ ROS_BUILD_DEPENDS = " \
     tf2-geometry-msgs \
 "
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     ament-cmake-auto-native \
 "
 
-ROS_EXPORT_DEPENDS = " \
+ROS_EXPORT_DEPENDS = "\
     control-toolbox \
     gazebo-msgs \
     gazebo-ros \
@@ -46,7 +46,7 @@ ROS_EXPORT_DEPENDS = " \
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     control-toolbox \
     gazebo-msgs \
     gazebo-ros \
@@ -58,7 +58,7 @@ ROS_EXEC_DEPENDS = " \
 "
 
 # Currently informational only -- see http://www.ros.org/reps/rep-0149.html#dependency-tags.
-ROS_TEST_DEPENDS = " \
+ROS_TEST_DEPENDS = "\
     ament-lint-auto \
     ament-lint-common \
 "
@@ -70,11 +70,10 @@ DEPENDS += "${ROS_EXPORT_DEPENDS} ${ROS_BUILDTOOL_EXPORT_DEPENDS}"
 
 RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 
-# matches with: https://github.com/pal-gbp/pal_gazebo_plugins-release/archive/release/humble/pal_gazebo_plugins/4.1.1-1.tar.gz
+# matches with: https://github.com/ros2-gbp/pal_gazebo_plugins-release/archive/release/humble/pal_gazebo_plugins/4.1.1-1.tar.gz
 ROS_BRANCH ?= "branch=release/humble/pal_gazebo_plugins"
-SRC_URI = "git://github.com/pal-gbp/pal_gazebo_plugins-release;${ROS_BRANCH};protocol=https"
+SRC_URI = "git://github.com/ros2-gbp/pal_gazebo_plugins-release;${ROS_BRANCH};protocol=https"
 SRCREV = "13bc7ee5cf1a20b1b0aab456acb0bfc4dd85c84f"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

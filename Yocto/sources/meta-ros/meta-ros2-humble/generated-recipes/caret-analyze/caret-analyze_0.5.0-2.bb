@@ -17,35 +17,35 @@ LIC_FILES_CHKSUM = "file://package.xml;beginline=9;endline=9;md5=12c26a18c7f493f
 ROS_CN = "caret_analyze"
 ROS_BPN = "caret_analyze"
 
-ROS_BUILD_DEPENDS = " \
+ROS_BUILD_DEPENDS = "\
     ${ROS_UNRESOLVED_DEP-python3-colorcet} \
-    ${ROS_UNRESOLVED_DEP-python3-graphviz} \
     graphviz \
+    python3-graphviz \
     python3-setuptools \
 "
 
 ROS_BUILDTOOL_DEPENDS = ""
 
-ROS_EXPORT_DEPENDS = " \
+ROS_EXPORT_DEPENDS = "\
     ${ROS_UNRESOLVED_DEP-python3-colorcet} \
-    ${ROS_UNRESOLVED_DEP-python3-graphviz} \
     graphviz \
+    python3-graphviz \
     python3-setuptools \
 "
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     ${ROS_UNRESOLVED_DEP-python3-colorcet} \
-    ${ROS_UNRESOLVED_DEP-python3-graphviz} \
     graphviz \
+    python3-graphviz \
     python3-pyyaml \
     python3-setuptools \
     python3-tqdm \
 "
 
 # Currently informational only -- see http://www.ros.org/reps/rep-0149.html#dependency-tags.
-ROS_TEST_DEPENDS = " \
+ROS_TEST_DEPENDS = "\
     ament-copyright \
     ament-flake8 \
     ament-mypy \
@@ -65,7 +65,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/humble/caret_analyze"
 SRC_URI = "git://github.com/ros2-gbp/caret_analyze-release;${ROS_BRANCH};protocol=https"
 SRCREV = "d95760aa55ae23c6958bfbfd940952c9e02b5ce1"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_python"
 

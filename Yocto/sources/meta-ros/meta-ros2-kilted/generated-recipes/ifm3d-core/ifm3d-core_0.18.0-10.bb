@@ -18,7 +18,7 @@ LIC_FILES_CHKSUM = "file://package.xml;beginline=8;endline=8;md5=3dce4ba60d7e51e
 ROS_CN = "ifm3d_core"
 ROS_BPN = "ifm3d_core"
 
-ROS_BUILD_DEPENDS = " \
+ROS_BUILD_DEPENDS = "\
     boost \
     curl \
     cv-bridge \
@@ -27,7 +27,7 @@ ROS_BUILD_DEPENDS = " \
     xmlrpc-c \
 "
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     cmake-native \
 "
 
@@ -35,7 +35,7 @@ ROS_EXPORT_DEPENDS = ""
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     curl \
     cv-bridge \
     glog \
@@ -57,7 +57,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/kilted/ifm3d_core"
 SRC_URI = "git://github.com/ros2-gbp/ifm3d-release;${ROS_BRANCH};protocol=https"
 SRCREV = "f7d34a6057a7a6162c4bde02d47674455b718fcc"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "cmake"
 

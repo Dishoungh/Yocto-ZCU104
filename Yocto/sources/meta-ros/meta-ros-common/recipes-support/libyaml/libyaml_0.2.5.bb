@@ -12,19 +12,16 @@ SRC_URI[sha256sum] = "c642ae9b75fee120b2d96c712538bd2cf283228d2337df2cf2988e3c02
 
 SRC_URI += "file://0001-use-cmake.patch"
 
-S = "${WORKDIR}/yaml-${PV}"
+S = "${UNPACKDIR}/yaml-${PV}"
 
 inherit cmake
 
-EXTRA_OECMAKE += "-DINSTALL_CMAKE_DIR=${baselib}/cmake/yaml \
+EXTRA_OECMAKE += "-DINSTALL_CMAKE_DIR=lib/cmake/yaml \
                   -DBUILD_TESTING=OFF \
-                  -DBUILD_SHARED_LIBS=ON"
+                  -DBUILD_SHARED_LIBS=ON \
+                  -DCMAKE_POLICY_VERSION_MINIMUM=3.5"
 
 DISABLE_STATIC:class-nativesdk = ""
 DISABLE_STATIC:class-native = ""
-
-CVE_STATUS[CVE-2024-35325] = "upstream-wontfix: Upstream thinks this is a misuse (or wrong use) of the libyaml API - https://github.com/yaml/libyaml/issues/303"
-CVE_STATUS[CVE-2024-35326] = "upstream-wontfix: Upstream thinks there is no working code that is exploitable - https://github.com/yaml/libyaml/issues/302"
-CVE_STATUS[CVE-2024-35328] = "upstream-wontfix: Upstream thinks there is no working code that is exploitable - https://github.com/yaml/libyaml/issues/302"
 
 BBCLASSEXTEND = "native nativesdk"

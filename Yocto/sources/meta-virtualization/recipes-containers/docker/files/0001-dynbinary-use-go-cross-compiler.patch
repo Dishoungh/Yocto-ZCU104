@@ -48,10 +48,10 @@ Index: import/hack/make/.binary
  		echo -n '.exe'
  	fi
  }
-@@ -16,33 +16,12 @@
- (
- 	export GOGC=${DOCKER_BUILD_GOGC:-1000}
+@@ -14,31 +14,10 @@
+ source "${MAKEDIR}/.go-autogen"
  
+ (
 -	if [ "$(go env GOOS)/$(go env GOARCH)" != "$(go env GOHOSTOS)/$(go env GOHOSTARCH)" ]; then
 -		# must be cross-compiling!
 -		if [ "$(go env GOOS)/$(go env GOARCH)" = "linux/arm" ]; then
@@ -73,17 +73,15 @@ Index: import/hack/make/.binary
 -		fi
 -	fi
 -
- 	# -buildmode=pie is not supported on Windows arm64 and Linux mips*, ppc64be
- 	# https://github.com/golang/go/blob/go1.19.4/src/cmd/internal/sys/supported.go#L125-L132
  	if ! [ "$DOCKER_STATIC" = "1" ]; then
  		# -buildmode=pie not supported when -race is enabled
  		if [[ " $BUILDFLAGS " != *" -race "* ]]; then
 -			case "$(go env GOOS)/$(go env GOARCH)" in
 +			case "$(${GO} env GOOS)/$(${GO} env GOARCH)" in
- 				windows/arm64 | linux/mips* | linux/ppc64) ;;
- 				*)
- 					BUILDFLAGS+=("-buildmode=pie")
-@@ -66,11 +45,11 @@
+ 				linux/mips* | linux/ppc64)
+ 					# -buildmode=pie is not supported on Linux mips*, ppc64be
+ 					# https://github.com/golang/go/blob/go1.24.3/src/internal/platform/supported.go#L188-L200
+@@ -65,11 +44,11 @@
  	# only necessary for non-sandboxed invocation where TARGETPLATFORM is empty
  	PLATFORM_NAME=$TARGETPLATFORM
  	if [ -z "$PLATFORM_NAME" ]; then
@@ -100,12 +98,12 @@ Index: import/hack/make/.binary
  		fi
  	fi
  
-@@ -82,7 +61,7 @@
+@@ -93,7 +72,7 @@
  	if [ -n "$DOCKER_DEBUG" ]; then
  		set -x
  	fi
--	./hack/with-go-mod.sh go build -mod=vendor -modfile=vendor.mod -o "$DEST/$BINARY_FULLNAME" "${BUILDFLAGS[@]}" -ldflags "$LDFLAGS $LDFLAGS_STATIC $DOCKER_LDFLAGS" -gcflags="${GCFLAGS}" "$GO_PACKAGE"
-+	./hack/with-go-mod.sh ${GO} build -trimpath -mod=vendor -modfile=vendor.mod -o "$DEST/$BINARY_FULLNAME" "${BUILDFLAGS[@]}" -ldflags "$LDFLAGS $LDFLAGS_STATIC $DOCKER_LDFLAGS" -gcflags="${GCFLAGS}" "$GO_PACKAGE"
- )
+-	go build -o "$DEST/$BINARY_FULLNAME" "${BUILDFLAGS[@]}" -ldflags "$LDFLAGS $LDFLAGS_STATIC $DOCKER_LDFLAGS" -gcflags="${GCFLAGS}" "$GO_PACKAGE"
++	$GO build -o "$DEST/$BINARY_FULLNAME" "${BUILDFLAGS[@]}" -ldflags "$LDFLAGS $LDFLAGS_STATIC $DOCKER_LDFLAGS" -gcflags="${GCFLAGS}" "$GO_PACKAGE"
  
- echo "Created binary: $DEST/$BINARY_FULLNAME"
+ 	# Verify that the built binary contains windows resources
+ 	if [ "$(go env GOOS)" = "windows" ]; then

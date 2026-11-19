@@ -15,8 +15,6 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=bd64d5de9621ced0bbf488c45413e534 \
 
 SRC_URI = "git://github.com/stevengj/nlopt.git;protocol=https;branch=master"
 
-S = "${WORKDIR}/git"
-
 SRCREV = "7d04da19236148f9ae9d8dfa470a2264f5d2aa33"
 
 DEPENDS = "swig-native"

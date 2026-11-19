@@ -19,7 +19,7 @@ ROS_BPN = "tiago_robot"
 
 ROS_BUILD_DEPENDS = ""
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     ament-cmake-native \
 "
 
@@ -27,7 +27,7 @@ ROS_EXPORT_DEPENDS = ""
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     tiago-bringup \
     tiago-controller-configuration \
     tiago-description \
@@ -43,11 +43,10 @@ DEPENDS += "${ROS_EXPORT_DEPENDS} ${ROS_BUILDTOOL_EXPORT_DEPENDS}"
 
 RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 
-# matches with: https://github.com/pal-gbp/tiago_robot-release/archive/release/humble/tiago_robot/4.24.1-1.tar.gz
+# matches with: https://github.com/ros2-gbp/tiago_robot-release/archive/release/humble/tiago_robot/4.24.1-1.tar.gz
 ROS_BRANCH ?= "branch=release/humble/tiago_robot"
-SRC_URI = "git://github.com/pal-gbp/tiago_robot-release;${ROS_BRANCH};protocol=https"
+SRC_URI = "git://github.com/ros2-gbp/tiago_robot-release;${ROS_BRANCH};protocol=https"
 SRCREV = "c891192d290df1aabbd87dc6508432adc68f4885"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

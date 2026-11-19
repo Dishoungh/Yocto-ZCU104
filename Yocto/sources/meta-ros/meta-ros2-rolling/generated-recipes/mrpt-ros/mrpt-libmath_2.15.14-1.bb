@@ -77,7 +77,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/mrpt_libmath"
 SRC_URI = "git://github.com/ros2-gbp/mrpt_ros-release;${ROS_BRANCH};protocol=https"
 SRCREV = "2312c666fb790327855f2a5184dff8a54792b5dd"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "cmake"
 

@@ -18,7 +18,7 @@ ROS_BPN = "boost_sml_vendor"
 
 ROS_BUILD_DEPENDS = ""
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     ament-cmake-native \
     ament-cmake-vendor-package-native \
     git-native \
@@ -44,7 +44,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/jazzy/boost_sml_vendor"
 SRC_URI = "git://github.com/ros2-gbp/boost_sml_vendor-release;${ROS_BRANCH};protocol=https"
 SRCREV = "430ab9601bb7784c902250662443f8013d339707"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

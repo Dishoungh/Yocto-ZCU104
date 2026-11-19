@@ -54,7 +54,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/cloudini_lib"
 SRC_URI = "git://github.com/facontidavide/cloudini-release;${ROS_BRANCH};protocol=https"
 SRCREV = "bec82ffb93fe92d97543229a921df2f1e03533e6"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

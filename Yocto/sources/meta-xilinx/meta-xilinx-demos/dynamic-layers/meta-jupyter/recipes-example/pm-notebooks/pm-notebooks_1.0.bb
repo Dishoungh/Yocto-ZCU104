@@ -13,11 +13,12 @@ SRC_URI = "git://github.com/Xilinx/platform-management-notebooks.git;branch=xlnx
 
 SRCREV = "c502be361b6857e21ab903f31c9ead69e3a0d9ba"
 
-S = "${WORKDIR}/git/pm-notebooks"
+S = "${UNPACKDIR}/${BP}/pm-notebooks"
 
 COMPATIBLE_MACHINE = "^$"
 COMPATIBLE_MACHINE:versal = "versal"
 COMPATIBLE_MACHINE:versal-net = "versal-net"
+COMPATIBLE_MACHINE:versal-2vp = "versal-2vp"
 
 RDEPENDS:${PN} = " \
     packagegroup-xilinx-jupyter \

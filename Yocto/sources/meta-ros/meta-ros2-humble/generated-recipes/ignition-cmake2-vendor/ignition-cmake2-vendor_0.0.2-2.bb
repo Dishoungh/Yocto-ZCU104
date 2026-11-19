@@ -18,29 +18,29 @@ LIC_FILES_CHKSUM = "file://package.xml;beginline=8;endline=8;md5=a843d02835d935e
 ROS_CN = "ignition_cmake2_vendor"
 ROS_BPN = "ignition_cmake2_vendor"
 
-ROS_BUILD_DEPENDS = " \
+ROS_BUILD_DEPENDS = "\
     ${ROS_UNRESOLVED_DEP-ignition-cmake2} \
 "
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     ament-cmake-test-native \
     cmake-native \
     doxygen-native \
     git-native \
 "
 
-ROS_EXPORT_DEPENDS = " \
+ROS_EXPORT_DEPENDS = "\
     ${ROS_UNRESOLVED_DEP-ignition-cmake2} \
 "
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     ${ROS_UNRESOLVED_DEP-ignition-cmake2} \
 "
 
 # Currently informational only -- see http://www.ros.org/reps/rep-0149.html#dependency-tags.
-ROS_TEST_DEPENDS = " \
+ROS_TEST_DEPENDS = "\
     ament-cmake-copyright \
     ament-cmake-lint-cmake \
     ament-cmake-xmllint \
@@ -57,7 +57,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/humble/ignition_cmake2_vendor"
 SRC_URI = "git://github.com/ros2-gbp/ignition_cmake2_vendor-release;${ROS_BRANCH};protocol=https"
 SRCREV = "18bf27798d4be2ba4a85e9e9fb129681e4e7af2b"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "cmake"
 

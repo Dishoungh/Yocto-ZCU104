@@ -1,3 +1,4 @@
+# Copyright (c) 2020 LG Electronics, Inc.
 # Copyright (c) 2024 Wind River Systems, Inc.
 
 inherit pkgconfig

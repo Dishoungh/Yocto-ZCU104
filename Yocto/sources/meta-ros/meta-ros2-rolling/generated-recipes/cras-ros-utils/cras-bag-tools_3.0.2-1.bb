@@ -57,7 +57,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/cras_bag_tools"
 SRC_URI = "git://github.com/ros2-gbp/cras_ros_utils-release;${ROS_BRANCH};protocol=https"
 SRCREV = "2d0777985b8a59368be4523544622b493d3e916a"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

@@ -3,12 +3,13 @@ HOMEPAGE = "https://www.chronox.de/libkcapi/index.html"
 LICENSE = "BSD-3-Clause | GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=3d8a091d797491204567185a6efce70f"
 
-S = "${WORKDIR}/git"
 SRCREV = "fc937358e71253a6efaa3ba74885364976b040ea"
 SRC_URI = "git://github.com/smuellerDD/libkcapi.git;branch=master;protocol=https \
           "
 
 inherit autotools
+
+CACHED_CONFIGUREVARS += "ac_cv_prog_cc_c23=no"
 
 PACKAGECONFIG ??= ""
 PACKAGECONFIG[testapp] = "--enable-kcapi-test,,,bash"

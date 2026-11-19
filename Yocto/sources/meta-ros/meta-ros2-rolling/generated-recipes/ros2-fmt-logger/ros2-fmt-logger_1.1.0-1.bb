@@ -59,7 +59,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/ros2_fmt_logger"
 SRC_URI = "git://github.com/ros2-gbp/ros2_fmt_logger-release;${ROS_BRANCH};protocol=https"
 SRCREV = "2b682c58feac0212dd7259f84a8128866bc4ea3f"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

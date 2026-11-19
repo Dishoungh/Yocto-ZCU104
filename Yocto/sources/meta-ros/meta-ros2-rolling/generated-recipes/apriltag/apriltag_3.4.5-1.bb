@@ -47,7 +47,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/apriltag"
 SRC_URI = "git://github.com/ros2-gbp/apriltag-release;${ROS_BRANCH};protocol=https"
 SRCREV = "43ad9a308791bb35663445251d7fd6e799a6849e"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "cmake"
 

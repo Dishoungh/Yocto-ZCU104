@@ -54,6 +54,7 @@ COMPATIBLE_MACHINE:zynqmp = ".*"
 COMPATIBLE_MACHINE:versal = ".*"
 COMPATIBLE_MACHINE:versal-net = ".*"
 COMPATIBLE_MACHINE:versal-2ve-2vm = ".*"
+COMPATIBLE_MACHINE:versal-2vp = ".*"
 COMPATIBLE_MACHINE:microblaze-v = ".*"
 
 DEPENDS += "python3-dtc-native"
@@ -70,6 +71,8 @@ DTB_BASE_NAME ?= "${MACHINE}-system${IMAGE_VERSION_SUFFIX}"
 MANIFEST_COMPONENT_NAME ?= "device-tree"
 MANIFEST_BRANCH_VARS = "DT_UBOOT_BRANCH BRANCH SRCBRANCH"
 MANIFEST_SRCREV_VARS = "DT_UBOOT_SRCREV SRCREV"
+# Generated from the hardware description; PV identifies nothing.
+MANIFEST_VERSION_VARS = ""
 
 # Copy the EXTRA_DT_FILES and EXTRA_DT_INCLUDE_FILES files in prepend operation so that
 # it can be preprocessed.
@@ -80,8 +83,8 @@ do_configure:prepend () {
     fi
 
     for f in ${EXTRA_DT_FILES} ${EXTRA_DT_INCLUDE_FILES}; do
-        if [ "$(realpath ${WORKDIR}/${f})" != "$(realpath ${DT_FILES_PATH}/`basename ${f}`)" ]; then
-            cp ${WORKDIR}/${f} ${DT_FILES_PATH}/
+        if [ "$(realpath ${UNPACKDIR}/${f})" != "$(realpath ${DT_FILES_PATH}/`basename ${f}`)" ]; then
+            cp -v ${UNPACKDIR}/${f} ${DT_FILES_PATH}/
         fi
     done
 }
@@ -139,7 +142,7 @@ devicetree_do_install:append() {
             install -Dm 0644 ${DT_FILES_PATH}/${DTB_FILE_NAME} ${D}/boot/devicetree/${DTB_FILE_NAME}
         fi
         if [ -e "${D}/boot/devicetree/${DTB_FILE_NAME}" ]; then
-            # We need the output to be system.dtb for WIC setup to match XSCT flow
+            # We need the output to be system.dtb for WIC setup to match former XSCT flow
             cp ${D}/boot/devicetree/${DTB_FILE_NAME} ${D}/boot/system.dtb
         else
             bberror "Expected filename ${DTB_FILE_NAME} doesn't exist in ${DEPLOYDIR}/devicetree"
@@ -154,7 +157,7 @@ devicetree_do_deploy:append() {
             install -Dm 0644 ${DT_FILES_PATH}/${DTB_FILE_NAME} ${DEPLOYDIR}/devicetree/${DTB_FILE_NAME}
         fi
         if [ -e "${DEPLOYDIR}/devicetree/${DTB_FILE_NAME}" ]; then
-            # We need the output to be system.dtb for WIC setup to match XSCT flow
+            # We need the output to be system.dtb for WIC setup to match former XSCT flow
             ln -sf devicetree/${DTB_FILE_NAME} ${DEPLOYDIR}/${DTB_BASE_NAME}.dtb
             ln -sf devicetree/${DTB_FILE_NAME} ${DEPLOYDIR}/${MACHINE}-system.dtb
             ln -sf devicetree/${DTB_FILE_NAME} ${DEPLOYDIR}/system.dtb

@@ -10,11 +10,14 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=402cce7fbcb6ea9ab5a0378dd7f40806 \
                     file://openqa/COPYING;md5=b234ee4d69f5fce4486a80fdaf4a4263 \
                    "
 SRC_URI = "git://gitlab.com/CodethinkLabs/qad/qad;branch=main;protocol=https \
-           file://0001-Fix-warnings-found-by-clang-compiler.patch"
+           file://0001-Fix-warnings-found-by-clang-compiler.patch \
+           file://0001-fix-compilation-with-glibc-2.43.patch"
 
 SRCREV = "ae0c099c1fdc0ca6f5d631cea6b302937122b362"
 
-S = "${WORKDIR}/git"
+# Upstream repo does not tag
+UPSTREAM_CHECK_COMMITS = "1"
+
 PV = "0.0+git"
 
 DEPENDS = "cjson libmicrohttpd libdrm libpng"

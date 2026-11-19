@@ -6,8 +6,6 @@ DESCRIPTION = "runc is a CLI tool for spawning and running containers according 
 LICENSE = "Apache-2.0"
 LIC_FILES_CHKSUM = "file://src/import/LICENSE;md5=435b266b3899aa8a959f17d41c56def8"
 
-S = "${WORKDIR}/git"
-
 PV = "${RUNC_VERSION}+git${SRCPV}"
 
 inherit go
@@ -30,7 +28,7 @@ RPROVIDES:${PN} = "virtual-runc"
 
 GO_IMPORT = "import"
 
-LIBCONTAINER_PACKAGE="github.com/opencontainers/runc/libcontainer"
+LIBCONTAINER_PACKAGE = "github.com/opencontainers/runc/libcontainer"
 
 do_configure[noexec] = "1"
 
@@ -38,7 +36,7 @@ do_configure[noexec] = "1"
 DISTRO_BUILDTAGS ?= "${@bb.utils.contains('DISTRO_FEATURES', 'seccomp', 'seccomp', '', d)} \
                      ${@bb.utils.contains('DISTRO_FEATURES', 'selinux', 'selinux', '', d)}"
 
-EXTRA_OEMAKE="BUILDTAGS='${PACKAGECONFIG_CONFARGS} ${DISTRO_BUILDTAGS}' GO=${GO}"
+EXTRA_OEMAKE = "BUILDTAGS='${PACKAGECONFIG_CONFARGS} ${DISTRO_BUILDTAGS}' GO=${GO}"
 
 do_compile() {
 	# Set GOPATH. See 'PACKAGERS.md'. Don't rely on
@@ -60,8 +58,8 @@ do_compile() {
 	# Pass the needed cflags/ldflags so that cgo
 	# can find the needed headers files and libraries
 	export CGO_ENABLED="1"
-	export CGO_CFLAGS="${CFLAGS} --sysroot=${STAGING_DIR_TARGET}"
-	export CGO_LDFLAGS="${LDFLAGS} --sysroot=${STAGING_DIR_TARGET}"
+	export CGO_CFLAGS="${CFLAGS}"
+	export CGO_LDFLAGS="${LDFLAGS}"
 	export GO=${GO}
 
 	export CFLAGS=""
@@ -79,5 +77,11 @@ do_install() {
 
 	cp ${S}/src/import/runc ${D}/${bindir}/runc
 	ln -sf runc ${D}/${bindir}/docker-runc
+
+	mkdir -p ${D}${datadir}/runc/
+	install -m 0755 ${S}/src/import/script/check-config.sh ${D}${datadir}/runc/
 }
 
+PACKAGES =+ "${PN}-check"
+FILES:${PN}-check += "${datadir}/runc/check-config.sh"
+RDEPENDS:${PN}-check += "bash"

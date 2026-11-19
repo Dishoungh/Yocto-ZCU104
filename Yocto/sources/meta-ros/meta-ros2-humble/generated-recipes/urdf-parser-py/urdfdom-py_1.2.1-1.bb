@@ -24,7 +24,7 @@ ROS_EXPORT_DEPENDS = ""
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     python3-lxml \
     python3-pyyaml \
     rclpy \
@@ -44,7 +44,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/humble/urdfdom_py"
 SRC_URI = "git://github.com/ros2-gbp/urdfdom_py-release;${ROS_BRANCH};protocol=https"
 SRCREV = "80affbcf93bda40bc12a0d0cbf85d12e9095e5db"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_python"
 

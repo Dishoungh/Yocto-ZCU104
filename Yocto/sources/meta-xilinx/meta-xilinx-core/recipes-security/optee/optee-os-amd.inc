@@ -5,8 +5,11 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
 BRANCH ?= ""
 REPO ?= "git://github.com/Xilinx/optee_os.git;protocol=https"
-BRANCHARG = "${@['nobranch=1', 'branch=${BRANCH}'][d.getVar('BRANCH', True) != '']}"
+BRANCHARG = "${@['nobranch=1', 'branch=${BRANCH}'][d.getVar('BRANCH') != '']}"
 SRC_URI = "${REPO};${BRANCHARG}"
+
+# Track optee-os when it lands in BOOT.BIN (versal-2ve-2vm optee feature).
+inherit shared-manifest
 
 COMPATIBLE_MACHINE:versal-2ve-2vm = ".*"
 
@@ -23,7 +26,7 @@ OPTEE_CONSOLE_DEFAULT:versal-2ve-2vm = "0"
 
 OPTEE_CONSOLE ?= "${OPTEE_CONSOLE_DEFAULT}"
 
-EXTRA_OEMAKE:append = "${@' CFG_CONSOLE_UART=${OPTEE_CONSOLE}' if d.getVar('OPTEE_CONSOLE', True) != '' else ''}"
+EXTRA_OEMAKE:append = "${@' CFG_CONSOLE_UART=${OPTEE_CONSOLE}' if d.getVar('OPTEE_CONSOLE') != '' else ''}"
 
 EXTRA_OEMAKE:append = " CFG_TEE_CORE_LOG_LEVEL=2 CFG_TEE_TA_LOG_LEVEL=2 CFG_DT=y"
 

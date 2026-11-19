@@ -18,7 +18,7 @@ ROS_BPN = "urdf_sim_tutorial"
 
 ROS_BUILD_DEPENDS = ""
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     ament-cmake-native \
 "
 
@@ -26,7 +26,7 @@ ROS_EXPORT_DEPENDS = ""
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     controller-manager \
     diff-drive-controller \
     gazebo-ros \
@@ -52,7 +52,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/humble/urdf_sim_tutorial"
 SRC_URI = "git://github.com/ros-gbp/urdf_sim_tutorial-release;${ROS_BRANCH};protocol=https"
 SRCREV = "2f771454c4fd6b5ac0d0da941381ea5ceb6dfb93"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

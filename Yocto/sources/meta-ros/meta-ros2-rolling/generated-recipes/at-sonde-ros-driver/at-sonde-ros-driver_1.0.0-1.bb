@@ -56,7 +56,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/at_sonde_ros_driver"
 SRC_URI = "git://github.com/ros2-gbp/at_sonde_ros_driver-release;${ROS_BRANCH};protocol=https"
 SRCREV = "1313719451ed16d917f1ec4270119286e5d15101"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

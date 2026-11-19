@@ -53,7 +53,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/open3d_vendor"
 SRC_URI = "git://github.com/ros2-gbp/open3d_vendor-release;${ROS_BRANCH};protocol=https"
 SRCREV = "9979797f78d67757f99c70b34cbbfcfa9c738ecb"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "cmake"
 

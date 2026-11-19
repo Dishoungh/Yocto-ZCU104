@@ -22,15 +22,15 @@ RDEPENDS:${PN} = " \
 "
 
 SRC_URI = " \
-    git://github.com/containers/skopeo;branch=release-1.14;protocol=https;destsuffix=git/src/github.com/containers/skopeo \
+    git://github.com/containers/skopeo;branch=release-1.22;protocol=https;destsuffix=git/src/github.com/containers/skopeo \
     file://0001-makefile-add-GOBUILDFLAGS-to-go-build-call.patch \
 "
 
-SRCREV = "1c2ab995059dd011aad74e2c37305d636ebd2675"
-PV = "v1.14.2+git"
+SRCREV = "267465e170820673de25149378284fb352daa65e"
+PV = "1.22.2+git"
 GO_IMPORT = "import"
 
-S = "${WORKDIR}/git/src/github.com/containers/skopeo"
+S = "${UNPACKDIR}/git/src/github.com/containers/skopeo"
 
 inherit goarch
 inherit pkgconfig
@@ -43,12 +43,12 @@ CVE_STATUS[CVE-2019-10214] = "fixed-version: This CVE was fixed in the container
 
 # This disables seccomp and apparmor, which are on by default in the
 # go package. 
-EXTRA_OEMAKE="BUILDTAGS=''"
+EXTRA_OEMAKE = "BUILDTAGS=''"
 
 do_compile() {
 	export GOARCH="${TARGET_GOARCH}"
 
-	export GOPATH="${S}/src/import/.gopath:${S}/src/import/vendor:${STAGING_DIR_TARGET}/${prefix}/local/go:${WORKDIR}/git/"
+	export GOPATH="${S}/src/import/.gopath:${S}/src/import/vendor:${STAGING_DIR_TARGET}/${prefix}/local/go:${UNPACKDIR}/git/"
 	cd ${S}
 
 	# Pass the needed cflags/ldflags so that cgo
@@ -60,7 +60,6 @@ do_compile() {
 	export CGO_LDFLAGS="${TARGET_LDFLAGS}"
 
 	export GO111MODULE=off
-	export GOBUILDFLAGS="-trimpath"
 	export EXTRA_LDFLAGS="-s -w"
 
 	oe_runmake bin/skopeo

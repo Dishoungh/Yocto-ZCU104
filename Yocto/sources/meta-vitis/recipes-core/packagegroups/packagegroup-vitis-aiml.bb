@@ -11,7 +11,6 @@ VITIS_AI_ML_PACKAGES = " \
 	glog \
 	gsl \
 	hdf5 \
-	libeigen \
 	nlohmann-json \
 	python3-build \
 	python3-pip \
@@ -33,9 +32,6 @@ VITIS_AI_ML_DEV_PACKAGES = " \
 	python3-pybind11-dev \
 	python3-pybind11-json-dev \
 	spdlog-dev \
-	xsimd-dev \
-	xtensor-dev \
-	xtl-dev \
 	zlib-dev \
 	"
 

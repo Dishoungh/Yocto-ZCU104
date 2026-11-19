@@ -12,12 +12,13 @@ BRANCH ?= "main"
 BRANCHARG = "${@['nobranch=1', 'branch=${BRANCH}'][d.getVar('BRANCH') != '']}"
 SRC_URI = "${REPO};${BRANCHARG}"
 PV .= "+git"
-S = "${WORKDIR}/git/openamp"
+S = "${UNPACKDIR}/${BP}/openamp"
 
 COMPATIBLE_MACHINE = "^$"
 COMPATIBLE_MACHINE:zynqmp = "zynqmp"
 COMPATIBLE_MACHINE:versal = "versal"
 COMPATIBLE_MACHINE:versal-net = "versal-net"
+COMPATIBLE_MACHINE:versal-2vp = "versal-2vp"
 
 DEPENDS += " packagegroup-xilinx-jupyter \
              packagegroup-openamp"

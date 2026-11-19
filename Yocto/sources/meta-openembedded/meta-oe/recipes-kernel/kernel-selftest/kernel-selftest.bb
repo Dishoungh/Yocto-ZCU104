@@ -2,19 +2,27 @@ SUMMARY = "Kernel selftest for Linux"
 DESCRIPTION = "Kernel selftest for Linux"
 LICENSE = "GPL-2.0-only"
 
-LIC_FILES_CHKSUM = "file://../COPYING;md5=bbea815ee2795b2f4230826c0c6b8814"
+LIC_FILES_CHKSUM = "file://COPYING;md5=bbea815ee2795b2f4230826c0c6b8814"
 
 DEPENDS = "rsync-native llvm-native"
+
+S = "${UNPACKDIR}"
 
 # for musl libc
 SRC_URI:append:libc-musl = "\
                       file://userfaultfd.patch \
                       "
+
+# Fix liburing detection (from Linux v7.0)
+MM_PATCH = "file://0001-selftests-mm-pass-down-full-CC-and-CFLAGS-to-check_c.patch"
+
 SRC_URI += "file://run-ptest \
             file://COPYING \
+            file://0001-selftests-timers-Fix-clock_adjtime-for-newer-32-bit-.patch \
+            ${@bb.utils.contains('PACKAGECONFIG', 'mm', '${MM_PATCH}', '', d)} \
             "
 
-# now we just test bpf and vm
+# now we just test bpf and mm (formerly known as vm)
 # we will append other kernel selftest in the future
 # bpf was added in 4.10 with: https://github.com/torvalds/linux/commit/5aa5bd14c5f8660c64ceedf14a549781be47e53d
 # if you have older kernel than that you need to remove it from PACKAGECONFIG
@@ -22,32 +30,29 @@ PACKAGECONFIG ??= "firmware"
 # bpf needs working clang compiler anyway
 PACKAGECONFIG:append:toolchain-clang:x86-64 = " bpf"
 PACKAGECONFIG:remove:x86 = "bpf"
-PACKAGECONFIG:remove:arm = "bpf vm"
+PACKAGECONFIG:remove:arm = "bpf mm"
 # host ptrace.h is used to compile BPF target but mips ptrace.h is needed
 # progs/loop1.c:21:9: error: incomplete definition of type 'struct user_pt_regs'
 # m = PT_REGS_RC(ctx);
-# vm tests need libhugetlbfs starting 5.8+ (https://lkml.org/lkml/2020/4/22/1654)
-PACKAGECONFIG:remove:qemumips = "bpf vm"
-
-# riscv does not support libhugetlbfs yet
-PACKAGECONFIG:remove:riscv64 = "bpf vm"
-PACKAGECONFIG:remove:riscv32 = "bpf vm"
+PACKAGECONFIG:remove:qemumips = "bpf"
+PACKAGECONFIG:remove:riscv64 = "bpf"
+PACKAGECONFIG:remove:riscv32 = "bpf"
 
 PACKAGECONFIG[bpf] = ",,elfutils elfutils-native libcap libcap-ng rsync-native python3-docutils-native,"
 PACKAGECONFIG[firmware] = ",,libcap, bash"
-PACKAGECONFIG[vm] = ",,libcap libhugetlbfs,libgcc bash"
+PACKAGECONFIG[mm] = ",,libcap liburing numactl, libgcc bash"
 
 do_patch[depends] += "virtual/kernel:do_shared_workdir"
 do_compile[depends] += "virtual/kernel:do_install"
 
 inherit linux-kernel-base module-base kernel-arch ptest siteinfo
 
-S = "${WORKDIR}/${BP}"
-
 DEBUG_PREFIX_MAP:remove = "-fcanon-prefix-map"
 
 TEST_LIST = "\
-    ${@bb.utils.filter('PACKAGECONFIG', 'bpf firmware vm', d)} \
+    ${@bb.utils.filter('PACKAGECONFIG', 'bpf firmware mm', d)} \
+    cpufreq \
+    cpu-hotplug \
     rtc \
     ptp \
     timers \
@@ -75,6 +80,7 @@ KERNEL_SELFTEST_SRC ?= "Makefile \
                         tools \
                         scripts \
                         arch \
+                        ${@bb.utils.filter('PACKAGECONFIG', 'mm', d)} \
                         LICENSES \
 "
 do_compile() {
@@ -88,7 +94,16 @@ either install it and add it to HOSTTOOLS, or add clang-native from meta-clang t
     install -Dm 0644 ${STAGING_KERNEL_BUILDDIR}/.config ${S}/include/config/auto.conf
     if [ "${SITEINFO_BITS}" != "32" ]; then
         for f in long-double endianness floatn struct_rwlock; do
-            cp ${RECIPE_SYSROOT}${includedir}/bits/$f-64.h ${S}/bits/$f-32.h
+            src_base="${RECIPE_SYSROOT}${includedir}/bits/${f}"
+            if [ -f "${src_base}-64.h" ]; then
+                src="${src_base}-64.h"
+            elif [ -f "${src_base}.h" ]; then
+                src="${src_base}.h"
+            else
+                bbwarn "Missing header for bits/${f}{-64,.h} under ${RECIPE_SYSROOT}${includedir}/bits skipped"
+                continue
+            fi
+            install -m 0644 "${src}" "${S}/bits/${f}-32.h"
         done
     fi
     oe_runmake -C ${S} headers
@@ -96,6 +111,12 @@ either install it and add it to HOSTTOOLS, or add clang-native from meta-clang t
     sed -i -e '/mrecord-mcount/d' ${S}/Makefile
     sed -i -e '/Wno-alloc-size-larger-than/d' ${S}/Makefile
     sed -i -e '/Wno-alloc-size-larger-than/d' ${S}/scripts/Makefile.*
+    
+    # Add kernel headers to CFLAGS to fix PTP selftest compilation
+    # Required for PTP_MASK_CLEAR_ALL and PTP_MASK_EN_SINGLE definitions
+    # introduced in kernel v6.7 (commit c5a445b)
+    export CFLAGS="${CFLAGS} -I${STAGING_KERNEL_BUILDDIR}/usr/include"
+    
     oe_runmake -C ${S}/tools/testing/selftests TARGETS="${TEST_LIST}"
 }
 
@@ -105,10 +126,6 @@ do_install() {
         sed -i -e '1s,#!.*python3,#! /usr/bin/env python3,' ${D}/usr/kernel-selftest/bpf/test_offload.py
     fi
     chown root:root  -R ${D}/usr/kernel-selftest
-}
-
-do_configure() {
-    install -D -m 0644 ${WORKDIR}/COPYING ${S}/COPYING
 }
 
 do_patch[prefuncs] += "copy_kselftest_source_from_kernel remove_unrelated"
@@ -137,9 +154,11 @@ remove_unrelated() {
     fi
 }
 
+do_configure[dirs] = "${S}"
+
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
-INHIBIT_PACKAGE_DEBUG_SPLIT="1"
+INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
 FILES:${PN} += "/usr/kernel-selftest"
 
 RDEPENDS:${PN} += "python3 perl perl-module-io-handle"

@@ -72,7 +72,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/auto_apms_ros2behavior"
 SRC_URI = "git://github.com/ros2-gbp/autoapms-release;${ROS_BRANCH};protocol=https"
 SRCREV = "196b7c5d8be224ddb92db1e8b49b9675caae4337"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_python"
 

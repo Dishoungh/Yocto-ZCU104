@@ -20,11 +20,11 @@ SRC_URI = "${DEBIAN_MIRROR}/main/libt/${BPN}/${BPN}_${PV}.orig.tar.gz \
            file://CVE-2021-33643-CVE-2021-33644.patch \
            file://CVE-2021-33640-CVE-2021-33645-CVE-2021-33646.patch \
            file://CVE-2013-4420.patch \
+           file://0001-compat-convert-K-R-function-definitions-to-ANSI-C-pr.patch \
            "
 
-S = "${WORKDIR}/${BPN}"
+S = "${UNPACKDIR}/${BPN}"
 
-SRC_URI[md5sum] = "6ced95ab3a4b33fbfe2dfb231d156cdb"
 SRC_URI[sha256sum] = "50f24c857a7ef1cb092e6508758b86d06f1188508f897f3e6b40c573e8879109"
 
 inherit autotools-brokensep

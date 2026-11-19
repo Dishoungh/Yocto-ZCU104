@@ -10,6 +10,7 @@
 #  'microblaze_generic'
 #  'zynqmp_r5' (both zynqmp and versal RPU)
 #  'zynqmp_a53' (both zynqmp and versal APU)
+#  'zynq7' (zynq APU)
 def get_cmake_machine(target_os, tune_arch, soc_fam, d):
  if target_os.startswith('linux'):
   if (soc_fam == 'zynqmp' or soc_fam == 'versal'):
@@ -21,5 +22,7 @@ def get_cmake_machine(target_os, tune_arch, soc_fam, d):
    return 'zynqmp_r5'
   elif (soc_fam == 'zynqmp' or soc_fam == 'versal'):
    return 'zynqmp_a53'
+  elif (soc_fam == 'zynq'):
+   return 'zynq7'
 
   return ''

@@ -61,7 +61,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/librealsense2"
 SRC_URI = "git://github.com/ros2-gbp/librealsense2-release;${ROS_BRANCH};protocol=https"
 SRCREV = "2124fd2eca8b58d7dae90a68fd4591b96e33b4a9"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "cmake"
 

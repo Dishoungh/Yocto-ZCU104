@@ -11,10 +11,10 @@ Signed-off-by: Stephen Street <stephen@redrocketcomputing.com>
  CMakeLists.txt | 5 -----
  1 file changed, 5 deletions(-)
 
-Index: git/CMakeLists.txt
+Index: controller-interface-2.53.1-1/CMakeLists.txt
 ===================================================================
---- git.orig/CMakeLists.txt
-+++ git/CMakeLists.txt
+--- controller-interface-2.53.1-1.orig/CMakeLists.txt
++++ controller-interface-2.53.1-1/CMakeLists.txt
 @@ -1,10 +1,6 @@
  cmake_minimum_required(VERSION 3.16)
  project(controller_interface LANGUAGES CXX)

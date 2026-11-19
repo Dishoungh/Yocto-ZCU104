@@ -17,7 +17,7 @@ ROS_BPN = "urdfdom_headers"
 
 ROS_BUILD_DEPENDS = ""
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     cmake-native \
 "
 
@@ -41,7 +41,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/humble/urdfdom_headers"
 SRC_URI = "git://github.com/ros2-gbp/urdfdom_headers-release;${ROS_BRANCH};protocol=https"
 SRCREV = "65a274bb8736b9ec74a5548474ffde4ea3738589"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "cmake"
 

@@ -2,11 +2,11 @@
 LICENSE = "Apache-2.0"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=2a461be67a1edf991251f85f3aadd1d0"
 
-SRC_URI = "git://github.com/gazebosim/gz-transport.git;protocol=https;branch=gz-transport13"
+SRC_URI = "git://github.com/gazebosim/gz-transport.git;protocol=https;branch=gz-transport13 \
+           file://fix-compatibility-with-protobuf-v30-part2.patch"
 
-SRCREV = "c571f73f4829ecbaea6d944494aac3dd21483246"
+SRCREV = "38b11d03f783368ef8a33dd86bb8f4e3302e6708"
 
-S = "${WORKDIR}/git"
 
 inherit cmake pkgconfig python3targetconfig
 
@@ -34,7 +34,7 @@ EXTRA_OECMAKE += " \
 
 do_install:append() {
     # Remove references to the build directory in the Doxygen tagfile
-    sed -i -e "s:${S}::g" ${D}${datadir}/gz/gz-transport13/gz-transport13.tag.xml
+    sed -i -e "s:${UNPACKDIR}::g" ${D}${datadir}/gz/gz-transport13/gz-transport13.tag.xml
 }
 
 FILES:${PN} += " \

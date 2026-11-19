@@ -62,7 +62,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/rosidl_dynamic_typesupport_fastrtps"
 SRC_URI = "git://github.com/ros2-gbp/rosidl_dynamic_typesupport_fastrtps-release;${ROS_BRANCH};protocol=https"
 SRCREV = "eb067aca0d79091dc631b0cd174091575b2f6bf6"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

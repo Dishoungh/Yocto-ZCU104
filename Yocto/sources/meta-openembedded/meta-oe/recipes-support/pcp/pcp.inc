@@ -7,14 +7,14 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=37ab75b580d5aad4ada04260efa3702f \
                     "
 COMPATIBLE_HOST:libc-musl = "null"
 
-SRC_URI = "git://github.com/performancecopilot/pcp;branch=main;protocol=https \
+SRC_URI = "git://github.com/performancecopilot/pcp;branch=stable;protocol=https;tag=${PV} \
            file://0001-configure-Limit-the-header-search-to-sysroot.patch \
            file://0001-htop-Change-dependency-order-of-header-and-sourcefil.patch \
            file://config.linux \
 	   "
-SRCREV = "c13558fd0df54438cbb87cf303dc279cb58816c2"
 
-S = "${WORKDIR}/git"
+SRCREV = "7b0943ade0bcecaf50ed4b4c2cc9084150420eff"
+
 
 inherit setuptools3-base pkgconfig autotools-brokensep
 
@@ -38,5 +38,3 @@ EXTRA_OECONF:append = "\
 PACKAGECONFIG[qt5] = "--with-qt=yes --with-qt3d=yes,--with-qt=no --with-qt3d=no,qtbase qt3d"
 
 PACKAGECONFIG ?= ""
-
-PARALLEL_MAKE = ""

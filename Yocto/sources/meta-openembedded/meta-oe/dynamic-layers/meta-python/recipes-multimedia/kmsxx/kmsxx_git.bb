@@ -10,7 +10,7 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=815ca599c9df247a0c7f619bab123dad"
 
 BRANCH = "master"
 SRC_URI = "git://github.com/tomba/kmsxx.git;protocol=https;branch=${BRANCH}"
-SRCREV = "412935a47b762c33e54a464243f2d789b065bbb6"
+SRCREV = "4a7836fe42a7bc0664d912246c5fbf17f240d152"
 PACKAGES =+ "${PN}-python"
 
 PACKAGECONFIG ?= "utils python "
@@ -20,9 +20,7 @@ PACKAGECONFIG[utils] += "-Dutils=true, -Dutils=false"
 
 DEPENDS += "libdrm libevdev fmt"
 
-S = "${WORKDIR}/git"
-
 inherit meson pkgconfig
 
-FILES:${PN} ="${bindir} ${libdir}"
+FILES:${PN} = "${bindir} ${libdir}"
 FILES:${PN}-python += "${PYTHON_SITEPACKAGES_DIR}/*"

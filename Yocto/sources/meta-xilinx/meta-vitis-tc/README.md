@@ -7,29 +7,25 @@ the AMD Vitis (and Vivado) products.
 
 This layer depends on:
 
-	URI: https://git.yoctoproject.org/poky
-	layers: meta, meta-poky
-	branch: scarthgap
-
-	URI: https://git.openembedded.org/meta-openembedded
-	layers: meta-oe
-	branch: scarthgap
+	URI: https://git.openembedded.org/openembedded-core
+	layers: meta
+	branch: wrynose
 
 	URI:
-        https://git.yoctoproject.org/meta-xilinx (official version)
-        https://github.com/Xilinx/meta-xilinx (development and AMD release)
-	layers: meta-xilinx-microblaze, meta-xilinx-core, meta-xilinx-standalone
-	branch: scarthgap or AMD release version (e.g. rel-v2026.1)
+	 https://git.yoctoproject.org/meta-xilinx (official version)
+	 https://github.com/Xilinx/meta-xilinx (development and AMD release)
+	layers: meta-xilinx-core, meta-microblaze, meta-xilinx-standalone
+	branch: wrynose or AMD release version (e.g. rel-v2026.2)
 
 	URI: https://git.yoctoproject.org/meta-arm
 	layers: meta-arm, meta-arm-toolchain
-	branch: scarthgap
+	branch: wrynose
 
-optionally, you may alwys want to include:
+optionally, you may always want to include:
 
 	URI: https://git.yoctoproject.org/meta-mingw
 	layers: meta-mingw
-	branch: scarthgap
+	branch: wrynose
 
 ---
 

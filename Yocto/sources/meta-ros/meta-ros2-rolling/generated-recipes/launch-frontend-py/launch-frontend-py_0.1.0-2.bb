@@ -57,7 +57,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/launch_frontend_py"
 SRC_URI = "git://github.com/ros2-gbp/launch_frontend_py-release;${ROS_BRANCH};protocol=https"
 SRCREV = "8be95e57dccd3a21f40eb8f3c244938828574ccd"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

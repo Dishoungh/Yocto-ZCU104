@@ -6,7 +6,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=eb723b61539feef013de476e68b5c50a"
 
 SECTION = "devel"
 
-EXTRA_OEMAKE = "'CC=${CC}'"
+EXTRA_OEMAKE = "'CC=${CC}' 'CFLAGS=${CFLAGS}'"
 
 SRCREV = "468fe4c31e6c62c9bbb328b06ba71eaf7be0b76a"
 
@@ -14,9 +14,10 @@ SRC_URI = "git://git.kernel.org/pub/scm/utils/kernel/kgdb/agent-proxy.git;protoc
            file://0001-Makefile-Add-LDFLAGS-variable.patch \
 "
 
+TARGET_LDFLAGS:append = " ${DEBUG_PREFIX_MAP}"
+
 BBCLASSEXTEND = "native nativesdk"
 
-S = "${WORKDIR}/git"
 
 do_install () {
     install -d ${D}${bindir}

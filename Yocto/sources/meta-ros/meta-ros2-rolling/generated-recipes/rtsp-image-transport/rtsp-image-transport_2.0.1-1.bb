@@ -63,7 +63,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/rtsp_image_transport"
 SRC_URI = "git://github.com/ros2-gbp/rtsp_image_transport-release;${ROS_BRANCH};protocol=https"
 SRCREV = "a0eae3b0b816ad84d37be1558f3e6eb5890c49f5"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

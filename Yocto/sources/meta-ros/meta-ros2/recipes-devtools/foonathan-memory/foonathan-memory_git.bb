@@ -4,19 +4,13 @@ SUMMARY = "Library to work around various flaws in the C++ STL allocator model"
 HOMEPAGE = "https://github.com/foonathan/memory"
 SECTION = "devel"
 LICENSE = "Zlib"
-LIC_FILES_CHKSUM = "file://LICENSE;md5=416a165d541fc79ae4852280a9ecb39f"
+LIC_FILES_CHKSUM = "file://LICENSE;md5=858ac481b3e933be38e4d36cb0dfcee8"
 
-PV = "0.6.2+git${SRCPV}"
+PV = "0.7.3+git${SRCPV}"
 
 SRCREV_FORMAT = "main"
-SRCREV_main = "8f6a027d473f9b4796509158962d8ddf89fbe086"
-SRCREV_comp = "cf13bff238397aab0d8c49b7f6263233cf8a2396"
-SRCREV_catch = "89f5f8435176aad44624442b7f1e874a513bee67"
-SRC_URI = "git://github.com/foonathan/memory.git;branch=main;protocol=https;name=main \
-    git://github.com/foonathan/compatibility.git;protocol=https;name=comp;destsuffix=git/cmake/comp;branch=master \
-    git://github.com/catchorg/Catch2.git;branch=v2.x;protocol=https;name=catch;destsuffix=git/catch-upstream \
-"
-S = "${WORKDIR}/git"
+SRCREV_main = "016c9fbd61b57ed2058551dcf225c15a0e716cce"
+SRC_URI = "git://github.com/foonathan/memory.git;branch=main;protocol=https;name=main"
 
 DEPENDS = "qemu-native"
 inherit cmake qemu
@@ -29,7 +23,7 @@ inherit cmake qemu
 # | cd /jenkins/mjansa/build-ros-thud-dashing/BUILD/work/cortexa7t2hf-neon-vfpv4-oe-linux-gnueabi/foonathan-memory/0.6.2+gitAUTOINC+8f6a027d47-r0/build/src && "PSEUDO_UNLOAD=1 qemu-arm -r 3.2.0  -L /jenkins/mjansa/build-ros-thud-dashing/BUILD/work/cortexa7t2hf-neon-vfpv4-oe-linux-gnueabi/foonathan-memory/0.6.2+gitAUTOINC+8f6a027d47-r0/recipe-sysroot -E LD_LIBRARY_PATH=/jenkins/mjansa/build-ros-thud-dashing/BUILD/work/cortexa7t2hf-neon-vfpv4-oe-linux-gnueabi/foonathan-memory/0.6.2+gitAUTOINC+8f6a027d47-r0/build:/jenkins/mjansa/build-ros-thud-dashing/BUILD/work/cortexa7t2hf-neon-vfpv4-oe-linux-gnueabi/foonathan-memory/0.6.2+gitAUTOINC+8f6a027d47-r0/recipe-sysroot//lib" /jenkins/mjansa/build-ros-thud-dashing/BUILD/work/cortexa7t2hf-neon-vfpv4-oe-linux-gnueabi/foonathan-memory/0.6.2+gitAUTOINC+8f6a027d47-r0/build/tool/nodesize_dbg --code --alignof "FOONATHAN_ALIGNOF(T)" /jenkins/mjansa/build-ros-thud-dashing/BUILD/work/cortexa7t2hf-neon-vfpv4-oe-linux-gnueabi/foonathan-memory/0.6.2+gitAUTOINC+8f6a027d47-r0/build/src/container_node_sizes_impl.hpp
 # | /bin/sh: 1: PSEUDO_UNLOAD=1 qemu-arm -r 3.2.0  -L /jenkins/mjansa/build-ros-thud-dashing/BUILD/work/cortexa7t2hf-neon-vfpv4-oe-linux-gnueabi/foonathan-memory/0.6.2+gitAUTOINC+8f6a027d47-r0/recipe-sysroot -E LD_LIBRARY_PATH=/jenkins/mjansa/build-ros-thud-dashing/BUILD/work/cortexa7t2hf-neon-vfpv4-oe-linux-gnueabi/foonathan-memory/0.6.2+gitAUTOINC+8f6a027d47-r0/build:/jenkins/mjansa/build-ros-thud-dashing/BUILD/work/cortexa7t2hf-neon-vfpv4-oe-linux-gnueabi/foonathan-memory/0.6.2+gitAUTOINC+8f6a027d47-r0/recipe-sysroot//lib: not found
 EXTRA_OECMAKE_CROSSCOMPILING_EMULATOR = "${@qemu_target_binary(d)};${@d.getVar('QEMU_OPTIONS').replace(' ', ';')}"
-EXTRA_OECMAKE = '-DCMAKE_CROSSCOMPILING_EMULATOR="${EXTRA_OECMAKE_CROSSCOMPILING_EMULATOR}"'
+EXTRA_OECMAKE:append:class-target = '-DCMAKE_CROSSCOMPILING_EMULATOR="${EXTRA_OECMAKE_CROSSCOMPILING_EMULATOR}"'
 
 # Otherwise cmake/comp/comp_base.cmake:_comp_fetch_feature function will try to download features
 # from default COMP_REMOTE_URL:
@@ -80,7 +74,7 @@ EXTRA_OECMAKE += "-DFOONATHAN_MEMORY_BUILD_TESTS=OFF"
 # because ${B}/test (as CMAKE_CURRENT_BINARY_DIR is recreated as empty, I can patch test/CMakeLists.txt to use
 # catch.hpp from ${S}/CMAKE_CURRENT_SOURCE_DIR but we don't need the tests, lets disable them completely
 
-FILES:${PN}-dev += "${datadir}/foonathan_memory/cmake"
+FILES:${PN}-dev += "${libdir}/foonathan_memory/cmake"
 FILES:${PN}-doc += "${datadir}/foonathan_memory"
 
 BBCLASSEXTEND = "native nativesdk"

@@ -66,7 +66,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/mola_relocalization"
 SRC_URI = "git://github.com/ros2-gbp/mola-release;${ROS_BRANCH};protocol=https"
 SRCREV = "96db4d60c901cd1b5999663a05f6838471ec395d"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "cmake"
 

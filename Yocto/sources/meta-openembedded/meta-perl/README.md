@@ -52,7 +52,7 @@ Dependencies
 This layer depends on:
 
   URI: git://git.openembedded.org/openembedded-core
-  branch: scarthgap 
+  branch: master
 
 Adding the meta-perl layer to your build
 ---------------------------------------
@@ -73,13 +73,12 @@ Maintenance
 -----------
 
 Send patches / pull requests to openembedded-devel@lists.openembedded.org with
-'[meta-perl][scarthgap]' in the subject.
+'[meta-perl]' in the subject.
 
-When sending single patches, please using something like:
-git send-email -M -1 --to openembedded-devel@lists.openembedded.org --subject-prefix='meta-perl][scarthgap][PATCH'
+When sending single patches, please use something like:
+git send-email -M -1 --to openembedded-devel@lists.openembedded.org --subject-prefix='meta-perl][wrynose][PATCH'
 
 Layer maintainers: Anuj Mittal <anuj.mittal@oss.qualcomm.com>
-    
 
 License
 -------

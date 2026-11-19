@@ -15,12 +15,12 @@ LIC_FILES_CHKSUM = "file://package.xml;beginline=8;endline=8;md5=795d41331508248
 ROS_CN = "zenoh_bridge_dds"
 ROS_BPN = "zenoh_bridge_dds"
 
-ROS_BUILD_DEPENDS = " \
+ROS_BUILD_DEPENDS = "\
     cargo \
     clang \
 "
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     ament-cmake-native \
 "
 
@@ -44,7 +44,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/kilted/zenoh_bridge_dds"
 SRC_URI = "git://github.com/ros2-gbp/zenoh_bridge_dds-release;${ROS_BRANCH};protocol=https"
 SRCREV = "c84b0e0b2ba8b4e577423beb690a509de317a3db"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

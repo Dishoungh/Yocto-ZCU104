@@ -19,7 +19,7 @@ ROS_BPN = "talos_gazebo"
 
 ROS_BUILD_DEPENDS = ""
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     ament-cmake-auto-native \
 "
 
@@ -27,7 +27,7 @@ ROS_EXPORT_DEPENDS = ""
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     gazebo-plugins \
     gazebo-ros \
     gazebo-ros2-control \
@@ -53,11 +53,10 @@ DEPENDS += "${ROS_EXPORT_DEPENDS} ${ROS_BUILDTOOL_EXPORT_DEPENDS}"
 
 RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 
-# matches with: https://github.com/pal-gbp/talos_simulation-release/archive/release/humble/talos_gazebo/2.0.3-1.tar.gz
+# matches with: https://github.com/ros2-gbp/talos_simulation-release/archive/release/humble/talos_gazebo/2.0.3-1.tar.gz
 ROS_BRANCH ?= "branch=release/humble/talos_gazebo"
-SRC_URI = "git://github.com/pal-gbp/talos_simulation-release;${ROS_BRANCH};protocol=https"
+SRC_URI = "git://github.com/ros2-gbp/talos_simulation-release;${ROS_BRANCH};protocol=https"
 SRCREV = "b4ffe16b769dc9cfdd264f59d8d4117137a2ab5e"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

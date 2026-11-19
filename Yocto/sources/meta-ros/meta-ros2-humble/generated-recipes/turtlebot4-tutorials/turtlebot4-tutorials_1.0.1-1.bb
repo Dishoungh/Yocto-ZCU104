@@ -17,23 +17,23 @@ LIC_FILES_CHKSUM = "file://package.xml;beginline=8;endline=8;md5=3dce4ba60d7e51e
 ROS_CN = "turtlebot4_tutorials"
 ROS_BPN = "turtlebot4_tutorials"
 
-ROS_BUILD_DEPENDS = " \
+ROS_BUILD_DEPENDS = "\
     turtlebot4-cpp-tutorials \
     turtlebot4-python-tutorials \
 "
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     ament-cmake-native \
 "
 
-ROS_EXPORT_DEPENDS = " \
+ROS_EXPORT_DEPENDS = "\
     turtlebot4-cpp-tutorials \
     turtlebot4-python-tutorials \
 "
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     turtlebot4-cpp-tutorials \
     turtlebot4-python-tutorials \
 "
@@ -52,7 +52,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/humble/turtlebot4_tutorials"
 SRC_URI = "git://github.com/ros2-gbp/turtlebot4_tutorials-release;${ROS_BRANCH};protocol=https"
 SRCREV = "7a072e871a3cfd38423ea6f07411a94271a70af1"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

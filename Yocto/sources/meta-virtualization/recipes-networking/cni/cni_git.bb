@@ -9,20 +9,19 @@ Because of this focus, CNI has a wide range of support and the specification \
 is simple to implement. \
 "
 
-SRCREV_cni = "b62753aa2bfa365c1ceaff6f25774a8047c896b5"
-SRCREV_plugins = "b6a0e0bc96906f0d3bd6bfcaab0b5ae72292f46c"
-SRCREV_flannel_plugin = "6464faacf5c00e25321573225d74638455ef03a0"
+SRCREV_cni = "7c270076995b6a35f4774ce94dafcf266d1c6925"
+SRCREV_plugins = "6d8f05b82e47b3bf573986146842c08f358270a7"
+SRCREV_flannel_plugin = "09e4c7f9bee6abdf56e97f167a85248a7084f7ef"
 SRCREV_FORMAT = "cni_plugins"
 SRC_URI = "\
-	git://github.com/containernetworking/cni.git;branch=main;name=cni;protocol=https \
-        git://github.com/containernetworking/plugins.git;branch=main;destsuffix=${S}/src/github.com/containernetworking/plugins;name=plugins;protocol=https \
-        git://github.com/flannel-io/cni-plugin;branch=main;name=flannel_plugin;protocol=https;destsuffix=${S}/src/github.com/containernetworking/plugins/plugins/meta/flannel \
-        file://modules.txt \
+	git://github.com/containernetworking/cni.git;branch=main;name=cni;protocol=https;destsuffix=${GO_SRCURI_DESTSUFFIX} \
 	"
 
-# generated via:
-# ./scripts/oe-go-mod-autogen.py --repo https://github.com/containernetworking/cni.git --rev <insert your rev here>
-include src_uri.inc
+SRC_URI += "git://github.com/containernetworking/plugins.git;branch=main;destsuffix=${GO_SRCURI_DESTSUFFIX}/src/github.com/containernetworking/plugins;name=plugins;protocol=https"
+SRC_URI += "git://github.com/flannel-io/cni-plugin;branch=main;name=flannel_plugin;protocol=https;destsuffix=${GO_SRCURI_DESTSUFFIX}/src/github.com/containernetworking/plugins/plugins/meta/flannel"
+
+include go-mod-git.inc
+include go-mod-cache.inc
 
 DEPENDS = " \
     rsync-native \
@@ -33,44 +32,82 @@ LIC_FILES_CHKSUM = "file://src/import/LICENSE;md5=fa818a259cbed7ce8bc2a22d35a464
 
 GO_IMPORT = "import"
 
-PV = "v1.2.0-rc0+git${SRCREV_cni}"
-CNI_VERSION = "v1.2.0"
+PV = "1.3.0+git"
+CNI_VERSION = "v1.3.0"
+
+# go-mod-discovery configuration
+# The CNI repo has minimal dependencies. The plugins repo is a separate module
+# with its own dependencies, so we need to discover both.
+# Primary discovery is for the CNI main repo:
+GO_MOD_DISCOVERY_BUILD_TARGET = "./..."
+GO_MOD_DISCOVERY_GIT_REPO = "https://github.com/containernetworking/cni.git"
+GO_MOD_DISCOVERY_GIT_REF = "${SRCREV_cni}"
+
+# Secondary discovery for the plugins repo - we'll run this manually and merge
+# For now, the plugins repo uses its vendor directory
 
 inherit go
 inherit goarch
+inherit go-mod-discovery
+
+BB_GIT_SHALLOW = "1"
 
 # https://github.com/llvm/llvm-project/issues/53999
 TOOLCHAIN = "gcc"
-
-# sets the "sites" variable.
-include relocation.inc
 
 do_compile() {
 	mkdir -p ${S}/src/github.com/containernetworking
 	ln -sfr ${S}/src/import ${S}/src/github.com/containernetworking/cni
 
-	# our copied .go files are to be used for the build
-	ln -sf vendor.copy vendor
+	# Fixes: cannot find package "github.com/containernetworking/plugins/plugins/meta/bandwidth" in any of:
+	# we can't clone the plugin source directly to where it belongs because
+	# there seems to be an issue in the relocation code from UNPACKDIR to S
+	# and our LICENSE file is never found.
+	# This symbolic link arranges for the code to be available where go will
+	# search during the build
+	ln -sfr ${S}/src/import/src/github.com/containernetworking/plugins ${B}/src/github.com/containernetworking
 
-	# inform go that we know what we are doing
-	cp ${WORKDIR}/modules.txt vendor/
+	cd ${B}/src/import
 
-	export GO111MODULE=off
+	export GOPATH="${S}/src/import/.gopath:${STAGING_DIR_TARGET}/${prefix}/local/go"
+	export GOMODCACHE="${S}/pkg/mod"
+	export CGO_ENABLED="1"
+	export GOSUMDB="off"
+	export GOTOOLCHAIN="local"
+	export GOPROXY="off"
 
 	cd ${B}/src/github.com/containernetworking/cni/libcni
-	${GO} build ${GOBUILDFLAGS}
+	${GO} build -trimpath ${GOBUILDFLAGS}
 
 	cd ${B}/src/github.com/containernetworking/cni/cnitool
-	${GO} build ${GOBUILDFLAGS}
+	${GO} build -trimpath ${GOBUILDFLAGS}
 
-	cd ${B}/src/github.com/containernetworking/plugins
-	PLUGINS="$(ls -d plugins/meta/*; ls -d plugins/ipam/*; ls -d plugins/main/* | grep -v windows)"
+	cd ${B}/src/import/src/github.com/containernetworking/plugins
+
+	# Build plugins from the plugins repo (excludes flannel which is a separate module)
+	# Exclude flannel from this loop - it's from a different repo with a different module path
+	PLUGINS="$(ls -d plugins/meta/* | grep -v flannel; ls -d plugins/ipam/*; ls -d plugins/main/* | grep -v windows)"
 	mkdir -p ${B}/plugins/bin/
 	for p in $PLUGINS; do
 	    plugin="$(basename "$p")"
 	    echo "building: $p"
-	    ${GO} build ${GOBUILDFLAGS} -ldflags '-X github.com/containernetworking/plugins/pkg/utils/buildversion.BuildVersion=${CNI_VERSION}' -o ${B}/plugins/bin/$plugin github.com/containernetworking/plugins/$p
+	    ${GO} build -trimpath ${GOBUILDFLAGS} -ldflags '-X github.com/containernetworking/plugins/pkg/utils/buildversion.BuildVersion=${CNI_VERSION}' -o ${B}/plugins/bin/$plugin github.com/containernetworking/plugins/$p
 	done
+
+	# Build flannel separately - it's from flannel-io/cni-plugin repo with its own module
+	# The source was fetched to plugins/meta/flannel but module path is github.com/flannel-io/cni-plugin
+	echo "building: flannel (from flannel-io/cni-plugin)"
+	cd ${B}/src/import/src/github.com/containernetworking/plugins/plugins/meta/flannel
+
+	# Flannel has its own go.mod/go.sum but its dependencies (containernetworking/cni
+	# and containernetworking/plugins) are already available in the plugins vendor directory.
+	# Remove go.mod/go.sum so Go treats this as a plain package within the plugins module
+	# and uses the vendor directory for dependencies.
+	rm -f go.mod go.sum
+
+	# Build from the plugins directory context so -mod=vendor finds deps in plugins/vendor
+	cd ${B}/src/import/src/github.com/containernetworking/plugins
+	${GO} build -trimpath ${GOBUILDFLAGS} -o ${B}/plugins/bin/flannel ./plugins/meta/flannel
 }
 
 do_compile[cleandirs] = "${B}/plugins"
@@ -84,15 +121,24 @@ do_install() {
     install -m 755 ${S}/src/import/cnitool/cnitool ${D}/${localbindir}
     install -m 755 -D ${B}/plugins/bin/* ${D}/${localbindir}
 
+    # make cnitool more available on the path
+    install -d ${D}${bindir}
+    ln -sr ${D}/${localbindir}/cnitool ${D}/${bindir}
+
     # Parts of k8s expect the cni binaries to be available in /opt/cni
     install -d ${D}/opt/cni
     ln -sf ${libexecdir}/cni/ ${D}/opt/cni/bin
 }
+
+PACKAGECONFIG ?= "ca-certs"
+PACKAGECONFIG[ca-certs] = ",,,ca-certificates"
 
 FILES:${PN} += "${libexecdir}/cni/* /opt/cni/bin"
 
 INSANE_SKIP:${PN} += "ldflags already-stripped"
 
 deltask compile_ptest_base
+RRECOMMENDS:${PN} += "iptables iproute2"
 
-RDEPENDS:${PN} += " ca-certificates"
+# Add CVE_PRODUCT to match the NVD CPE product names
+CVE_PRODUCT = "linuxfoundation:container_network_interface linuxfoundation:cni_network_plugins"

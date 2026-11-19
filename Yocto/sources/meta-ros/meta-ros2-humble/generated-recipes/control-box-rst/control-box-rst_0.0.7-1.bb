@@ -18,23 +18,23 @@ LIC_FILES_CHKSUM = "file://package.xml;beginline=10;endline=10;md5=1e7b3bcc2e271
 ROS_CN = "control_box_rst"
 ROS_BPN = "control_box_rst"
 
-ROS_BUILD_DEPENDS = " \
+ROS_BUILD_DEPENDS = "\
     ${ROS_UNRESOLVED_DEP-coinor-libipopt-dev} \
     libeigen \
 "
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     cmake-native \
 "
 
-ROS_EXPORT_DEPENDS = " \
+ROS_EXPORT_DEPENDS = "\
     ${ROS_UNRESOLVED_DEP-coinor-libipopt-dev} \
     libeigen \
 "
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     ${ROS_UNRESOLVED_DEP-coinor-libipopt-dev} \
     libeigen \
 "
@@ -53,7 +53,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/humble/control_box_rst"
 SRC_URI = "git://github.com/ros2-gbp/control_box_rst-release;${ROS_BRANCH};protocol=https"
 SRCREV = "109cacd4e494bd81bba619b97f9c8775e7f855b2"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "cmake"
 

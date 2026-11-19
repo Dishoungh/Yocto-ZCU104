@@ -16,11 +16,11 @@ LIC_FILES_CHKSUM = "file://package.xml;beginline=14;endline=14;md5=5f660bce20dfd
 ROS_CN = "schunk_svh_library"
 ROS_BPN = "schunk_svh_library"
 
-ROS_BUILD_DEPENDS = " \
+ROS_BUILD_DEPENDS = "\
     boost \
 "
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     cmake-native \
 "
 
@@ -28,12 +28,12 @@ ROS_EXPORT_DEPENDS = ""
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     ament-cmake \
 "
 
 # Currently informational only -- see http://www.ros.org/reps/rep-0149.html#dependency-tags.
-ROS_TEST_DEPENDS = " \
+ROS_TEST_DEPENDS = "\
     boost \
 "
 
@@ -48,7 +48,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/humble/schunk_svh_library"
 SRC_URI = "git://github.com/ros2-gbp/schunk_svh_library-release;${ROS_BRANCH};protocol=https"
 SRCREV = "eb88f49a96664c56f57002f2564ab41a961d28e5"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "cmake"
 

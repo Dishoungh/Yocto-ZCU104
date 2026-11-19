@@ -59,7 +59,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/tf_tree_terminal"
 SRC_URI = "git://github.com/ros2-gbp/tf_tree_terminal-release;${ROS_BRANCH};protocol=https"
 SRCREV = "5e39bf80eff93338489e0bd8defc44e9a6fd231d"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_python"
 

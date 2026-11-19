@@ -11,18 +11,18 @@ This layer depends on:
 
   URI: git://git.openembedded.org/openembedded-core
   layers: meta
-  branch: scarthgap
+  branch: master
 
   URI: git://git.openembedded.org/meta-openembedded
   layers: meta-oe
-  branch: scarthgap
+  branch: master
 
 Patches
 =======
 
 Please submit any patches against the filesystems layer to the
 OpenEmbedded development mailing list (openembedded-devel@lists.openembedded.org)
-with '[meta-filesystems][scarthgap]' in the subject.
+with '[meta-filesystems]' in the subject.
 
 Layer maintainer: Anuj Mittal <anuj.mittal@oss.qualcomm.com>
 
@@ -30,7 +30,7 @@ When sending single patches, please use something like:
 
    git send-email -1 -M \
         --to openembedded-devel@lists.openembedded.org \
-        --subject-prefix='meta-filesystems][scarthgap][PATCH'
+        --subject-prefix='meta-filesystems][wrynose][PATCH'
 
 
 Table of Contents

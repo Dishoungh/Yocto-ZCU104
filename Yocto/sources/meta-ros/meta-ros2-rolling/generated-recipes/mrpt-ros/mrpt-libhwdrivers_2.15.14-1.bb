@@ -74,7 +74,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/mrpt_libhwdrivers"
 SRC_URI = "git://github.com/ros2-gbp/mrpt_ros-release;${ROS_BRANCH};protocol=https"
 SRCREV = "79e5c77c64dc7a907c2699b1989ae35f2abd573e"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "cmake"
 

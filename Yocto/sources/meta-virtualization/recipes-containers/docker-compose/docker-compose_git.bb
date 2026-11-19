@@ -4,31 +4,46 @@ DESCRIPTION = "Docker compose v2"
 
 DEPENDS = " \
     go-md2man \
-    rsync-native \
 "
 
-# Specify the first two important SRCREVs as the format
-SRCREV_FORMAT="compose_survey"
-SRCREV_compose = "3371227794f5f3645f4f19829c60a741635ed329"
+SRCREV_compose = "e8c214349819cc14804e8946adb8ae3576b7139c"
+SRCREV_FORMAT = "compose"
 
-SRC_URI = "git://github.com/docker/compose;name=compose;branch=main;protocol=https"
+SRC_URI = "git://github.com/docker/compose;branch=main;name=compose;protocol=https;destsuffix=${GO_SRCURI_DESTSUFFIX}"
 
-include src_uri.inc
+# GO_MOD_FETCH_MODE: "vcs" (all git://) or "hybrid" (gomod:// + git://)
+GO_MOD_FETCH_MODE ?= "hybrid"
 
-# patches and config
-SRC_URI += "file://modules.txt"
+# VCS mode: all modules via git://
+include ${@ "go-mod-git.inc" if d.getVar("GO_MOD_FETCH_MODE") == "vcs" else ""}
+include ${@ "go-mod-cache.inc" if d.getVar("GO_MOD_FETCH_MODE") == "vcs" else ""}
+
+# Hybrid mode: gomod:// for most, git:// for selected
+include ${@ "go-mod-hybrid-gomod.inc" if d.getVar("GO_MOD_FETCH_MODE") == "hybrid" else ""}
+include ${@ "go-mod-hybrid-git.inc" if d.getVar("GO_MOD_FETCH_MODE") == "hybrid" else ""}
+include ${@ "go-mod-hybrid-cache.inc" if d.getVar("GO_MOD_FETCH_MODE") == "hybrid" else ""}
 
 LICENSE = "Apache-2.0"
 LIC_FILES_CHKSUM = "file://src/import/LICENSE;md5=175792518e4ac015ab6696d16c4f607e"
 
 GO_IMPORT = "import"
 
-PV = "v2.26.0"
+PV = "5.1.0"
+
+CVE_PRODUCT = "docker:compose"
+
+CVE_STATUS[CVE-2025-62725] = "fixed-version: fixed in 2.40.2"
 
 COMPOSE_PKG = "github.com/docker/compose/v2"
 
+# go-mod-discovery configuration
+GO_MOD_DISCOVERY_BUILD_TARGET = "./cmd"
+GO_MOD_DISCOVERY_GIT_REPO = "https://github.com/docker/compose.git"
+GO_MOD_DISCOVERY_GIT_REF = "${SRCREV_compose}"
+
 inherit go goarch
 inherit pkgconfig
+inherit go-mod-discovery
 
 COMPATIBLE_HOST = "^(?!mips).*"
 
@@ -37,25 +52,18 @@ do_configure[noexec] = "1"
 PACKAGECONFIG ?= "docker-plugin"
 PACKAGECONFIG[docker-plugin] = ",,,docker"
 
-include relocation.inc
-
-GOBUILDFLAGS:append = " -mod=vendor"
 do_compile() {
-    	cd ${S}/src/import
+	cd ${S}/src/import
 
-	export GOPATH="$GOPATH:${S}/src/import/.gopath"
+	# GOMODCACHE, GOPROXY, GOSUMDB, GOTOOLCHAIN are set by go-mod-vcs.bbclass
+	export GOPATH="${S}/src/import/.gopath:${STAGING_DIR_TARGET}/${prefix}/local/go"
+	export CGO_ENABLED="1"
 
 	# Pass the needed cflags/ldflags so that cgo
 	# can find the needed headers files and libraries
 	export GOARCH=${TARGET_GOARCH}
-	export CGO_ENABLED="1"
-	export CGO_CFLAGS="${CFLAGS} --sysroot=${STAGING_DIR_TARGET}"
-	export CGO_LDFLAGS="${LDFLAGS} --sysroot=${STAGING_DIR_TARGET}"
-
-	# our copied .go files are to be used for the build
-	ln -sf vendor.copy vendor
-	# inform go that we know what we are doing
-	cp ${WORKDIR}/modules.txt vendor/
+	export CGO_CFLAGS="${CFLAGS}"
+	export CGO_LDFLAGS="${LDFLAGS}"
 
 	GO_LDFLAGS="-s -w -X internal.Version=${PV} -X ${COMPOSE_PKG}/internal.Version=${PV}"
 	GO_BUILDTAGS=""
@@ -78,3 +86,7 @@ FILES:${PN} += " ${nonarch_libdir}/docker/cli-plugins/"
 
 INHIBIT_PACKAGE_STRIP = "1"
 INSANE_SKIP:${PN} += "ldflags already-stripped"
+
+# the AWS dependency is 8GB, try and control the
+# size of the clones
+BB_GIT_SHALLOW = "1"

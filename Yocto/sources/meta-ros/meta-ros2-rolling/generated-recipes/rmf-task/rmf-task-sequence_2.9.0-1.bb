@@ -62,7 +62,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/rmf_task_sequence"
 SRC_URI = "git://github.com/ros2-gbp/rmf_task-release;${ROS_BRANCH};protocol=https"
 SRCREV = "1605f32b241be727ba62d4a037a1f06f99a8877d"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "cmake"
 

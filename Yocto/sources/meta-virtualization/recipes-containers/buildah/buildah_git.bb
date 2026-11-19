@@ -6,9 +6,7 @@ DESCRIPTION = "A tool that facilitates building OCI container images."
 LICENSE = "Apache-2.0"
 LIC_FILES_CHKSUM = "file://src/github.com/containers/buildah/LICENSE;md5=e3fc50a88d0a364313df4b21ef20c29e"
 
-S = "${WORKDIR}/git"
-
-BUILDAH_VERSION = "1.34.3"
+BUILDAH_VERSION = "1.43.1"
 
 PV = "${BUILDAH_VERSION}"
 
@@ -27,15 +25,10 @@ GO_INSTALL = "${GO_IMPORT}"
 GO_WORKDIR = "${GO_INSTALL}"
 GOBUILDFLAGS += "-mod vendor"
 
-SRCREV_FORMAT = "buildah_storage"
-SRCREV_buildah = "2db756331014a4f355507df47d2622d05532da1f"
-SRCREV_storage = "246ba3062e8b551026aef2708eee747014ce5c52"
+SRCREV = "1d61d52173ff67b920d2e9d5e308c3761017c85e"
 
 SRC_URI = " \
-    git://github.com/containers/buildah;branch=release-1.34;name=buildah;protocol=https \
-    file://0001-Use-securejoin.SecureJoin-when-forming-userns-paths.patch;patchdir=src/github.com/containers/buildah/vendor/github.com/containers/storage \
-    file://CVE-2024-9675.patch;patchdir=src/github.com/containers/buildah \
-    file://CVE-2024-9341.patch;patchdir=src/github.com/containers/buildah \
+    git://github.com/containers/buildah;branch=release-1.43;name=buildah;protocol=https;destsuffix=${GO_SRCURI_DESTSUFFIX} \
     "
 
 DEPENDS = "libdevmapper btrfs-tools gpgme"

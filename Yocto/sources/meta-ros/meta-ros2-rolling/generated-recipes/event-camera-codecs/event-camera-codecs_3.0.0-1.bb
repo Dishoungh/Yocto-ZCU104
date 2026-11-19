@@ -64,7 +64,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/event_camera_codecs"
 SRC_URI = "git://github.com/ros2-gbp/event_camera_codecs-release;${ROS_BRANCH};protocol=https"
 SRCREV = "53261202326440b8df41d5378b115f1684e37cf8"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

@@ -83,7 +83,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/sbg_driver"
 SRC_URI = "git://github.com/SBG-Systems/sbg_ros2-release;${ROS_BRANCH};protocol=https"
 SRCREV = "596d5ddd14b476e2a938de058b9f66edf712afc5"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

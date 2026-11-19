@@ -12,20 +12,19 @@ Dependencies
 This layer depends on:
 
 URI: git://git.openembedded.org/meta-openembedded
-branch: scarthgap
+branch: master
 
 
 Maintenance
 -----------
 
 Send patches / pull requests to openembedded-devel@lists.openembedded.org
-with '[meta-initramfs][scarthgap]' in the subject.
+with '[meta-initramfs]' in the subject.
 
-When sending single patches, please using something like:
-git send-email -M -1 --to openembedded-devel@lists.openembedded.org --subject-prefix='meta-initramfs][scarthgap][PATCH'
+When sending single patches, please use something like:
+git send-email -M -1 --to openembedded-devel@lists.openembedded.org --subject-prefix='meta-initramfs][wrynose][PATCH'
 
 Layer maintainer: Anuj Mittal <anuj.mittal@oss.qualcomm.com>
-
 
 License
 -------

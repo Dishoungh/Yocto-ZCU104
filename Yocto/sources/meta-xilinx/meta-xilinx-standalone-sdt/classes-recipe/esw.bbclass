@@ -4,7 +4,24 @@ inherit check_sdt_enabled python3native xlnx-embeddedsw pkgconfig cmake
 # behavior when this is enabled and will generate:
 #    -isystem /usr/include
 # which will cause a build failures.
+#
+# Note, the -DYOCTO=ON below should make this obsolete, but it is left to
+# support older versions of ESW where YOCTO=ON did not yet exist.
 OECMAKE_ARGS:remove = "-DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON"
+
+# cmake 4.3 changed CMP0000 to fatal when cmake_minimum_required() is absent.
+# Set a default CMAKE version which resolves most cases.
+OECMAKE_ARGS += "-DCMAKE_POLICY_VERSION_MINIMUM=3.5"
+
+# ESW upstream CMakeLists.txt files lack this directive.
+# Inject it at the top of the file before cmake reads it, since -D variables
+# are processed too late for some checks.
+do_configure:prepend() {
+    local cmake_file="${OECMAKE_SOURCEPATH}/CMakeLists.txt"
+    if [ -f "$cmake_file" ] && ! grep -q "cmake_minimum_required" "$cmake_file"; then
+        sed -i '1s/^/cmake_minimum_required(VERSION 3.5)\n/' "$cmake_file"
+    fi
+}
 
 SRCREV_FORMAT = "src_decouple"
 
@@ -68,7 +85,11 @@ XLNX_CMAKE_MACHINE:zynqmp = "ZynqMP"
 XLNX_CMAKE_MACHINE:versal = "Versal"
 XLNX_CMAKE_MACHINE:versal-net = "VersalNet"
 XLNX_CMAKE_MACHINE:versal-2ve-2vm = "VersalNet"
+XLNX_CMAKE_MACHINE:versal-2vp = "Versal"
+
+# Fallback values in case it can't be read from the device-tree
 XLNX_CMAKE_SUBMACHINE:versal-2ve-2vm = "Versal_2VE_2VM"
+XLNX_CMAKE_SUBMACHINE:versal-2vp = "Versal_2vp"
 
 XLNX_CMAKE_SUBMACHINE = "undefined"
 
@@ -76,14 +97,28 @@ XLNX_CMAKE_PROCESSOR = "${@get_xlnx_cmake_processor(d.getVar('DEFAULTTUNE'), d.g
 XLNX_CMAKE_SYSTEM_NAME ?= "Generic"
 XLNX_CMAKE_BSP_VARS ?= ""
 
+# We need fdtget from the recipe-sysroot-native, normally this runs in
+# parallel with do_prepare_recipe_sysroot, instead we need to wait for
+# it to be completed.
+addtask generate_toolchain_file after do_prepare_recipe_sysroot
 cmake_do_generate_toolchain_file:append() {
+    # Use the family to determine the next step
+    family=$(fdtget ${DTS_FILE} / family || :)
+    if [ "$family" = "Versal" ]; then
+        submachine=$(fdtget ${DTS_FILE} / variant || :)
+    fi
+    # Fallback to the default submachine if empty
+    if [ -z "$submachine" ]; then
+        submachine="${XLNX_CMAKE_SUBMACHINE}"
+    fi
+
     cat >> ${WORKDIR}/toolchain.cmake <<EOF
     include(CMakeForceCompiler)
     CMAKE_FORCE_C_COMPILER("${OECMAKE_C_COMPILER}" GNU)
     CMAKE_FORCE_CXX_COMPILER("${OECMAKE_CXX_COMPILER}" GNU)
     set( CMAKE_SYSTEM_PROCESSOR "${XLNX_CMAKE_PROCESSOR}" )
     set( CMAKE_MACHINE "${XLNX_CMAKE_MACHINE}" )
-    set( CMAKE_SUBMACHINE "${XLNX_CMAKE_SUBMACHINE}" )
+    set( CMAKE_SUBMACHINE "$submachine" )
     # Will need this in the future to make cmake understand esw variables
     # set( CMAKE_SYSTEM_NAME `echo elf | sed -e 's/^./\u&/' -e 's/^\(Linux\).*/\1/'` )
     set( CMAKE_SYSTEM_NAME "${XLNX_CMAKE_SYSTEM_NAME}" )
@@ -104,7 +139,7 @@ do_install() {
 }
 
 CFLAGS:append = " ${ESW_CFLAGS}"
-EXTRA_OECMAKE += "-DYOCTO=ON"
+EXTRA_OECMAKE:append = " -DYOCTO=ON"
 
 do_configure:prepend() {
     (
@@ -114,22 +149,40 @@ do_configure:prepend() {
     )
 }
 
-# We need to find the license file, which vaires depending on the component
-# recurse a maximum of x times, could be fancier but it gets complicated since
-# we dont know for certain we are running devtool or just externalsrc
 python(){
+    # Even though we have preferred versions, we found instances where the
+    # wrong version was selected by the build environment on certain ESW
+    # components.  Use some basic code to try to lock down versioning.
+    pn = d.getVar('BPN')
+    pv = d.getVar('PV')
+    preferred_version = d.getVar('PREFERRED_VERSION_%s' % pn)
+    if preferred_version:
+        if not pv.startswith(preferred_version.rstrip('%')):
+            raise bb.parse.SkipRecipe('Skip non-preferred version %s, looking for %s' % (pv, preferred_version))
+
+    if not preferred_version:
+        esw = d.getVar('ESW_VER')
+        esw_preferred_version = d.getVar('PREFERRED_VERSION_esw')
+
+        if esw_preferred_version:
+            if not esw.startswith(esw_preferred_version.rstrip('%')):
+                raise bb.parse.SkipRecipe('Skip non-preferred version %s, looking for %s' % (esw, esw_preferred_version))
+
+    # We need to find the license file, which vaires depending on the component
+    # recurse a maximum of x times, could be fancier but it gets complicated since
+    # we dont know for certain we are running devtool or just externalsrc
     import os.path
     if bb.data.inherits_class('externalsrc', d) and d.getVar('EXTERNALSRC'):
         externalsrc = d.getVar('EXTERNALSRC')
         lic_file = d.getVar('LIC_FILES_CHKSUM', False)
         licpath=externalsrc
         for i in range(5):
-            if os.path.isfile(licpath + '/' + d.getVar('LICFILENAME',True)):
+            if os.path.isfile(licpath + '/' + d.getVar('LICFILENAME')):
                 lic_file = lic_file.replace('${S}',licpath)
                 d.setVar('LIC_FILES_CHKSUM', lic_file)
                 return
             licpath=os.path.dirname(licpath)
-        bb.error("Couldn't find license file: %s, within directory %s or his parent directories" % (d.getVar('LICFILENAME',True), externalsrc))
+        bb.error("Couldn't find license file: %s, within directory %s or his parent directories" % (d.getVar('LICFILENAME'), externalsrc))
 }
 
 do_generate_driver_data[dirs] = "${B}"

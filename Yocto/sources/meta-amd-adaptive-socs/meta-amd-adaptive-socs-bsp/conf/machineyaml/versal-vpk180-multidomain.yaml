@@ -6,12 +6,18 @@ args:
 
 args_append:
     - --domain-file ${LAYER_PATH_xilinx-standalone-sdt}/conf/domainyaml/versal-multidomain-base.yaml \
-                    ${LAYER_PATH_xilinx-standalone-sdt}/conf/domainyaml/versal-openamp-overlay.yaml \
+                    ${BSPLAYERDIR_amd-adaptive-socs-bsp}/conf/domainyaml/versal-domain-access-overlay.yaml \
+                    ${LAYER_PATH_xilinx-standalone-sdt}/conf/domainyaml/versal-openamp-zephyr-common-overlay.yaml \
+                    ${LAYER_PATH_xilinx-standalone-sdt}/conf/domainyaml/versal-openamp-zephyr-cips-overlay.yaml \
                     ${LAYER_PATH_xilinx-standalone-sdt}/conf/domainyaml/versal-libmetal-overlay.yaml
 
 kconfig:
-    CONFIG_YOCTO_BBMC_LINUX_DTSI: ${LAYER_PATH_xilinx-virtualization}/recipes-bsp/device-tree/files/versal-xen.dtsi \
+    CONFIG_SUBSYSTEM_DT_DOMAIN_ACCESS: y
+    CONFIG_YOCTO_BBMC_LINUX_DTSI: \
+        ${BSPLAYERDIR_amd-adaptive-socs-bsp}/recipes-bsp/device-tree/files/qspi-2g-memory-map.dtsi \
+        ${LAYER_PATH_xilinx-virtualization}/recipes-bsp/device-tree/files/versal-xen.dtsi \
         ${BSPLAYERDIR_amd-adaptive-socs-bsp}/recipes-bsp/device-tree/files/platform-misc.dtsi
+
 machine:
     description: >-
         AMP/multidomain machine for the AMD Versal Premium VPK180
@@ -19,7 +25,42 @@ machine:
         and MicroBlaze PMC/PSM sub-machines built from system device
         tree.
     post:
+        include:
+            comment: "Enable meta-xilinx-imgrcvry if available"
+            op: 'conf/enable-xilinx-imgrcvry.conf'
+        EXTRA_OECMAKE:append:pn-xilplmi:
+            comment: 'Enables the restoration of the multi-boot register for A/B firmware platforms'
+            op: '='
+            val: ' -DXILPLMI_pm_restore_multiboot=ON'
+        CFLAGS:append:pn-image-selector:
+            comment: 'Enable QSPI flash'
+            op: '='
+            val: ' -DXIS_QSPI_FLSH'
         BOOTBIN_INC:
             comment: 'Enable libmetal application'
-            op: '=' 
+            op: '='
             val: 'libmetal-demo-rpu1.inc'
+        SPI_IMAGE_SIZE:
+            comment: 'QSPI flash size (256MB)'
+            op: '='
+            val: '0x1000_0000'
+        SPI_BOOTBIN_OFFSET:
+            comment: 'Boot.bin A/B offsets for 256MB QSPI'
+            op: '='
+            val: '0x15C_0000 0x880_0000'
+        SPI_USER_SCRATCH_OFFSET:
+            op: '='
+            val: '0xFA4_0000'
+        SPI_MANIFEST_OFFSET:
+            op: '='
+            val: '0xFFF_0000'
+        PRODUCT_NAME:
+            comment: 'UEFI Capsule Update / LVFS Configuration'
+            op: '='
+            val: 'VPK180'
+        PRODUCT_GUID:
+            op: '='
+            val: '683c7197-e225-57c7-a675-cd6e6050289e'
+        PRODUCT_URL:
+            op: '='
+            val: 'https://www.amd.com/en/products/adaptive-socs-and-fpgas/versal.html'

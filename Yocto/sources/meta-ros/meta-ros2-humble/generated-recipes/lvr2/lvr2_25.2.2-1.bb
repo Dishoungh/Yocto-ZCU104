@@ -16,7 +16,7 @@ LIC_FILES_CHKSUM = "file://package.xml;beginline=19;endline=19;md5=4633480cdd27d
 ROS_CN = "lvr2"
 ROS_BPN = "lvr2"
 
-ROS_BUILD_DEPENDS = " \
+ROS_BUILD_DEPENDS = "\
     ${ROS_UNRESOLVED_DEP-embree} \
     boost \
     freeglut \
@@ -35,11 +35,11 @@ ROS_BUILD_DEPENDS = " \
     yaml-cpp \
 "
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     cmake-native \
 "
 
-ROS_EXPORT_DEPENDS = " \
+ROS_EXPORT_DEPENDS = "\
     ${ROS_UNRESOLVED_DEP-embree} \
     boost \
     freeglut \
@@ -60,7 +60,7 @@ ROS_EXPORT_DEPENDS = " \
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     ${ROS_UNRESOLVED_DEP-embree} \
     boost \
     freeglut \
@@ -93,7 +93,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/humble/lvr2"
 SRC_URI = "git://github.com/ros2-gbp/lvr2-release;${ROS_BRANCH};protocol=https"
 SRCREV = "61968a460cecd677c6dda9b236391dc0f8c6960d"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "cmake"
 

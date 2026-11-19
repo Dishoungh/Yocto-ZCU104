@@ -15,22 +15,31 @@ DEPENDS = "freetype libpng jpeg zlib tiff"
 
 SRC_URI = "git://github.com/libgd/libgd.git;nobranch=1;protocol=https \
            file://0001-Fix-deprecared-function-prototypes.patch \
+           file://Fix-ftype-missing-const.patch \
            "
 
 SRCREV = "b5319a41286107b53daa0e08e402aa1819764bdc"
 
-S = "${WORKDIR}/git"
 
 inherit autotools binconfig gettext pkgconfig
 
-EXTRA_OECONF += " --disable-rpath \
-                  --with-jpeg=${STAGING_LIBDIR}/.. \
-                  --with-freetype=yes \
-                  --without-fontconfig \
-                  --without-webp \
-                  --without-xpm \
-                  --without-x \
-                "
+PACKAGECONFIG ?= "jpeg freetype"
+
+PACKAGECONFIG[avif] = "--with-avif,--without-avif"
+PACKAGECONFIG[fontconfig] = "--with-fontconfig,--without-fontconfig"
+PACKAGECONFIG[freetype] = "--with-freetype,--without-freetype"
+PACKAGECONFIG[heif] = "--with-heif,--without-heif"
+PACKAGECONFIG[jpeg] = "--with-jpeg,--without-jpeg"
+PACKAGECONFIG[liq] = "--with-liq,--without-liq"
+PACKAGECONFIG[png] = "--with-png,--without-png"
+PACKAGECONFIG[raqm] = "--with-raqm,--without-raqm,libraqm"
+PACKAGECONFIG[tiff] = "--with-tiff,--without-tiff"
+PACKAGECONFIG[webp] = "--with-webp,--without-webp"
+PACKAGECONFIG[x] = "--with-x,--without-x"
+PACKAGECONFIG[xpm] = "--with-xpm,--without-xpm"
+PACKAGECONFIG[zlib] = "--with-zlib,--without-zlib"
+
+EXTRA_OECONF += "--disable-rpath"
 
 EXTRA_OEMAKE = 'LDFLAGS="${LDFLAGS}"'
 

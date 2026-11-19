@@ -15,11 +15,11 @@ LIC_FILES_CHKSUM = "file://package.xml;beginline=9;endline=9;md5=665599198b8a9e4
 ROS_CN = "fmilibrary_vendor"
 ROS_BPN = "fmilibrary_vendor"
 
-ROS_BUILD_DEPENDS = " \
+ROS_BUILD_DEPENDS = "\
     git \
 "
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     ament-cmake-native \
 "
 
@@ -43,7 +43,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/jazzy/fmilibrary_vendor"
 SRC_URI = "git://github.com/ros2-gbp/fmilibrary_vendor-release;${ROS_BRANCH};protocol=https"
 SRCREV = "a2c5aea2e1092520a763dfba27fd2621d761a9ab"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

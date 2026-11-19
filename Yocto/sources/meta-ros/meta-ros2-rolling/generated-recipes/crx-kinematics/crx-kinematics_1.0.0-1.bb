@@ -58,7 +58,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/crx_kinematics"
 SRC_URI = "git://github.com/ros2-gbp/crx_kinematics-release;${ROS_BRANCH};protocol=https"
 SRCREV = "279e45e123cbd6ceabfeec6695f0e665e8f69028"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

@@ -6,17 +6,17 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=fbc093901857fcd118f065f900982c24"
 
 DEPENDS = "gtk+3 libxml2 glib-2.0-native"
 
-PNAME = "gtksourceview"
-
-S = "${WORKDIR}/${PNAME}-${PV}"
-
 GNOMEBASEBUILDCLASS = "autotools"
 inherit gnomebase lib_package gettext features_check gtk-doc gobject-introspection upstream-version-is-even
 
+GNOMEBN = "gtksourceview"
+SRC_URI[archive.sha256sum] = "691b074a37b2a307f7f48edc5b8c7afa7301709be56378ccf9cc9735909077fd"
+S = "${UNPACKDIR}/gtksourceview-${PV}"
+
 REQUIRED_DISTRO_FEATURES = "x11"
 
-SRC_URI = "http://ftp.gnome.org/pub/gnome/sources/gtksourceview/3.24/${PNAME}-${PV}.tar.xz"
-SRC_URI[md5sum] = "b748da426a7d64e1304f0c532b0f2a67"
-SRC_URI[sha256sum] = "691b074a37b2a307f7f48edc5b8c7afa7301709be56378ccf9cc9735909077fd"
+EXTRA_OECONF += "--disable-glade-catalog --disable-gtk-doc --disable-Werror"
+
+CFLAGS += "-Wno-error=incompatible-pointer-types"
 
 FILES:${PN} += " ${datadir}/gtksourceview-3.0"

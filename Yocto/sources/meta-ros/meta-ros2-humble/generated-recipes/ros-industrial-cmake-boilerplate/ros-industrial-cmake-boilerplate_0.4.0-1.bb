@@ -20,7 +20,7 @@ ROS_BPN = "ros_industrial_cmake_boilerplate"
 
 ROS_BUILD_DEPENDS = ""
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     cmake-native \
 "
 
@@ -31,7 +31,7 @@ ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 ROS_EXEC_DEPENDS = ""
 
 # Currently informational only -- see http://www.ros.org/reps/rep-0149.html#dependency-tags.
-ROS_TEST_DEPENDS = " \
+ROS_TEST_DEPENDS = "\
     ${ROS_UNRESOLVED_DEP-iwyu} \
     clang \
     cppcheck \
@@ -50,7 +50,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/humble/ros_industrial_cmake_boilerplate"
 SRC_URI = "git://github.com/ros2-gbp/ros_industrial_cmake_boilerplate-release;${ROS_BRANCH};protocol=https"
 SRCREV = "35398618a1d0516c78e430b82eae0ac778c7d64e"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "cmake"
 

@@ -62,7 +62,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/nanoeigenpy"
 SRC_URI = "git://github.com/ros2-gbp/nanoeigenpy-release;${ROS_BRANCH};protocol=https"
 SRCREV = "e23df3b42c6990ea6cba74b9283e5d77f3958dfb"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "cmake"
 

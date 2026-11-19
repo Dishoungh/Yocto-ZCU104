@@ -8,6 +8,7 @@
 # SPDX-License-Identifier: MIT
 
 import sys
+import os
 import re
 import logging
 import common_utils
@@ -21,7 +22,7 @@ def GenConf_processor(procdata):
     ''' Generate Processor Info as Kconfig'''
     if not procdata:
         raise Exception('ERROR: No CPU can be found in the system. Please review your hardware system. '
-              'Valid processors are: microblaze, ps7_cortexa9, psu_cortexa53, psv_cortexa72, psx_cortexa78.')
+              'Valid processors are: microblaze-v, ps7_cortexa9, psu_cortexa53, psv_cortexa72, psx_cortexa78.')
     KconfStr = 'SUBSYSTEM_PROCESSOR'
     confstr = ''
     procconfstr = '\nchoice\n'
@@ -29,8 +30,6 @@ def GenConf_processor(procdata):
     procconfstr += '\thelp\n'
     procconfstr += '\tSelect a processor as the system processor.\n'
 
-    archdict = {}
-    archKdict = {'microblaze': 'ARCHMB', 'arm': 'ARCHARM', 'aarch64': 'ARCH64'}
     for index, proc in enumerate(procdata.keys()):
         confstr += '\nconfig %s%s_IP_NAME\n' % (KconfStr, index)
         confstr += '\tstring\n'
@@ -43,18 +42,8 @@ def GenConf_processor(procdata):
         Kprocselect = '%s_%s_SELECT' % (KconfStr, proc)
         procconfstr += '\nconfig %s\n' % Kprocselect
         procconfstr += '\tbool "%s"\n' % proc
-        arch = procdata[proc].get('arch')
-        if arch:
-            archdict.setdefault(arch, []).append(Kprocselect)
 
     procconfstr += '\nendchoice\n'
-
-    for arch in archdict.keys():
-        confstr += '\nconfig SUBSYSTEM_ENABLE_%s\n' % archKdict.get(arch)
-        confstr += '\tbool\n'
-        confstr += '\tdefault y\n'
-        confstr += '\tselect SUBSYSTEM_ARCH_%s\n' % arch.upper()
-        confstr += '\tdepends on %s\n' % ' || '.join(archdict.get(arch))
 
     confstr += procconfstr
     return confstr
@@ -96,7 +85,8 @@ def GenConf_memory(IpsToAdd, slavesdict, proc_ipname, arch):
         confstr += '\nconfig %s_SELECT\n' % memKconf
         confstr += '\tbool "%s"\n' % slave
         # Check each IP baseaddr and use the lower one as default
-        if not DefaultBaseAddr or DefaultBaseAddr > baseaddr:
+        if not DefaultBaseAddr or \
+                int(DefaultBaseAddr, base=16) > int(baseaddr, base=16):
             DefaultBaseAddr = baseaddr
             DefaultBank = 'default %s_SELECT\n' % memKconf
 
@@ -128,7 +118,7 @@ def GenConf_memory(IpsToAdd, slavesdict, proc_ipname, arch):
             hex(int(baseaddr, base=16) + 0x8000000))
         memoryconfstr += '\tdefault %s if SUBSYSTEM_ARCH_ARM\n' % (
             hex(int(baseaddr, base=16) + 0x4000000))
-        memoryconfstr += '\tdefault %s if SUBSYSTEM_ARCH_MICROBLAZE\n' % (
+        memoryconfstr += '\tdefault %s if SUBSYSTEM_ARCH_MICROBLAZE-V\n' % (
             hex(int(baseaddr, base=16) + 0x100000))
         memoryconfstr += '\trange %s %s\n' % (hex(int(baseaddr, base=16) + 0x100000),
                                               hex(int(baseaddr, base=16) + int(highaddr, base=16) - 0x2000000 + 0x100000))
@@ -191,191 +181,178 @@ def GenConf_memory(IpsToAdd, slavesdict, proc_ipname, arch):
     return confstr
 
 
-def GenConf_serial(IpsToAdd, slavesdict, proc_ipname, arch):
-    ''' Generate Serial Info as Kconfig'''
-    confstr = '\nmenu "Serial Settings"\n'
-    serialconfstr = ''
-    serial_Kconf = 'SUBSYSTEM_SERIAL'
-    serialdict = {'microblaze': ['FSBOOT', 'DTG'],
-                  'microblaze_riscv': ['DTG'],
-                  'ps7_cortexa9': ['FSBL', 'DTG'],
-                  'psu_cortexa53': ['PMUFW', 'FSBL', 'TF-A', 'DTG'],
-                  'psv_cortexa72': ['PLM', 'TF-A', 'DTG'],
-                  'psx_cortexa78': ['PLM', 'TF-A', 'DTG'],
-                  'cortexa78': ['PLM', 'ASU', 'TF-A', 'OP-TEE', 'DTG']
-                  }
-    def_baudrates = ['600', '9600', '28800',
-                     '115200', '230400', '460800', '921600']
-    for comp in serialdict.get(proc_ipname, ''):
-        confstr += '\nchoice\n'
-        confstr += '\tprompt "%s Serial stdin/stdout"\n' % (
-                'U-boot/Linux' if comp == 'DTG' else comp)
-        confstr += '\thelp\n'
-        confstr += '\tSelect a serial as the %s\'s stdin,stdout.\n' % (
-            'U-boot and Linux' if comp == 'DTG' else comp)
-        confstr += '\tIf you select \'manual\', you will need to add this variable\n'
-        if comp == 'TF-A':
-            confstr += '\tTFA_CONSOLE:forcevariable = "<serial_ipname>" in petalinuxbps.conf or local.conf\n'
-        elif comp == 'OP-TEE':
-            confstr += '\tOPTEE_CONSOLE:forcevariable = "<serial_number>" in petalinuxbps.conf or local.conf\n'
-        else:
-            confstr += '\tFor XSCT flow:\n'
-            confstr += '\t YAML_SERIAL_CONSOLE_STDIN:forcevariable:pn-<recipename> = "<serial_ipname>"\n'
-            confstr += '\t YAML_SERIAL_CONSOLE_STDOUT:forcevariable:pn-<recipename> = \"<serial_ipname>\"\n'
-            confstr += '\t in petalinuxbsp.conf file or local.conf to specify the stdin/stdout."\n'
-        if comp == 'DTG':
-            serialconfstr += '\nconfig %s_IP_NAME\n' % (
-                serial_Kconf)
-        else:
-            serialconfstr += '\nconfig %s_%s_IP_NAME\n' % (
-                serial_Kconf, comp.upper())
-        serialconfstr += '\tstring\n'
-        for slave in IpsToAdd + ['manual']:
-            if comp in ['PLM', 'PMUFW'] and re.search(
-                    r'.*coresight.*', slave.replace('_', '')):
-                # coresight ip is not supported for plm and pmufw
-                # so skipping in displaying menuconfig
+def _SerialPortNum(slave):
+    ''' Return the port index ('0' or '1') encoded in the serial name. '''
+    nslave = slave.replace('_', '')
+    if re.search(r'(uart|serial)0', nslave):
+        return '0'
+    if re.search(r'(uart|serial)1', nslave):
+        return '1'
+    return ''
+
+
+def _GetSerialConsoleToken(domain_kind, slave, ip_name):
+    ''' Derive the console token for a serial slave.
+    For TF-A/OP-TEE the firmware expects an ip alias (cadence/pl011/dcc or
+    serial number); for the device-tree (Linux/baremetal) domains the token
+    is the serial slave name itself. The TF-A console aliases are read from
+    sdt_ipinfo.yaml ('firmware_console_alias' per serial IP). A serial IP may
+    report a SoC-specific ip_name (e.g. a versal-net psx_sbsauart node maps to
+    the psv_sbsauart entry); such variants are declared explicitly via the
+    'ip_name_aliases' list in the canonical sdt_ipinfo.yaml entry. '''
+    if domain_kind not in ('tfa', 'optee'):
+        return slave
+    entry = ipinfodata.get(ip_name) if ip_name else None
+    if not entry and ip_name:
+        for val in ipinfodata.values():
+            if not isinstance(val, dict) or val.get('device_type') != 'serial':
                 continue
-            confstr += '\nconfig SUBSYSTEM_%sSERIAL_%s_SELECT\n' % (
-                '%s_' % comp if comp != 'DTG' else '', slave.upper())
-            confstr += '\tbool "%s"\n' % slave
-            if slave == 'manual':
-                continue
-            serialconsole = slave
-            if comp in ['TF-A', 'OP-TEE']:
-                ip_name = slavesdict[slave].get('ip_name')
-                if ip_name == 'psu_uart':
-                    if re.search(r'.*uart0.*', slave.replace('_', '')) or \
-                            re.search(r'.*serial0.*', slave.replace('_', '')):
-                        serialconsole = 'cadence' if comp == 'TF-A' else '0'
-                    elif re.search(r'.*uart1.*', slave.replace('_', '')) or \
-                            re.search(r'.*serial1.*', slave.replace('_', '')):
-                        serialconsole = 'cadence1' if comp == 'TF-A' else '1'
-                elif ip_name in ['sbsauart', 'psv_sbsauart', 'psx_sbsauart']:
-                    if re.search(r'.*uart0.*', slave.replace('_', '')) or \
-                            re.search(r'.*serial0.*', slave.replace('_', '')):
-                        serialconsole = 'pl011' if comp == 'TF-A' else '0'
-                    elif re.search(r'.*uart1.*', slave.replace('_', '')) or \
-                            re.search(r'.*serial1.*', slave.replace('_', '')):
-                        serialconsole = 'pl011_1' if comp == 'TF-A' else '1'
-                else:
-                    serialconsole = 'dcc'
-            serialconfstr += '\tdefault %s if SUBSYSTEM_%sSERIAL_%s_SELECT\n' % (
-                serialconsole, '%s_' % comp if comp != 'DTG' else '', slave.upper())
+            if ip_name in (val.get('ip_name_aliases') or []):
+                entry = val
+                break
+    aliases = entry.get('firmware_console_alias') or {} if isinstance(entry, dict) else {}
+    if not aliases:
+        return 'dcc'
+    port = _SerialPortNum(slave)
+    if not port:
+        return slave
+    return port if domain_kind == 'optee' else aliases.get(port, slave)
 
-        confstr += '\nendchoice\n'
 
-    # Baudrate settings
-    for slave in IpsToAdd:
-        confstr += '\nchoice\n'
-        confstr += '\tprompt "System stdin/stdout baudrate for %s"\n' % slave
-        confstr += '\tdefault %s_%s_BAUDRATE_115200\n' % (
-            serial_Kconf, slave.upper())
-        confstr += '\thelp\n'
-        confstr += '\tBaudrate settings for serial Ip %s\n' % slave
-        confstr += '\tThe Baudrate setting applies only for U-boot/Linux serial Ip\n'
-        for baudrate in def_baudrates:
-            confstr += '\nconfig %s_%s_BAUDRATE_%s\n' % (
-                serial_Kconf, slave.upper(), baudrate)
-            confstr += '\tbool "%s"\n' % baudrate
+def _GenSerialChoice(label, depends, domain_kind, serial_ips, slaves_dict,
+                     select_sym_fmt, ipname_sym):
+    ''' Generate a single per-domain serial choice plus the hidden
+    <ipname_sym> string used by the machine conf generators.
+    select_sym_fmt is a '%s' template taking the upper-cased slave name so
+    that the legacy config symbol naming can be preserved per domain.
+    The default option depends on the domain kind:
+      - device-tree domains (Linux/baremetal) default to 'From SDT', meaning
+        the console defined in the SDT chosen node is used as-is;
+      - TF-A/OP-TEE have no chosen-node console, so they default to the first
+        detected serial console. A 'manual' option is still offered to fall
+        back to the firmware recipe's own default console.
+    'From SDT' and 'manual' emit no <ipname_sym> default (no override). '''
+    # (symbol token, display label) for each option in menu order, and the
+    # token that should be the choice default.
+    if domain_kind in ('tfa', 'optee'):
+        # Real serial IPs first, then a 'manual' fallback. Default to the
+        # first detected console.
+        serial_options = [(slave.upper(), slave) for slave in serial_ips]
+        serial_options.append(('MANUAL', 'manual'))
+        default_option = serial_ips[0].upper() if serial_ips else 'MANUAL'
+        extra_help = ('\tSelect \'manual\' to use the %s recipe\'s default '
+                      'console.\n' % label)
+    else:
+        # 'From SDT' first (default), then the real serial IPs.
+        serial_options = [('FROM_SDT', 'From SDT')]
+        serial_options += [(slave.upper(), slave) for slave in serial_ips]
+        default_option = 'FROM_SDT'
+        extra_help = ('\tSelect \'From SDT\' to use the console defined in '
+                      'the SDT chosen node.\n')
 
-        confstr += '\nendchoice\n'
+    # Options that represent "no IP override" (use SDT / recipe default).
+    no_override_options = ('FROM_SDT', 'MANUAL')
 
-    confstr += serialconfstr
-    confstr += '\nendmenu\n'
+    confstr = '\nchoice\n'
+    confstr += '\tprompt "%s Serial stdin/stdout"\n' % label
+    if depends:
+        confstr += '\tdepends on %s\n' % depends
+    confstr += '\tdefault %s\n' % (select_sym_fmt % default_option)
+    confstr += '\thelp\n'
+    confstr += '\tSelect a serial device as the %s stdin/stdout.\n' % label
+    confstr += extra_help
 
+    ipname_str = '\nconfig %s\n\tstring\n' % ipname_sym
+    for option_key, option_label in serial_options:
+        select_sym = select_sym_fmt % option_key
+        confstr += '\nconfig %s\n\tbool "%s"\n' % (select_sym, option_label)
+        if option_key in no_override_options:
+            continue
+        console_token = _GetSerialConsoleToken(
+            domain_kind, option_label,
+            slaves_dict.get(option_label, {}).get('ip_name'))
+        ipname_str += '\tdefault %s if %s\n' % (console_token, select_sym)
+    confstr += '\nendchoice\n'
+    confstr += ipname_str
     return confstr
 
 
-def GenConf_ethernet(IpsToAdd, slavesdict, proc_ipname, arch):
-    ''' Generate Ethernet Info as Kconfig'''
-    eth_Kconf = 'SUBSYSTEM_ETHERNET'
-    confstr = '\nmenu "Ethernet Settings"\n'
-    confstr += '\nchoice\n'
-    confstr += '\tprompt "Primary Ethernet"\n'
+def _GenBaudrateChoice(slave, def_baudrates):
+    ''' Generate the baudrate choice for a single (Linux) serial IP. '''
+    confstr = '\nchoice\n'
+    confstr += '\tprompt "System stdin/stdout baudrate for %s"\n' % slave
+    confstr += '\tdefault SUBSYSTEM_SERIAL_%s_BAUDRATE_115200\n' % slave.upper()
     confstr += '\thelp\n'
-    confstr += '\tSelect a Ethernet used as primary Ethernet.\n'
-    confstr += '\tThe primary ethernet will be used for u-boot networking if u-boot is\n'
-    confstr += '\tselected and will be used as eth0 in Linux.\n'
-    confstr += '\tIf your preferred primary ethernet is not on the list, please select"\n'
-    confstr += '\t\'manual\'.\n'
-    serialconfstr = ''
-    for slave in IpsToAdd + ['manual']:
-        confstr += '\nconfig %s_%s_SELECT\n' % (eth_Kconf, slave.upper())
-        confstr += '\tbool "%s"\n' % slave
-        if slave == 'manual':
-            continue
-        serialconfstr += '\nconfig %s_%s_MAC_AUTO\n' % (
-            eth_Kconf, slave.upper())
-        serialconfstr += '\tbool "Randomise MAC address"\n'
-        serialconfstr += '\tdefault y if SUBSYSTEM_ARCH_MICROBLAZE\n'
-        serialconfstr += '\tdefault n\n'
-        serialconfstr += '\tdepends on %s_%s_SELECT && SUBSYSTEM_DISTRO_PETALINUX\n' % (
-            eth_Kconf, slave.upper())
-        serialconfstr += '\thelp\n'
-        serialconfstr += '\trandomise MAC address for the primary ethernet.\n'
-
-        serialconfstr += '\nconfig %s_%s_MAC_PATTERN\n' % (
-            eth_Kconf, slave.upper())
-        serialconfstr += '\tstring "Template for randomised MAC address"\n'
-        serialconfstr += '\tdefault "00:0a:35:00:??:??"\n'
-        serialconfstr += '\tdepends on %s_%s_SELECT && %s_%s_MAC_AUTO && SUBSYSTEM_DISTRO_PETALINUX\n' % (
-            eth_Kconf, slave.upper(), eth_Kconf, slave.upper())
-        serialconfstr += '\thelp\n'
-        serialconfstr += '\tPattern for generating random MAC addresses - question mark\n'
-        serialconfstr += '\tcharacters will be replaced by random hex digits\n'
-
-        serialconfstr += '\nconfig %s_%s_MAC\n' % (eth_Kconf, slave.upper())
-        serialconfstr += '\tstring "Ethernet MAC address"\n'
-        serialconfstr += '\tdepends on %s_%s_SELECT && !%s_%s_MAC_AUTO && SUBSYSTEM_DISTRO_PETALINUX\n' % (
-            eth_Kconf, slave.upper(), eth_Kconf, slave.upper())
-        serialconfstr += '\thelp\n'
-        serialconfstr += '\tDefault mac address will set from eeprom fru data\n'
-        serialconfstr += '\tif you want change with desired value you can change, example: 00:0a:35:00:22:01 or ff:ff:ff:ff:ff:ff\n'
-
-        serialconfstr += '\nconfig %s_%s_USE_DHCP\n' % (
-            eth_Kconf, slave.upper())
-        serialconfstr += '\tbool "Obtain IP address automatically"\n'
-        serialconfstr += '\tdefault y\n'
-        serialconfstr += '\tdepends on %s_%s_SELECT && SUBSYSTEM_DISTRO_PETALINUX\n' % (
-            eth_Kconf, slave.upper())
-        serialconfstr += '\thelp\n'
-        serialconfstr += '\tSet this option if you would like your SUBSYSTEM to use DHCP for\n'
-        serialconfstr += '\tobtaining an IP address.\n'
-
-        serialconfstr += '\nconfig %s_%s_IP_ADDRESS\n' % (
-            eth_Kconf, slave.upper())
-        serialconfstr += '\tstring "Static IP address"\n'
-        serialconfstr += '\tdefault "192.168.0.10"\n'
-        serialconfstr += '\tdepends on %s_%s_SELECT && !%s_%s_USE_DHCP && SUBSYSTEM_DISTRO_PETALINUX\n' % (
-            eth_Kconf, slave.upper(), eth_Kconf, slave.upper())
-        serialconfstr += '\thelp\n'
-        serialconfstr += '\tThe IP address of your main network interface when static network\n'
-        serialconfstr += '\taddress assignment is used.\n'
-
-        serialconfstr += '\nconfig %s_%s_IP_NETMASK\n' % (
-            eth_Kconf, slave.upper())
-        serialconfstr += '\tstring "Static IP netmask"\n'
-        serialconfstr += '\tdefault "255.255.255.0"\n'
-        serialconfstr += '\tdepends on %s_%s_SELECT && !%s_%s_USE_DHCP && SUBSYSTEM_DISTRO_PETALINUX\n' % (
-            eth_Kconf, slave.upper(), eth_Kconf, slave.upper())
-        serialconfstr += '\thelp\n'
-        serialconfstr += '\tDefault netmask when static network address assignment is used.\n'
-        serialconfstr += '\tIn case of systemd please specify netmask value like CIDR notation Eg: 24 instead of 255.255.255.0\n'
-        serialconfstr += '\tIn case of sysvinit please specify netmask value like dot-decimal notation Eg: 255.255.255.0 instead of 24\n'
-
-        serialconfstr += '\nconfig %s_%s_IP_GATEWAY\n' % (
-            eth_Kconf, slave.upper())
-        serialconfstr += '\tstring "Static IP gateway"\n'
-        serialconfstr += '\tdefault "192.168.0.1"\n'
-        serialconfstr += '\tdepends on %s_%s_SELECT && !%s_%s_USE_DHCP && SUBSYSTEM_DISTRO_PETALINUX\n' % (
-            eth_Kconf, slave.upper(), eth_Kconf, slave.upper())
-        serialconfstr += '\thelp\n'
-        serialconfstr += '\tDefault gateway when static network address assignment is used.\n'
-
+    confstr += '\tBaudrate settings for serial Ip %s\n' % slave
+    confstr += '\tThe Baudrate setting applies only for U-boot/Linux serial Ip\n'
+    for brate in def_baudrates:
+        confstr += '\nconfig SUBSYSTEM_SERIAL_%s_BAUDRATE_%s\n' % (
+            slave.upper(), brate)
+        confstr += '\tbool "%s"\n' % brate
     confstr += '\nendchoice\n'
-    confstr += serialconfstr
+    return confstr
+
+
+def GenSerialDomainsKconfig(syshw_file, proc_type, bbmctargets):
+    ''' Generate the per-domain Serial Settings menu.
+    One serial choice dropdown is created for each domain (Linux, TF-A,
+    OP-TEE and every enabled multiconfig target). The default for each
+    domain is derived from the SDT serial IPs; the visibility of each
+    multiconfig domain is gated on its YOCTO_BBMC_<MC> enable symbol.
+    The Linux/TF-A/OP-TEE domains reuse the legacy config symbol names so
+    that existing consumer scripts keep working unchanged. '''
+    global ipinfodata
+    if 'ipinfodata' not in globals():
+        ipinfo_file = os.path.join(
+            project_config.GenMachineScriptsPath(), 'data', 'sdt_ipinfo.yaml')
+        ipinfodata = yaml_utils.ReadYaml(ipinfo_file)
+    hwyamldata = common_utils.GetSyshwData(syshw_file)
+    procdata = hwyamldata.get('processor', {})
+    if proc_type not in procdata:
+        return ''
+    arch = procdata[proc_type].get('arch')
+    proc_ipname = procdata[proc_type].get('ip_name')
+    slaves_dict = procdata[proc_type].get('slaves', {})
+    serial_ips = [re.sub('_bankless$', '', slave) for slave in slaves_dict
+                  if slaves_dict[slave].get('device_type') == 'serial']
+    if not serial_ips:
+        return ''
+
+    def_baudrates = ['600', '9600', '28800',
+                     '115200', '230400', '460800', '921600']
+
+    # Domains as (label, depends, domain_kind, config_infix). config_infix is
+    # the config symbol infix: '' keeps the legacy Linux 'SUBSYSTEM_SERIAL_'
+    # names; others use 'SUBSYSTEM_<config_infix>_SERIAL_' so they don't
+    # collide with the Linux read.
+    domains = [('Linux/U-Boot', '', 'dtg', '')]
+    if arch == 'aarch64':
+        domains.append(('TF-A', 'SUBSYSTEM_ARCH_AARCH64', 'tfa', 'TF-A'))
+    if proc_ipname == 'cortexa78':
+        domains.append(('OP-TEE', 'SUBSYSTEM_ARCH_AARCH64', 'optee', 'OP-TEE'))
+    for target in bbmctargets:
+        config_infix = target.upper().replace('-', '_')
+        domains.append((target, 'YOCTO_BBMC_%s' % config_infix, 'dtg',
+                        config_infix))
+
+    confstr = '\nmenu "Serial Settings"\n'
+    # Emit all per-domain serial console dropdowns first so they stay
+    # grouped together in the menu.
+    for label, depends, domain_kind, config_infix in domains:
+        if config_infix:
+            select_sym_fmt = 'SUBSYSTEM_%s_SERIAL_%%s_SELECT' % config_infix
+            ipname_sym = 'SUBSYSTEM_SERIAL_%s_IP_NAME' % config_infix
+        else:
+            select_sym_fmt = 'SUBSYSTEM_SERIAL_%s_SELECT'
+            ipname_sym = 'SUBSYSTEM_SERIAL_IP_NAME'
+        confstr += _GenSerialChoice(label, depends, domain_kind, serial_ips,
+                                    slaves_dict, select_sym_fmt, ipname_sym)
+    # Baudrate applies only to the Linux/U-Boot serial console; place it
+    # after all the serial dropdowns.
+    for slave in serial_ips:
+        confstr += _GenBaudrateChoice(slave, def_baudrates)
     confstr += '\nendmenu\n'
+
     return confstr
 
 
@@ -384,7 +361,7 @@ def GenConf_flash(IpsToAdd, slavesdict, proc_ipname, arch):
     flash_Kconf = 'SUBSYSTEM_FLASH'
     flashpart_dict = {'aarch64': {'boot': '0x100000', 'kernel': '0x1600000', 'bootenv': '0x40000'},
                       'arm': {'boot': '0x500000', 'kernel': '0xA80000', 'bootenv': '0x20000'},
-                      'microblaze': {'fpga': '0xB00000', 'boot': '0x40000', 'bootenv': '0x20000', 'kernel': '0xC00000'}
+                      'microblaze-v': {'fpga': '0xB00000', 'boot': '0x40000', 'bootenv': '0x20000', 'kernel': '0xC00000'}
                       }
     confstr = '\nmenu "Flash Settings"\n'
     confstr += '\nchoice\n'
@@ -404,13 +381,11 @@ def GenConf_flash(IpsToAdd, slavesdict, proc_ipname, arch):
             continue
         ip_name = slavesdict.get(slave)['ip_name']
         global ipinfodata
-        try:
-            flash_prefix = '%s' % (
-                ipinfodata[ip_name]['device_type']['flash'].get('flash_prefix', ''))
-            if flash_prefix:
-                flash_prefix = flash_prefix + '-'
-        except KeyError:
-            flash_prefix = ''
+        flash_prefix = ''
+        if ip_name in ipinfodata and ipinfodata[ip_name].get('device_type') == 'flash':
+            flash_prefix = ipinfodata[ip_name].get('flash_prefix', '')
+        if flash_prefix:
+            flash_prefix = flash_prefix + '-'
         flashconfstr += '\nconfig %s__ADVANCED_AUTOCONFIG\n' % flash_Kconf
         flashconfstr += '\tbool "Advanced Flash Auto Configuration"\n'
         flashconfstr += '\tdefault n\n'
@@ -525,18 +500,28 @@ BootModes_dict = {
             'UFS': 11, 'SD1 (v3.0)': 14
         },
         'def_bootmode': '8'
+    },
+    'versal-2vp': {
+        'bootmodes': {
+            'JTAG': '0','QSPI24': 1, 'QSPI32': 2, 'SD0 (v3.0)': 3,
+            'SD1 (v2.0)': 5, 'eMMC1 (v4.51)': 6,
+            'OSPI': 8, 'SD1 (v3.0)': 14
+        },
+        'def_bootmode': '8'
     }
 }
 
 
 def GenConf_bootmodes(proc):
-    soc_family = project_config.DetectSocFamily(proc)
+    soc_family = project_config.DetectSocFamily(
+                            proc, hwyamldata.get('device_id', ''))
     bootmode_info = BootModes_dict.get(soc_family, {})
     bootmodes = bootmode_info.get('bootmodes', {})
     default_bootmode = bootmode_info.get('def_bootmode', '')
     if not bootmodes:
         return ''
-    confstr = '\nif !SUBSYSTEM_DISTRO_PETALINUX && SUBSYSTEM_SDT_FLOW\n'
+    # Boot mode is a boot/u-boot concept; hide it for 32-bit MicroBlaze-V (Zephyr).
+    confstr = '\nif SUBSYSTEM_SDT_FLOW && !SUBSYSTEM_MICROBLAZE_V_XLEN_32\n'
     confstr += '\nmenu "Boot Mode Settings"\n'
     confstr += '\nchoice\n'
     confstr += '\tprompt "Primary Boot Mode"\n'
@@ -567,15 +552,15 @@ def GenConf_bootmodes(proc):
 # Supported Device Types to create Kconfig file
 devicetypes = {
     'memory': {'exclude': ['psu_ocm']},
-    'serial': {}, 'ethernet': {}, 'flash': {}, 'sd': {}
+    'flash': {}, 'sd': {}
 }
 
 
 def GenKconfigSysHW(hwyamlinfile, ipinfofile, outfile):
-    ''' Read Input Yaml(plnx sys HW data) and convert into
+    ''' Read Input Yaml(sys HW data) and convert into
     Kconfig for described device types'''
     global hwyamldata, ipinfodata
-    hwyamldata = yaml_utils.ReadYaml(hwyamlinfile)
+    hwyamldata = common_utils.GetSyshwData(hwyamlinfile)
     ipinfodata = yaml_utils.ReadYaml(ipinfofile)
     procdata = hwyamldata.get('processor')
     KconfStr = 'menu "Subsystem Hardware Settings"\n'
@@ -600,5 +585,8 @@ def GenKconfigSysHW(hwyamlinfile, ipinfofile, outfile):
                                     proc_ipname, arch)' % (devtype))
         KconfStr += GenConf_bootmodes(proc)
         KconfStr += '\nendif\n'
+    # Placeholder for the per-domain Serial Settings menu. It is filled in by
+    # project_config.GenKconfigProj where the multiconfig target list is known.
+    KconfStr += '\n@@serialmenustr@@\n'
     KconfStr += '\nendmenu\n'
     common_utils.AddStrToFile(outfile, KconfStr)

@@ -13,7 +13,7 @@
 
 &amba {
 
-        ai_engine_0: ai_engine@20000000000 {
+        ai_engine_0: ai-engine@20000000000 {
                 xlnx,aie-site = "AIE_ML";
                 xlnx,name = "ai_engine_0";
                 xlnx,start-column = <0x0>;
@@ -21,10 +21,10 @@
                 xlnx,shim-rows = /bits/ 8 <0x00 0x01>;
                 xlnx,core-rows = /bits/ 8 <0x03 0x08>;
                 xlnx,num-trig-out = <0x0>;
+                resets = <&versal_reset 0xc10405e>;
                 xlnx,en-ext-rst = <0x0>;
                 xlnx,nsu-dict = "NOC_NSU128_X1Y6 0x20000000000 NOC_NSU128_X2Y6 0x20002000000 NOC_NSU128_X3Y6 0x20008000000 NOC_NSU128_X4Y6 0x2000A000000 NOC_NSU128_X5Y6 0x20018000000 NOC_NSU128_X6Y6 0x20020000000 NOC_NSU128_X7Y6 0x2002C000000 NOC_NSU128_X8Y6 0x20032000000 NOC_NSU128_X9Y6 0x2003E000000 NOC_NSU128_X10Y6 0x20042000000 NOC_NSU128_X11Y6 0x20046000000 NOC_NSU128_X12Y6 0x2004A000000";
                 xlnx,num-trig-in = <0x0>;
-                power-domains = <&versal_firmware 0x18800000>;
                 clock-names = "aclk0";
                 xlnx,available-nsu = "NOC_NSU128_X1Y6 0x20000000000 NOC_NSU128_X2Y6 0x20002000000 NOC_NSU128_X3Y6 0x20008000000 NOC_NSU128_X4Y6 0x2000A000000 NOC_NSU128_X5Y6 0x20018000000 NOC_NSU128_X6Y6 0x20020000000 NOC_NSU128_X7Y6 0x2002C000000 NOC_NSU128_X8Y6 0x20032000000 NOC_NSU128_X9Y6 0x2003E000000 NOC_NSU128_X10Y6 0x20042000000 NOC_NSU128_X11Y6 0x20046000000 NOC_NSU128_X12Y6 0x2004A000000";
                 xlnx,selected-nsu = <0x0>;
@@ -65,7 +65,6 @@
                         interrupt-names = "interrupt1", "interrupt2", "interrupt3";
                         #size-cells = <0x2>;
                         xlnx,node-id = <0x18800000>;
-                        power-domains = <&versal_firmware 0x18800000>;
                         #address-cells = <0x2>;
                         interrupts = <0x0 0x94 0x4 0x0 0x95 0x4 0x0 0x96 0x4>;
                         interrupt-parent = <&gic>;
@@ -73,7 +72,7 @@
                 };
         };
 
-        axi_bram_ctrl_0: axi_bram_ctrl_0@a4000000 {
+        axi_bram_ctrl_0: axi-bram-ctrl-0@a4000000 {
                 xlnx,name = "axi_bram_ctrl_0";
                 xlnx,s-axi-id-width = <0x1>;
                 xlnx,mem-depth = <0x800>;
@@ -106,7 +105,6 @@
         };
 
         axi_gpio_0: gpio@a6010000 {
-                gpio-line-names = "pl_led0", "pl_led1", "pl_led2", "pl_led3";
                 xlnx,all-inputs = <0x0>;
                 xlnx,name = "axi_gpio_0";
                 xlnx,tri-default = <0xffffffff>;
@@ -135,7 +133,6 @@
         };
 
         axi_gpio_1: gpio@a6020000 {
-                gpio-line-names = "pl_pb0", "pl_pb1";
                 xlnx,all-inputs = <0x1>;
                 xlnx,name = "axi_gpio_1";
                 xlnx,tri-default = <0xffffffff>;
@@ -164,7 +161,6 @@
         };
 
         axi_gpio_2: gpio@a6030000 {
-                gpio-line-names = "pl_dip_sw0", "pl_dip_sw1", "pl_dip_sw2", "pl_dip_sw3";
                 xlnx,all-inputs = <0x1>;
                 xlnx,name = "axi_gpio_2";
                 xlnx,tri-default = <0xffffffff>;
@@ -226,78 +222,6 @@
                 compatible = "xlnx,zocl-versal";
                 interrupt-parent = <&gic>;
                 interrupts = <0x0 0x89 0x4 0x0 0x90 0x4 0x0 0x91 0x4 0x0 0x92 0x4 0x0 0x93 0x4 0x0 0x94 0x4 0x0 0x95 0x4 0x0 0x96 0x4>;
-        };
-
-        leds {
-                compatible = "gpio-leds";
-
-                pl_led0: led-0 {
-                        default-state = "off";
-                        gpios = <&axi_gpio_0 0x0 0x0>;
-                        label = "pl_led0";
-                };
-
-                pl_led1: led-1 {
-                        default-state = "off";
-                        gpios = <&axi_gpio_0 0x1 0x0>;
-                        label = "pl_led1";
-                };
-
-                pl_led2: led-2 {
-                        default-state = "off";
-                        gpios = <&axi_gpio_0 0x2 0x0>;
-                        label = "pl_led2";
-                };
-
-                pl_led3: led-3 {
-                        default-state = "off";
-                        gpios = <&axi_gpio_0 0x3 0x0>;
-                        label = "pl_led3";
-                };
-        };
-
-        pl_gpio_keys: gpio-keys {
-                poll-interval = <0x64>;
-                label = "pl-gpio-keys";
-                compatible = "gpio-keys-polled";
-
-                pl_dip_sw0 {
-                        linux,code = <0x100>;
-                        gpios = <&axi_gpio_2 0x0 0x0>;
-                        label = "pl_dip_sw0";
-                };
-
-                pl_dip_sw1 {
-                        linux,code = <0x101>;
-                        gpios = <&axi_gpio_2 0x1 0x0>;
-                        label = "pl_dip_sw1";
-                };
-
-                pl_dip_sw2 {
-                        linux,code = <0x102>;
-                        gpios = <&axi_gpio_2 0x2 0x0>;
-                        label = "pl_dip_sw2";
-                };
-
-                pl_dip_sw3 {
-                        linux,code = <0x103>;
-                        gpios = <&axi_gpio_2 0x3 0x0>;
-                        label = "pl_dip_sw3";
-                };
-
-                pl_pb0 {
-                        debounce-interval = <0xa>;
-                        linux,code = <0x104>;
-                        gpios = <&axi_gpio_1 0x0 0x0>;
-                        label = "pl_pb0";
-                };
-
-                pl_pb1 {
-                        debounce-interval = <0xa>;
-                        linux,code = <0x105>;
-                        gpios = <&axi_gpio_1 0x1 0x0>;
-                        label = "pl_pb1";
-                };
         };
 };
 

@@ -15,7 +15,6 @@ SRC_URI = "git://github.com/gazebosim/gz-common.git;protocol=https;branch=ign-co
 
 SRCREV = "60b1fddf05ce020ba7cb79022fdf40be545eb789"
 
-S = "${WORKDIR}/git"
 
 inherit cmake pkgconfig
 
@@ -40,7 +39,7 @@ DEPENDS = " \
 
 do_install:append() {
     # Remove references to the build directory in the Doxygen tagfile
-    sed -i -e "s:${S}::g" ${D}${datadir}/ignition/ignition-common4/ignition-common4.tag.xml
+    sed -i -e "s:${UNPACKDIR}::g" ${D}${datadir}/ignition/ignition-common4/ignition-common4.tag.xml
 }
 
 FILES:${PN} += " \

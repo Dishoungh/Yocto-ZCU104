@@ -16,7 +16,7 @@ LIC_FILES_CHKSUM = "file://package.xml;beginline=10;endline=10;md5=5bb539404d0b4
 ROS_CN = "gazebo_model_attachment_plugin"
 ROS_BPN = "gazebo_model_attachment_plugin"
 
-ROS_BUILD_DEPENDS = " \
+ROS_BUILD_DEPENDS = "\
     gazebo-model-attachment-plugin-msgs \
     gazebo-msgs \
     gazebo-ros \
@@ -26,12 +26,12 @@ ROS_BUILD_DEPENDS = " \
     std-msgs \
 "
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     ament-cmake-native \
     ament-cmake-python-native \
 "
 
-ROS_EXPORT_DEPENDS = " \
+ROS_EXPORT_DEPENDS = "\
     gazebo-model-attachment-plugin-msgs \
     gazebo-msgs \
     gazebo-ros \
@@ -42,7 +42,7 @@ ROS_EXPORT_DEPENDS = " \
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     gazebo-model-attachment-plugin-msgs \
     gazebo-msgs \
     gazebo-ros \
@@ -54,7 +54,7 @@ ROS_EXEC_DEPENDS = " \
 "
 
 # Currently informational only -- see http://www.ros.org/reps/rep-0149.html#dependency-tags.
-ROS_TEST_DEPENDS = " \
+ROS_TEST_DEPENDS = "\
     launch-testing-ament-cmake \
     ros2launch \
 "
@@ -70,7 +70,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/humble/gazebo_model_attachment_plugin"
 SRC_URI = "git://github.com/ros2-gbp/boeing_gazebo_model_attachement_plugin-release;${ROS_BRANCH};protocol=https"
 SRCREV = "4661d877b2fff492a3088b1ab762afcdc66bc0fc"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

@@ -18,7 +18,6 @@ PACKAGECONFIG[systemd] = "--enable-systemd,--disable-systemd,systemd,"
 PACKAGECONFIG[externalblktap] = ",,,"
 
 DEPENDS = " \
-    ${@bb.utils.contains('XEN_TARGET_ARCH', 'x86_64', 'dev86-native', '', d)} \
     bison-native \
     flex-native \
     file-native \
@@ -73,33 +72,46 @@ libexecdir = "${libdir}"
 export XEN_OS = "Linux"
 
 # this is used for the header (#!${bindir}/python) of the install python scripts
-export PYTHONPATH="${bindir}/env python3"
-export ac_cv_path_PYTHONPATH="${bindir}/env python3"
+export PYTHONPATH = "${bindir}/env python3"
+export ac_cv_path_PYTHONPATH = "${bindir}/env python3"
 export DISTUTILS_BUILD_ARGS
 export DISTUTILS_INSTALL_ARGS
 
 # xen and seabios require HOSTCC and HOSTCXX set to cross-compile
-export HOSTCC="${BUILD_CC}"
-export HOSTCXX="${BUILD_CXX}"
+export HOSTCC = "${BUILD_CC}"
+export HOSTCXX = "${BUILD_CXX}"
 
 # make xen requires CROSS_COMPILE set by hand as it does not abide by ./configure
-export CROSS_COMPILE="${TARGET_PREFIX}"
+export CROSS_COMPILE = "${TARGET_PREFIX}"
 
 # overide LDFLAGS to allow xen to build without: "x86_64-oe-linux-ld: unrecognized option '-Wl,-O1'"
-export LDFLAGS=""
+export LDFLAGS = ""
 
-# No additional C flags for the main hypervisor build
+# Inject prefix maps into Xen's hypervisor build to avoid buildpaths QA
+# errors. Xen's Makefile overrides CFLAGS completely (nostdinc, fno-builtin)
+# so OE's DEBUG_PREFIX_MAP in CFLAGS never reaches the hypervisor compile.
+# EXTRA_CFLAGS_XEN_CORE is the Xen-provided hook for additional flags.
 EXTRA_CFLAGS_XEN_CORE ?= ""
-# Add prefix maps to support buildpaths QA test and reproducibility
+EXTRA_CFLAGS_XEN_CORE += " \
+    -ffile-prefix-map=${S}=${PN}-source \
+    -fdebug-prefix-map=${WORKDIR}=${PN} \
+    "
+# Also set DEBUG_PREFIX_MAP for the tools build which does use OE CFLAGS
 DEBUG_PREFIX_MAP:append = " \
     -ffile-prefix-map=${S}=${PN}-source \
     -fdebug-prefix-map=${WORKDIR}=${PN} \
     "
+# The Xen hypervisor build embeds absolute source paths in xen-syms debug
+# info via assembly files and linker scripts that bypass the C compiler's
+# -fdebug-prefix-map. The EXTRA_CFLAGS_XEN_CORE prefix maps fix most files
+# but xen-syms retains paths from the linker's output. This only affects
+# the -dbg package (not deployed to target).
+INSANE_SKIP:${PN}-dbg += "buildpaths"
 
 # - The Xen tools build for x86 systems with HVM-mode enabled includes hvmloader
 #   which fails to build when "-m64" is included in flags set via the
 #   EXTRA_CFLAGS_XEN_TOOLS: so clear TUNE_CCARGS on x86 to prevent that.
-TUNE_CCARGS:x86-64=""
+TUNE_CCARGS:x86-64 = ""
 
 # - Yocto supplies the _FORTIFY_SOURCE flag via CC/CPP/CXX but then passes the
 #   optimization -O via C*FLAGS which is problematic when the CFLAGS are cleared
@@ -110,11 +122,11 @@ TUNE_CCARGS:x86-64=""
 #   It must not be compiled with SSE compiler options enabled and the Xen build
 #   explicitly clears CFLAGS to ensure that, so such options must not be passed
 #   in via the tool variable. hvmloader is required to run HVM-mode guest VMs.
-CC="${CCACHE}${HOST_PREFIX}gcc ${TOOLCHAIN_OPTIONS} ${DEBUG_PREFIX_MAP} ${CC_REPRODUCIBLE_OPTIONS}"
-EXTRA_CFLAGS_XEN_TOOLS="${HOST_CC_ARCH} ${CFLAGS}"
+CC = "${CCACHE}${HOST_PREFIX}gcc ${TOOLCHAIN_OPTIONS} ${DEBUG_PREFIX_MAP} ${CC_REPRODUCIBLE_OPTIONS}"
+EXTRA_CFLAGS_XEN_TOOLS = "${HOST_CC_ARCH} ${CFLAGS}"
 # 32-bit ARM needs the TUNE_CCARGS component of HOST_CC_ARCH to be passed
 # in CC to ensure that configure can compile binaries for the right arch.
-CC:arm="${CCACHE}${HOST_PREFIX}gcc ${TUNE_CCARGS} ${TOOLCHAIN_OPTIONS} ${DEBUG_PREFIX_MAP} ${CC_REPRODUCIBLE_OPTIONS}"
+CC:arm = "${CCACHE}${HOST_PREFIX}gcc ${TUNE_CCARGS} ${TOOLCHAIN_OPTIONS} ${DEBUG_PREFIX_MAP} ${CC_REPRODUCIBLE_OPTIONS}"
 
 # There are no Xen-provided variables for C++, so append to the tool variables:
 CPP:append = " ${CPPFLAGS}"

@@ -1,6 +1,13 @@
 # Copyright (c) 2020 LG Electronics, Inc.
 
-DEPENDS += "libglu"
+LICENSE = "BSD-2-Clause"
+
+PACKAGECONFIG ?= "${@bb.utils.filter('DISTRO_FEATURES', 'opengl', d)}"
+PACKAGECONFIG[opengl] = "-DG2O_USE_OPENGL=ON,-DG2O_USE_OPENGL=OFF,libglu"
+
+DEPENDS_TO_REMOVE = "${@bb.utils.contains('PACKAGECONFIG', 'opengl', '', 'mesa libglu', d)}"
+DEPENDS:remove = "${DEPENDS_TO_REMOVE}"
+RDEPENDS:${PN}:remove = "${DEPENDS_TO_REMOVE}"
 
 # Don't try to read /proc/cpuinfo as we're cross-compling
 EXTRA_OECMAKE += " \

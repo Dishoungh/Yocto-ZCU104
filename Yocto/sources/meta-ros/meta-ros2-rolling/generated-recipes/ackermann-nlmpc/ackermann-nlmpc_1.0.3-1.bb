@@ -61,7 +61,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/ackermann_nlmpc"
 SRC_URI = "git://github.com/ros2-gbp/ackmerann_nlmpc-release;${ROS_BRANCH};protocol=https"
 SRCREV = "3e0aadc97be46ee9459f52f8feeebad709fb1351"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_python"
 

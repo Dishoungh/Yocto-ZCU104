@@ -3,34 +3,50 @@ LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=b234ee4d69f5fce4486a80fdaf4a4263"
 PRIORITY = "optional"
 
-SRCREV_crun = "89d44467e3b410b73f2065756a12789be45b855b"
-SRCREV_libocispec = "19c05670c37a42c217caa7b141bcaada7867cc15"
-SRCREV_ispec = "9615142d016838b5dfe7453f80af0be74feb5c7c"
-SRCREV_rspec = "720792f25ae6e9ee6b1332db698f37659e69ce8d"
+SRCREV_crun = "393509db566bedea037d1599c5a58b896f5d3b01"
+SRCREV_libocispec = "8b07b619df73a113f7721f1c7ce24f2572b04cea"
+SRCREV_ispec = "a4c6ade7bb82b316d45391f572727a63e268b252"
+SRCREV_rspec = "6f7b71c2d216403715f7364ac88dec88d9da989c"
 SRCREV_yajl = "f344d21280c3e4094919fd318bc5ce75da91fc06"
 
 SRCREV_FORMAT = "crun_rspec"
 SRC_URI = "git://github.com/containers/crun.git;branch=main;name=crun;protocol=https \
-           git://github.com/containers/libocispec.git;branch=main;name=libocispec;destsuffix=git/libocispec;protocol=https \
-           git://github.com/opencontainers/runtime-spec.git;branch=main;name=rspec;destsuffix=git/libocispec/runtime-spec;protocol=https \
-           git://github.com/opencontainers/image-spec.git;branch=main;name=ispec;destsuffix=git/libocispec/image-spec;protocol=https \
-           git://github.com/containers/yajl.git;branch=main;name=yajl;destsuffix=git/libocispec/yajl;protocol=https \
-           file://CVE-2025-24965.patch \
+           git://github.com/containers/libocispec.git;branch=main;name=libocispec;destsuffix=${BB_GIT_DEFAULT_DESTSUFFIX}/libocispec;protocol=https \
+           git://github.com/opencontainers/runtime-spec.git;branch=main;name=rspec;destsuffix=${BB_GIT_DEFAULT_DESTSUFFIX}/libocispec/runtime-spec;protocol=https \
+           git://github.com/opencontainers/image-spec.git;branch=main;name=ispec;destsuffix=${BB_GIT_DEFAULT_DESTSUFFIX}/libocispec/image-spec;protocol=https \
+           git://github.com/containers/yajl.git;branch=main;name=yajl;destsuffix=${BB_GIT_DEFAULT_DESTSUFFIX}/libocispec/yajl;protocol=https \
+           file://0001-libocispec-correctly-parse-JSON-schema-references.patch;patchdir=libocispec \
+           file://0002-libocispec-fix-array-items-parsing.patch;patchdir=libocispec \
+           file://CVE-2026-30892.patch \
+           file://CVE-2026-47766.patch \
           "
 
-PV = "v1.14.3+git${SRCREV_crun}"
-S = "${WORKDIR}/git"
-
-REQUIRED_DISTRO_FEATURES ?= "systemd seccomp"
+PV = "1.26.0+git"
 
 inherit autotools-brokensep pkgconfig features_check
 
-PACKAGECONFIG ??= ""
+# crun ships a GNUmakefile that aborts if ./configure hasn't run yet,
+# which breaks autotools_preconfigure's "make clean" on rebuild.
+CLEANBROKEN = "1"
 
-DEPENDS = "yajl libcap go-md2man-native m4-native"
-# TODO: is there a packageconfig to turn this off ?
-DEPENDS += "libseccomp"
-DEPENDS += "systemd"
+# if this is true, we'll symlink crun to runc for easier integration
+# with container stacks
+CRUN_AS_RUNC ?= "true"
+
+PACKAGECONFIG ??= " \
+    caps external-yajl man \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'seccomp', 'seccomp', '', d)} \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'systemd', '', d)} \
+"
+
+PACKAGECONFIG[caps] = "--enable-caps,--disable-caps,libcap"
+PACKAGECONFIG[external-yajl] = "--disable-embedded-yajl,--enable-embedded-yajl,yajl"
+# whether to regenerate manpages that are already present in the repo
+PACKAGECONFIG[man] = ",,go-md2man-native"
+PACKAGECONFIG[seccomp] = "--enable-seccomp,--disable-seccomp,libseccomp"
+PACKAGECONFIG[systemd] = "--enable-systemd,--disable-systemd,systemd"
+
+DEPENDS = "m4-native"
 DEPENDS:append:libc-musl = " argp-standalone"
 
 do_configure:prepend () {
@@ -42,4 +58,16 @@ do_configure:prepend () {
 
 do_install() {
     oe_runmake 'DESTDIR=${D}' install
+    if [ -n "${CRUN_AS_RUNC}" ]; then
+        ln -sr "${D}/${bindir}/crun" "${D}${bindir}/runc"
+    fi
 }
+
+# When crun provides /usr/bin/runc symlink, it conflicts with the runc package
+RCONFLICTS:${PN} = "${@'runc' if d.getVar('CRUN_AS_RUNC') else ''}"
+
+REQUIRED_DISTRO_FEATURES:class-native ?= ""
+DEPENDS:class-native += "yajl libcap go-md2man m4 libseccomp"
+BBCLASSEXTEND = "native"
+
+CVE_STATUS[CVE-2025-24965] = "fixed-version: Fixed since 1.20"

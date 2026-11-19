@@ -63,7 +63,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/simulation_interfaces"
 SRC_URI = "git://github.com/ros2-gbp/simulation_interfaces-release;${ROS_BRANCH};protocol=https"
 SRCREV = "97f0ee91a516f132517fee9b8328289670eb772c"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

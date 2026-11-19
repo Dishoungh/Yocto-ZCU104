@@ -20,7 +20,6 @@ SRCREV = "630434bb0ac619f7beec927569782d924c459385"
 PV_LONG := "${PV}-171-g${SRCREV}"
 PV .= "+git"
 
-S = "${WORKDIR}/git"
 
 inherit autotools ptest
 
@@ -30,6 +29,8 @@ EXTRA_OECONF:append:libc-musl = " --with-jemalloc-prefix=je_"
 # For some reason VERSION file populated only in tarball distribution.
 # Adding jemalloc version since this recipe is using source code from git tag
 EXTRA_OECONF:append = " --with-version=${PV_LONG} --enable-xmalloc"
+# Enable jemalloc debug build flag if DEBUG_BUILD is enabled
+EXTRA_OECONF:append = " ${@oe.utils.vartrue('DEBUG_BUILD', '--enable-debug=yes', '', d)}"
 
 do_install:append() {
 	sed -i -e 's@${STAGING_DIR_HOST}@@g' \

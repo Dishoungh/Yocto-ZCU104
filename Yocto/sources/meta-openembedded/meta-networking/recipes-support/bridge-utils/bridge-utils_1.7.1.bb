@@ -1,5 +1,5 @@
 SUMMARY = "Tools for ethernet bridging"
-HOMEPAGE = "http://www.linuxfoundation.org/collaborate/workgroups/networking/bridge"
+HOMEPAGE = "https://wiki.linuxfoundation.org/networking/bridge"
 SECTION = "net"
 LICENSE = "GPL-2.0-only"
 
@@ -15,9 +15,8 @@ SRC_URI = "\
     file://0004-cleanup-includes.patch \
 "
 
-S = "${WORKDIR}/git"
 
-DEPENDS = "sysfsutils"
+CVE_PRODUCT = "kernel:bridge-utils"
 
 inherit autotools-brokensep update-alternatives
 

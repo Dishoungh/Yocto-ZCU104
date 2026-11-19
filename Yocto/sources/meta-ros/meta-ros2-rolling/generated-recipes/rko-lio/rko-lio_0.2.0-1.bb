@@ -86,7 +86,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/rko_lio"
 SRC_URI = "git://github.com/ros2-gbp/rko_lio-release;${ROS_BRANCH};protocol=https"
 SRCREV = "61177d3e331dc36a5d56512b078d7672bbcd3da1"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

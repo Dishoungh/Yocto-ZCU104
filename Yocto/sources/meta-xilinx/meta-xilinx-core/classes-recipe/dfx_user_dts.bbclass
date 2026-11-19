@@ -11,9 +11,6 @@ inherit devicetree bootgen-bif
 
 DEPENDS = "dtc-native bootgen-native"
 
-# Don't allow building for microblaze architectures
-COMPATIBLE_HOST:microblaze = "null"
-
 PROVIDES = ""
 
 do_fetch[cleandirs] = "${B}"
@@ -21,7 +18,7 @@ do_fetch[cleandirs] = "${B}"
 DT_PADDING_SIZE = "0x1000"
 BOOTGEN_FLAGS ?= " -arch ${BOOTGEN_ARCH} -w ${@bb.utils.contains('SOC_FAMILY','zynqmp','','-process_bitstream bin',d)}"
 
-S ?= "${WORKDIR}"
+S ?= "${UNPACKDIR}"
 FW_DIR ?= ""
 FW_INSTALL_DIR ?= "${PN}"
 DTSI_PATH ?= ""
@@ -51,10 +48,10 @@ python() {
     uri = bb.fetch.URI(srcuri)
     if uri.scheme in ("git", "gitsm"):
         bb.debug(2, "SRC_URI scheme is git or gitsm")
-        d.setVar("S",'${WORKDIR}/git/'+d.getVar("FW_DIR"))
+        d.setVar("S",'${UNPACKDIR}/${BP}/'+d.getVar("FW_DIR"))
     elif uri.scheme in ("http", "https", "ftp"):
         bb.debug(2, "SRC_URI scheme is http or https or ftp")
-        d.setVar("S",'${WORKDIR}/'+d.getVar("FW_DIR"))
+        d.setVar("S",'${UNPACKDIR}/'+d.getVar("FW_DIR"))
     else:
         dtsi_found = False
         dtbo_found = False
@@ -357,13 +354,52 @@ do_install() {
     fi
 
     # Install xclbin
-    if ls ${S}/${XCL_PATH}/*.xclbin >/dev/null 2>&1; then
+    # In case of dtbo as input (i.e. '.dtbo' exists directly in ${S} or
+    # ${S}/${DTBO_PATH}), .xclbin will be copied directly from ${S} to
+    # install directory. Otherwise (dtsi/dts as input) install as
+    # ${PN}.xclbin.
+    # if more than one .xclbin file is found then fatal the task.
+    if [ `ls ${S}/*.xclbin 2>/dev/null | wc -l` -gt 1 ]; then
+        bbfatal "Multiple .xclbin found, use the right .xclbin in SRC_URI from the following:\n$(basename -a ${S}/*.xclbin)"
+    elif [ `ls ${S}/${XCL_PATH}/*.xclbin 2>/dev/null | wc -l` -gt 1 ]; then
+        bbfatal "Multiple .xclbin found, use the right .xclbin in SRC_URI from the following:\n$(basename -a ${S}/${XCL_PATH}/*.xclbin)"
+    elif [ `ls ${S}/*.dtbo 2>/dev/null | wc -l` -eq 1 ] || [ `ls ${S}/${DTBO_PATH}/*.dtbo 2>/dev/null | wc -l` -eq 1 ]; then
+        if [ `ls ${S}/*.xclbin 2>/dev/null | wc -l` -eq 1 ]; then
+            install -Dm 0644 ${S}/*.xclbin ${D}/${nonarch_base_libdir}/firmware/xilinx/${FW_INSTALL_DIR}/
+        elif [ `ls ${S}/${XCL_PATH}/*.xclbin 2>/dev/null | wc -l` -eq 1 ]; then
+            install -Dm 0644 ${S}/${XCL_PATH}/*.xclbin ${D}/${nonarch_base_libdir}/firmware/xilinx/${FW_INSTALL_DIR}/
+        fi
+    elif [ `ls ${S}/*.xclbin 2>/dev/null | wc -l` -eq 1 ]; then
+        install -Dm 0644 ${S}/*.xclbin ${D}/${nonarch_base_libdir}/firmware/xilinx/${FW_INSTALL_DIR}/${PN}.xclbin
+    elif [ `ls ${S}/${XCL_PATH}/*.xclbin 2>/dev/null | wc -l` -eq 1 ]; then
         install -Dm 0644 ${S}/${XCL_PATH}/*.xclbin ${D}/${nonarch_base_libdir}/firmware/xilinx/${FW_INSTALL_DIR}/${PN}.xclbin
     fi
 
     # Install shell.json or accel.json
     if [ -f ${S}/${JSON_PATH}/shell.json ] || [ -f ${S}/${JSON_PATH}/accel.json ]; then
         install -Dm 0644 ${S}/${JSON_PATH}/*.json ${D}/${nonarch_base_libdir}/firmware/xilinx/${FW_INSTALL_DIR}/
+    fi
+}
+
+# Log the PL firmware PDI UUIDs. Versal-only; best-effort, so a missing or
+# unreadable PDI is a no-op rather than a build failure.
+do_install:append() {
+    # Versal-only: only these families carry image-header UUIDs.
+    case "${SOC_FAMILY}" in
+        versal|versal-net|versal-2ve-2vm|versal-2vp) ;;
+        *) return ;;
+    esac
+
+    # Check both locations, mirroring do_install.
+    pdi_file="$(ls ${S}/*.pdi ${S}/${PDI_PATH}/*.pdi 2>/dev/null | head -1)"
+    [ -n "$pdi_file" ] || return
+
+    ih="$(bootgen -arch ${BOOTGEN_ARCH} -read "$pdi_file" ih 2>/dev/null || true)"
+    uid="$(echo "$ih" | sed -n 's/.*[^_]unique_id (0x24) : \(0x[0-9a-fA-F]*\).*/\1/p')"
+    puid="$(echo "$ih" | sed -n 's/.*parent_unique_id (0x28) : \(0x[0-9a-fA-F]*\).*/\1/p')"
+
+    if [ -n "$uid" ] && [ -n "$puid" ]; then
+        bbnote "PL firmware UUID: $(basename "$pdi_file") unique_id=$uid parent_unique_id=$puid"
     fi
 }
 

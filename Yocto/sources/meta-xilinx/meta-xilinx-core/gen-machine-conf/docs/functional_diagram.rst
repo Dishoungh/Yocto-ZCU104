@@ -1,4 +1,4 @@
-.. Copyright (C) 2022-2025, Advanced Micro Devices, Inc. All rights reserved.
+.. Copyright (C) 2022-2026, Advanced Micro Devices, Inc. All rights reserved.
 
 .. SPDX-License-Identifier: MIT
 
@@ -8,14 +8,14 @@ High-Level Architecture
 =========================
 
 This represents the complete flow from hardware description input to final
-Yocto/PetaLinux build configuration output, including all major components,
+Yocto build configuration output, including all major components,
 their interactions, and the data transformations that occur at each stage.
 
 .. code-block:: text
 
    ┌─────────────────────────────────────────────────────────────────────────────┐
    │                         GEN-MACHINE-CONF TOOL                               │
-   │                  Yocto/PetaLinux Machine Configuration Generator            │
+   │                  Yocto Machine Configuration Generator                     │
    └─────────────────────────────────────────────────────────────────────────────┘
                                        |
                                        ▼
@@ -23,7 +23,6 @@ their interactions, and the data transformations that occur at each stage.
    │                          INPUT LAYER                                      │
    ├───────────────────────────────────────────────────────────────────────────┤
    │  • Hardware Description:                                                  │
-   │    - .xsa files (Vivado/Vitis)                                            │
    │    - System Device Tree (system-top.dts)                                  │
    │    - URIs/Local paths/Directories                                         │
    │  • Template YAML (optional)                                               │
@@ -40,8 +39,8 @@ their interactions, and the data transformations that occur at each stage.
    │  ├─ Read Template YAML (yaml_utils.ReadTemplateYaml)                      │
    │  ├─ Initialize Bitbake (if available)                                     │
    │  ├─ Validate HW Description (ValidateHWFile)                              │
-   │  │   ├─ Check .xsa or system-top.dts                                      │
-   │  │   └─ Auto-detect hw_flow: 'xsct' or 'sdt'                              │
+   │  │   ├─ Check system-top.dts                                              │
+   │  │   └─ Auto-detect hw_flow: 'sdt'                                        │
    │  ├─ Fetch/Copy HW Description (GetHWDescription)                          │
    │  │   ├─ Handle URIs with Bitbake                                          │
    │  │   └─ Copy local files to output directory                              │
@@ -49,16 +48,12 @@ their interactions, and the data transformations that occur at each stage.
    │  └─ Setup Logging                                                         │
    └───────────────────────────────────────────────────────────────────────────┘
                                        │
-                       ┌───────────────┴───────────────┐
-                       │                               │
-                       ▼                               ▼
-       ┌───────────────────────────┐   ┌──────────────────────────┐
-       │   PARSE-XSA FLOW          │   │   PARSE-SDT FLOW         │
-       │   (xsct_flow.py)          │   │   (sdt_flow.py)          │
-       │   [DEPRECATED]            │   │   [RECOMMENDED]          │
-       └───────────────────────────┘   └──────────────────────────┘
-                       │                               │
-                       └───────────────┬───────────────┘
+                                       ▼
+                            ┌────────────────────────┐
+                            │     PARSE-SDT FLOW     │
+                            │     (sdt_flow.py)      │
+                            └────────────────────────┘
+                                       │
                                        ▼
    ┌───────────────────────────────────────────────────────────────────────────┐
    │                    HARDWARE INFORMATION GATHERING                         │
@@ -67,7 +62,8 @@ their interactions, and the data transformations that occur at each stage.
    │  ├─ Extract Platform Information:                                         │
    │  │   ├─ Machine Name                                                      │
    │  │   ├─ Device ID                                                         │
-   │  │   ├─ SoC Family (microblaze/zynq/zynqmp/versal/versal-2ve-2vm)         │
+   │  │   ├─ SoC Family (microblaze-v/zynq/zynqmp/versal/                      │
+   │  │   │                 versal-2ve-2vm/versal-2vp)                         │
    │  │   ├─ SoC Variant (cg/dr/eg/ev/ai-prime/premium/net/hbm)                │
    │  │   └─ Model/Board Name                                                  │
    │  │                                                                        │
@@ -78,7 +74,6 @@ their interactions, and the data transformations that occur at each stage.
    │  │                                                                        │
    │  ├─ Generate System HW Configuration:                                     │
    │  │   ├─ Run Lopper scripts (for SDT)                                      │
-   │  │   ├─ Run XSCT commands (for XSA)                                       │
    │  │   └─ Generate Kconfig.syshw                                            │
    │  │                                                                        │
    │  └─ Detect Peripherals:                                                   │
@@ -111,8 +106,7 @@ their interactions, and the data transformations that occur at each stage.
    │  ├─ PreProcess System Config (PreProcessSysConf)                          │
    │  │                                                                        │
    │  └─ Optional: Run Menuconfig UI                                           │
-   │      ├─ Project configuration                                             │
-   │      └─ Rootfs configuration                                              │
+   │      └─ Project configuration                                             │
    └───────────────────────────────────────────────────────────────────────────┘
                                        │
                                        ▼
@@ -123,7 +117,7 @@ their interactions, and the data transformations that occur at each stage.
    │  ├─ Validate Configuration Consistency                                    │
    │  ├─ Resolve Dependencies                                                  │
    │  ├─ Update Hardware-Specific Settings                                     │
-   │  └─ Generate petalinux_config.yaml                                        │
+   │  └─ Generate sys_hw_data.yaml                                             │
    └───────────────────────────────────────────────────────────────────────────┘
                                        │
                                        ▼
@@ -218,9 +212,6 @@ their interactions, and the data transformations that occur at each stage.
    │  │       └─ microblaze-riscv.inc (if applicable)                          │
    │  │                                                                        │
    │  ├─ Flow-Specific Configuration:                                          │
-   │  │   ├─ XSCT Flow (YoctoXsctConfigs):                                     │
-   │  │   │   ├─ HDF_MACHINE and HDF_BASE                                      │
-   │  │   │   └─ XSCTH_* variables                                             │
    │  │   └─ SDT Flow (YoctoSdtConfigs):                                       │
    │  │       ├─ SYSTEM_DTFILE paths                                           │
    │  │       └─ CONFIG_DTFILE_DIR                                             │
@@ -235,33 +226,12 @@ their interactions, and the data transformations that occur at each stage.
                                        │
                                        ▼
    ┌───────────────────────────────────────────────────────────────────────────┐
-   │                  PETALINUX CONFIGURATION (Optional)                       │
-   ├───────────────────────────────────────────────────────────────────────────┤
-   │  [plnx_machine.py, rootfs_config.py]                                      │
-   │  ├─ Generate plnxtool.conf:                                               │
-   │  │   ├─ PETALINUX_PRODUCT                                                 │
-   │  │   ├─ Platform-specific variables                                       │
-   │  │   └─ Tool configurations                                               │
-   │  │                                                                        │
-   │  ├─ Generate Rootfs Configuration:                                        │
-   │  │   ├─ Parse rootfsconfig_<soc_family>                                   │
-   │  │   ├─ Generate Kconfig for rootfs packages                              │
-   │  │   ├─ Apply --add-rootfsconfig                                          │
-   │  │   └─ Optional: Run rootfs menuconfig                                   │
-   │  │                                                                        │
-   │  └─ Update User Layers (update_buildconf.py):                             │
-   │      └─ Add/Remove layers from bblayers.conf                              │
-   └───────────────────────────────────────────────────────────────────────────┘
-                                       │
-                                       ▼
-   ┌───────────────────────────────────────────────────────────────────────────┐
    │                    BUILD CONFIGURATION UPDATE                             │
    ├───────────────────────────────────────────────────────────────────────────┤
    │  [update_buildconf.py]                                                    │
    │  ├─ Update local.conf (if --localconf specified):                         │
    │  │   ├─ MACHINE setting                                                   │
-   │  │   ├─ Include generated .conf files                                     │
-   │  │   └─ PETALINUX specific settings                                       │
+   │  │   └─ Include generated .conf files                                     │
    │  │                                                                        │
    │  ├─ Generate auto.conf (optional):                                        │
    │  │   └─ Kconfig-derived configuration                                     │
@@ -279,7 +249,7 @@ their interactions, and the data transformations that occur at each stage.
    │  ├─ config                        # System configuration                  │
    │  ├─ gen-machineconf.log          # Tool log                               │
    │  ├─ memory.qemuboot.conf         # QEMU HW DDR map for qemuboot/runqemu  │
-   │  ├─ petalinux_config.yaml        # Hardware info YAML                     │
+   │  ├─ sys_hw_data.yaml             # Hardware info YAML                     │
    │  ├─ configs/                     # Kconfig files                          │
    │  │   ├─ Kconfig                                                           │
    │  │   ├─ Kconfig.syshw                                                     │
@@ -305,8 +275,5 @@ their interactions, and the data transformations that occur at each stage.
    │  │   │   └─ pl-overlay-{full|dfx}/pl.dtsi                                 │
    │  │   └─ system-conf.dtsi                                                  │
    │  │                                                                        │
-   │  ├─ plnxtool.conf               # PetaLinux tool conf (if --petalinux)    │
-   │  ├─ local.conf                  # Updated local.conf (if --localconf)     │
-   │  └─ rootfs_config/              # Rootfs configs (if --petalinux)         │
-   │      └─ ...                                                               │
+   │  └─ local.conf                  # Updated local.conf (if --localconf)     │
    └───────────────────────────────────────────────────────────────────────────┘

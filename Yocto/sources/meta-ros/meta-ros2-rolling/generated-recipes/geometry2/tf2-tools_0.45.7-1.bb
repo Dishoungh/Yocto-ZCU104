@@ -53,7 +53,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/tf2_tools"
 SRC_URI = "git://github.com/ros2-gbp/geometry2-release;${ROS_BRANCH};protocol=https"
 SRCREV = "b74ab0ac44203b71ca7ef22f7d388af1985c8f45"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_python"
 

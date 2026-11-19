@@ -18,7 +18,7 @@ ROS_BPN = "rqt_moveit"
 
 ROS_BUILD_DEPENDS = ""
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     python3-setuptools-native \
     rosidl-default-generators-native \
 "
@@ -27,7 +27,7 @@ ROS_EXPORT_DEPENDS = ""
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     python-qt-binding \
     rclpy \
     rqt-gui \
@@ -51,7 +51,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/jazzy/rqt_moveit"
 SRC_URI = "git://github.com/ros2-gbp/rqt_moveit-release;${ROS_BRANCH};protocol=https"
 SRCREV = "907f5687d674b3f68e5590c2d0d08eddac25ec41"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_python"
 

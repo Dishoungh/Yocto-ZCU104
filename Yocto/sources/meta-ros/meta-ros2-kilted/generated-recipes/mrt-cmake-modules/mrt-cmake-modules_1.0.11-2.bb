@@ -18,7 +18,7 @@ ROS_BPN = "mrt_cmake_modules"
 
 ROS_BUILD_DEPENDS = ""
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     ament-cmake-core-native \
     python3-catkin-pkg-native \
     python3-pyyaml-native \
@@ -29,7 +29,7 @@ ROS_BUILDTOOL_DEPENDS = " \
 
 ROS_EXPORT_DEPENDS = ""
 
-ROS_BUILDTOOL_EXPORT_DEPENDS = " \
+ROS_BUILDTOOL_EXPORT_DEPENDS = "\
     gtest-vendor-native \
     lcov-native \
     python3-catkin-pkg-native \
@@ -55,7 +55,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/kilted/mrt_cmake_modules"
 SRC_URI = "git://github.com/ros2-gbp/mrt_cmake_modules-release;${ROS_BRANCH};protocol=https"
 SRCREV = "03d4ef0a2488ef10b269359d85bd07569ac79dd3"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

@@ -10,10 +10,10 @@ SRC_URI = "http://ftp.de.debian.org/debian/pool/main/c/checksecurity/checksecuri
 
 SRC_URI[sha256sum] = "12b043dc7b38512cdf0735c7c147a4f9e60d83a397b5b8ec130c65ceddbe1a0c"
 
-S = "${WORKDIR}/checksecurity-${PV}+nmu3"
+S = "${UNPACKDIR}/checksecurity-${PV}+nmu3"
 
 # allow for anylocal, no need to patch
-LOGDIR="/etc/checksecurity"
+LOGDIR = "/etc/checksecurity"
 
 do_compile() {
     sed -i -e "s;LOGDIR=/var/log/setuid;LOGDIR=${LOGDIR};g" ${B}/etc/check-setuid.conf

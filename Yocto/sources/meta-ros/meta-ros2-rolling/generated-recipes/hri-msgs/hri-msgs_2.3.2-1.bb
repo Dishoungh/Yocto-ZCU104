@@ -55,7 +55,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/hri_msgs"
 SRC_URI = "git://github.com/ros2-gbp/hri_msgs-release;${ROS_BRANCH};protocol=https"
 SRCREV = "53db9ade0a933a061d4c57dedfd80b2215efad76"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

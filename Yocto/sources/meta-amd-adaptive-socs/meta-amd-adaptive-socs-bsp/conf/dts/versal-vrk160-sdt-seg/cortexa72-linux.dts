@@ -5,6 +5,7 @@
         #size-cells = <0x2>;
         model = "Xilinx Versal VRK160 Eval board revA";
         board = "vrk160";
+        vivado-version = "2026.2";
         device_id = "xcvr1602";
         xlnx,ddrmc5-debug-elf = "false";
         xlnx,ddrmc5-i2c-master = "PMC";
@@ -21,7 +22,7 @@
         };
 
         cpus_a72: cpus {
-                phandle = <0xa7>;
+                phandle = <0xa9>;
                 #address-cells = <0x1>;
                 #size-cells = <0x0>;
                 compatible = "cpus,cluster";
@@ -29,7 +30,7 @@
                 #ranges-size-cells = <0x2>;
 
                 psv_cortexa72_0: cpu@0 {
-                        phandle = <0x9f>;
+                        phandle = <0xa1>;
                         compatible = "arm,cortex-a72", "arm,armv8";
                         device_type = "cpu";
                         enable-method = "psci";
@@ -55,7 +56,7 @@
                 };
 
                 psv_cortexa72_1: cpu@1 {
-                        phandle = <0xa1>;
+                        phandle = <0xa3>;
                         compatible = "arm,cortex-a72", "arm,armv8";
                         device_type = "cpu";
                         enable-method = "psci";
@@ -169,15 +170,15 @@
         };
 
         versal_fpga: versal-fpga {
-                phandle = <0x85>;
+                phandle = <0x87>;
                 compatible = "xlnx,versal-fpga";
         };
 
         sensor0: versal-thermal-sensor {
-                phandle = <0x87>;
+                phandle = <0x89>;
                 compatible = "xlnx,versal-thermal";
                 #thermal-sensor-cells = <0x1>;
-                io-channels = <&sysmon0 0x0>;
+                io-channels = <&sysmon0 0x9>;
                 io-channel-names = "sysmon-temp-channel";
         };
 
@@ -475,7 +476,7 @@
                         xlnx,eth-mode = "RGMII";
                         xlnx,enet-clk-freq-hz = <0x773545d>;
                         xlnx,enet-slcr-100mbps-div0 = <0xa>;
-                        phy-handle = <0x8a>;
+                        phy-handle = <0x8c>;
 
                         mdio: mdio {
                                 phandle = <0xbd>;
@@ -483,8 +484,7 @@
                                 #size-cells = <0x0>;
 
                                 phy0: ethernet-phy@1 {
-                                        phandle = <0x8a>;
-                                        #phy-cells = <0x1>;
+                                        phandle = <0x8c>;
                                         compatible = "ethernet-phy-id2000.a231";
                                         reg = <0x1>;
                                         ti,rx-internal-delay = <0xb>;
@@ -600,7 +600,6 @@
                                         eeprom: eeprom@54 {
                                                 phandle = <0xc1>;
                                                 compatible = "st,24c128", "atmel,24c128";
-                                                label = "eeprom_vrk160a";
                                                 reg = <0x54>;
                                         };
                                 };
@@ -907,36 +906,47 @@
                         #io-channel-cells = <0x1>;
                         reg = <0x0 0xf1270000 0x0 0x4000>;
                         interrupts = <0x0 0x90 0x4>;
-                        xlnx,numchannels = [00];
+                        xlnx,numchannels = [09];
                         #address-cells = <0x2>;
                         #size-cells = <0x2>;
                         xlnx,nodeid = <0x18224055>;
                         xlnx,sat-63-desc = "PS , FPD , satellite";
                         xlnx,sat-34-y = <0x2d6d>;
-                        xlnx,sat-17-x = <0x4249>;
                         xlnx,sat-1-desc = "PMC , system , ADC";
+                        xlnx,sat-17-x = <0x4249>;
                         xlnx,sat-9-x = <0x2212>;
-                        xlnx,sat-17-y = <0x273f>;
-                        xlnx,sat-19-desc = "Clocking , column , bot , satellite , (RFADC)";
                         xlnx,sat-20-desc = "Clocking , column , top , satellite , (RFADC)";
+                        xlnx,sat-19-desc = "Clocking , column , bot , satellite , (RFADC)";
+                        xlnx,sat-17-y = <0x273f>;
                         xlnx,sat-9-y = <0x3e6a>;
                         xlnx,sat-32-desc = "Clocking , column , satellite";
                         xlnx,sat-22-x = <0x4353>;
-                        xlnx,ip-name = "psv_pmc_sysmon";
+                        xlnx,meas-0-root-id = <0x0>;
+                        xlnx,meas-7-slr-number = <0x0>;
                         xlnx,sat-22-y = <0x94d>;
+                        xlnx,meas-1-root-id = <0x2>;
+                        xlnx,ip-name = "psv_pmc_sysmon";
                         xlnx,sat-16-desc = "Clocking , column , top , satellite , (RFDAC)";
+                        xlnx,meas-2-root-id = <0x6>;
+                        xlnx,meas-2-slr-number = <0x0>;
+                        xlnx,meas-3-root-id = <0x7>;
                         xlnx,sat-9-desc = "ME , satellite";
                         xlnx,sat-26-x = <0x1b1a>;
+                        xlnx,meas-4-root-id = <0x1>;
                         xlnx,sat-28-desc = "ME , satellite";
                         xlnx,sat-26-y = <0x29a3>;
+                        xlnx,meas-5-root-id = <0x3>;
                         xlnx,sat-10-x = <0x31a4>;
                         xlnx,sat-64-x = <0x24>;
                         xlnx,sat-2-x = <0x24>;
+                        xlnx,meas-6-root-id = <0x4>;
                         xlnx,sat-10-y = <0x3e6a>;
                         xlnx,sat-64-y = <0xeea>;
                         xlnx,sat-2-y = <0xeea>;
+                        xlnx,meas-7-root-id = <0x5>;
                         xlnx,sat-13-desc = "ME , satellite";
                         xlnx,sat-31-x = <0x2ee>;
+                        xlnx,meas-8-root-id = <0x8>;
                         xlnx,sat-6-desc = "VNOC , satellite";
                         xlnx,sat-31-y = <0x3e6a>;
                         xlnx,sat-14-x = <0x4249>;
@@ -951,8 +961,10 @@
                         xlnx,sat-18-x = <0x4249>;
                         xlnx,sat-3-desc = "X5IO , Satellite";
                         xlnx,sat-18-y = <0x217a>;
+                        xlnx,meas-5-slr-number = <0x0>;
                         xlnx,sat-22-desc = "X5IO , Satellite";
                         xlnx,sat-23-x = <0x2898>;
+                        xlnx,meas-0-slr-number = <0x0>;
                         xlnx,sat-34-desc = "Clocking , column , satellite";
                         xlnx,sat-23-y = <0x94d>;
                         xlnx,sat-18-desc = "Clocking , column , top , satellite , (RFADC)";
@@ -965,6 +977,7 @@
                         xlnx,sat-3-y = <0x94d>;
                         status = "okay";
                         xlnx,sat-32-x = <0xb78>;
+                        xlnx,meas-8-slr-number = <0x0>;
                         xlnx,sat-15-desc = "Clocking , column , bot , satellite , (RFDAC)";
                         xlnx,sat-32-y = <0x3961>;
                         xlnx,sat-15-x = <0x4249>;
@@ -973,13 +986,14 @@
                         xlnx,sat-15-y = <0x3332>;
                         xlnx,sat-7-y = <0x3596>;
                         xlnx,sat-27-desc = "VNOC , satellite";
+                        xlnx,meas-3-slr-number = <0x0>;
                         xlnx,sat-36-x = <0xb78>;
                         xlnx,sat-36-y = <0x217a>;
-                        xlnx,sat-12-desc = "ME , satellite";
-                        xlnx,sat-19-x = <0x4249>;
                         xlnx,sat-20-x = <0x4249>;
-                        xlnx,sat-19-y = <0x1b4b>;
+                        xlnx,sat-19-x = <0x4249>;
+                        xlnx,sat-12-desc = "ME , satellite";
                         xlnx,sat-20-y = <0x1586>;
+                        xlnx,sat-19-y = <0x1b4b>;
                         xlnx,sat-5-desc = "VNOC , satellite";
                         xlnx,sat-24-desc = "VNOC , satellite";
                         xlnx,sat-24-x = <0x1b1a>;
@@ -990,32 +1004,44 @@
                         xlnx,sat-28-x = <0x1a49>;
                         xlnx,sat-21-desc = "Clocking , column , bot , satellite , (RFADC)";
                         xlnx,sat-28-y = <0x3e6a>;
+                        xlnx,meas-6-slr-number = <0x0>;
                         xlnx,sat-12-x = <0x4136>;
                         xlnx,sat-4-x = <0x2f97>;
                         xlnx,sat-12-y = <0x3e6a>;
                         xlnx,sat-4-y = <0x11bc>;
                         xlnx,sat-33-desc = "Clocking , column , satellite";
                         xlnx,sat-33-x = <0xb78>;
+                        xlnx,meas-1-slr-number = <0x0>;
                         xlnx,sat-33-y = <0x3332>;
-                        xlnx,sat-16-x = <0x4249>;
                         xlnx,sat-17-desc = "Clocking , column , bot , satellite , (RFDAC)";
+                        xlnx,sat-16-x = <0x4249>;
                         xlnx,sat-8-x = <0x29db>;
                         xlnx,sat-16-y = <0x2d6d>;
                         xlnx,sat-8-y = <0x3e6a>;
+                        xlnx,meas-0 = "VCCAUX";
                         xlnx,sat-37-x = <0xb78>;
                         xlnx,sat-30-desc = "ME , satellite";
                         xlnx,sat-29-desc = "ME , satellite";
+                        xlnx,meas-1 = "VCCINT";
                         xlnx,sat-37-y = <0x1b4b>;
                         xlnx,sat-21-x = <0x4249>;
-                        xlnx,sat-14-desc = "Clocking , column , top , satellite , (RFDAC)";
+                        xlnx,meas-2 = "VCC_RAM";
                         xlnx,sat-21-y = <0xf58>;
+                        xlnx,meas-3 = "VCC_SOC";
+                        xlnx,sat-14-desc = "Clocking , column , top , satellite , (RFDAC)";
+                        xlnx,meas-4 = "VCCAUX_PMC";
                         xlnx,sat-7-desc = "VNOC , satellite";
+                        xlnx,meas-5 = "VCC_PMC";
                         xlnx,sat-26-desc = "VNOC , satellite";
                         xlnx,sat-25-x = <0x1b1a>;
+                        xlnx,meas-6 = "VCC_PSFP";
                         xlnx,sat-25-y = <0x1daf>;
+                        xlnx,meas-7 = "VCC_PSLP";
                         xlnx,sat-63-x = <0x24>;
-                        xlnx,sat-11-desc = "ME , satellite";
                         xlnx,sat-1-x = <0x24>;
+                        xlnx,meas-4-slr-number = <0x0>;
+                        xlnx,meas-8 = "VP_VN";
+                        xlnx,sat-11-desc = "ME , satellite";
                         xlnx,sat-63-y = <0xeea>;
                         xlnx,sat-1-y = <0xeea>;
                         xlnx,sat-4-desc = "VNOC , satellite";
@@ -1023,13 +1049,58 @@
                         xlnx,sat-29-x = <0x1280>;
                         xlnx,sat-30-y = <0x3e6a>;
                         xlnx,sat-29-y = <0x3e6a>;
-                        xlnx,sat-13-x = <0x48fe>;
                         xlnx,sat-23-desc = "X5IO , Satellite";
+                        xlnx,sat-13-x = <0x48fe>;
                         xlnx,sat-5-x = <0x2f97>;
                         xlnx,sat-13-y = <0x3e6a>;
                         xlnx,sat-5-y = <0x1daf>;
                         xlnx,sat-35-desc = "Clocking , column , satellite";
                         xlnx,sat-34-x = <0xb78>;
+
+                        supply@0 {
+                                reg = <0x0>;
+                                xlnx,name = "vccaux";
+                        };
+
+                        supply@2 {
+                                reg = <0x2>;
+                                xlnx,name = "vccint";
+                        };
+
+                        supply@6 {
+                                reg = <0x6>;
+                                xlnx,name = "vcc_ram";
+                        };
+
+                        supply@7 {
+                                reg = <0x7>;
+                                xlnx,name = "vcc_soc";
+                        };
+
+                        supply@1 {
+                                reg = <0x1>;
+                                xlnx,name = "vccaux_pmc";
+                        };
+
+                        supply@3 {
+                                reg = <0x3>;
+                                xlnx,name = "vcc_pmc";
+                        };
+
+                        supply@4 {
+                                reg = <0x4>;
+                                xlnx,name = "vcc_psfp";
+                        };
+
+                        supply@5 {
+                                reg = <0x5>;
+                                xlnx,name = "vcc_pslp";
+                        };
+
+                        supply@8 {
+                                reg = <0x8>;
+                                xlnx,name = "vp_vn";
+                        };
                 };
 
                 sysmon1: sysmon@109270000 {
@@ -1079,13 +1150,13 @@
                         clocks = <&versal_clk 0x27>;
                         power-domains = <&versal_firmware 0x18224024>;
                         xlnx,ttc-board-interface = "custom";
-                        xlnx,ttc-clk2-freq-hz = <0x8f0cba9>;
+                        xlnx,ttc-clk2-freq-hz = <0x5f5e100>;
                         xlnx,ttc-clk1-clksrc = <0x0>;
-                        xlnx,clock-freq = <0x8f0cba9>;
+                        xlnx,clock-freq = <0x5f5e100>;
                         xlnx,ttc-clk2-clksrc = <0x0>;
                         xlnx,ip-name = "psv_ttc";
-                        xlnx,ttc-clk0-freq-hz = <0x8f0cba9>;
-                        xlnx,ttc-clk1-freq-hz = <0x8f0cba9>;
+                        xlnx,ttc-clk0-freq-hz = <0x5f5e100>;
+                        xlnx,ttc-clk1-freq-hz = <0x5f5e100>;
                         xlnx,ttc-clk0-clksrc = <0x0>;
                         #pwm-cells = <0x3>;
                 };
@@ -1101,13 +1172,13 @@
                         clocks = <&versal_clk 0x28>;
                         power-domains = <&versal_firmware 0x18224025>;
                         xlnx,ttc-board-interface = "custom";
-                        xlnx,ttc-clk2-freq-hz = <0x8f0cba9>;
+                        xlnx,ttc-clk2-freq-hz = <0x5f5e100>;
                         xlnx,ttc-clk1-clksrc = <0x0>;
-                        xlnx,clock-freq = <0x8f0cba9>;
+                        xlnx,clock-freq = <0x5f5e100>;
                         xlnx,ttc-clk2-clksrc = <0x0>;
                         xlnx,ip-name = "psv_ttc";
-                        xlnx,ttc-clk0-freq-hz = <0x8f0cba9>;
-                        xlnx,ttc-clk1-freq-hz = <0x8f0cba9>;
+                        xlnx,ttc-clk0-freq-hz = <0x5f5e100>;
+                        xlnx,ttc-clk1-freq-hz = <0x5f5e100>;
                         xlnx,ttc-clk0-clksrc = <0x0>;
                 };
 
@@ -1122,13 +1193,13 @@
                         clocks = <&versal_clk 0x29>;
                         power-domains = <&versal_firmware 0x18224026>;
                         xlnx,ttc-board-interface = "custom";
-                        xlnx,ttc-clk2-freq-hz = <0x8f0cba9>;
+                        xlnx,ttc-clk2-freq-hz = <0x5f5e100>;
                         xlnx,ttc-clk1-clksrc = <0x0>;
-                        xlnx,clock-freq = <0x8f0cba9>;
+                        xlnx,clock-freq = <0x5f5e100>;
                         xlnx,ttc-clk2-clksrc = <0x0>;
                         xlnx,ip-name = "psv_ttc";
-                        xlnx,ttc-clk0-freq-hz = <0x8f0cba9>;
-                        xlnx,ttc-clk1-freq-hz = <0x8f0cba9>;
+                        xlnx,ttc-clk0-freq-hz = <0x5f5e100>;
+                        xlnx,ttc-clk1-freq-hz = <0x5f5e100>;
                         xlnx,ttc-clk0-clksrc = <0x0>;
                 };
 
@@ -1143,13 +1214,13 @@
                         clocks = <&versal_clk 0x2a>;
                         power-domains = <&versal_firmware 0x18224027>;
                         xlnx,ttc-board-interface = "custom";
-                        xlnx,ttc-clk2-freq-hz = <0x8f0cba9>;
+                        xlnx,ttc-clk2-freq-hz = <0x5f5e100>;
                         xlnx,ttc-clk1-clksrc = <0x0>;
-                        xlnx,clock-freq = <0x8f0cba9>;
+                        xlnx,clock-freq = <0x5f5e100>;
                         xlnx,ttc-clk2-clksrc = <0x0>;
                         xlnx,ip-name = "psv_ttc";
-                        xlnx,ttc-clk0-freq-hz = <0x8f0cba9>;
-                        xlnx,ttc-clk1-freq-hz = <0x8f0cba9>;
+                        xlnx,ttc-clk0-freq-hz = <0x5f5e100>;
+                        xlnx,ttc-clk1-freq-hz = <0x5f5e100>;
                         xlnx,ttc-clk0-clksrc = <0x0>;
                 };
 
@@ -1223,11 +1294,12 @@
                         bus-range = <0x0 0xff>;
                         ranges = <0x2000000 0x0 0xe0010000 0x0 0xe0010000 0x0 0x10000000 0x43000000 0x80 0x0 0x80 0x0 0x0 0x80000000>;
                         msi-map = <0x0 &gic_its 0x0 0x10000>;
-                        reg = <0x6 0x0 0x0 0x10000000 0x0 0xfca10000 0x0 0x1000 0x0 0xfca00000 0x0 0x10000>;
-                        reg-names = "cfg", "cpm_slcr", "cpm_crx";
+                        reg = <0x6 0x0 0x0 0x10000000 0x0 0xfca10000 0x0 0x1000>;
+                        reg-names = "cfg", "cpm_slcr";
+                        resets = <&versal_reset 0xc410054>;
 
                         pcie_intc_0: interrupt-controller {
-                                phandle = <0x90>;
+                                phandle = <0x92>;
                                 #address-cells = <0x0>;
                                 #interrupt-cells = <0x1>;
                                 interrupt-controller;
@@ -1256,11 +1328,11 @@
                         bus-range = <0x0 0xff>;
                         ranges = <0x2000000 0x0 0xe0000000 0x0 0xe0000000 0x0 0x10000000 0x43000000 0x80 0x0 0x80 0x0 0x0 0x80000000>;
                         msi-map = <0x0 &gic_its 0x0 0x10000>;
-                        reg = <0x6 0x0 0x0 0x10000000 0x0 0xfcdd0000 0x0 0x1000 0x0 0xfce20000 0x0 0x10000 0x0 0xfcdc0000 0x0 0x10000>;
-                        reg-names = "cfg", "cpm_slcr", "cpm_csr", "cpm_crx";
+                        reg = <0x6 0x0 0x0 0x10000000 0x0 0xfcdd0000 0x0 0x1000 0x0 0xfce20000 0x0 0x10000>;
+                        reg-names = "cfg", "cpm_slcr", "cpm_csr";
 
                         pcie_intc_2: interrupt-controller {
-                                phandle = <0x92>;
+                                phandle = <0x94>;
                                 #address-cells = <0x0>;
                                 #interrupt-cells = <0x1>;
                                 interrupt-controller;
@@ -1273,7 +1345,7 @@
                         status = "disabled";
                         reg = <0x0 0xfd4d0000 0x0 0x10000>;
                         interrupt-names = "wdt", "wwdt_reset_pending", "gwdt", "gwdt_reset_pending";
-                        interrupts = <0x0 0x64 0x1 0x0 0x6d 0x1 0x0 0x6c 0x1 0x0 0x6e 0x1>;
+                        interrupts = <0x0 0x64 0x1 0x0 0x6d 0x1 0x0 0x6c 0x4 0x0 0x6e 0x4>;
                         interrupt-parent = <&gic>;
                         timeout-sec = <0x1e>;
                         clocks = <&versal_clk 0x4c>;
@@ -1860,7 +1932,7 @@
                         compatible = "arm,gic-v3";
 
                         gic_its: msi-controller@f9020000 {
-                                phandle = <0x91>;
+                                phandle = <0x93>;
                                 reg = <0x0 0xf9020000 0x0 0x20000>;
                                 #msi-cells = <0x1>;
                                 msi-controller;
@@ -1985,7 +2057,7 @@
                                         reg = <0x1>;
 
                                         fpd_funnel_in_port1: endpoint {
-                                                phandle = <0x9e>;
+                                                phandle = <0xa0>;
                                                 remote-endpoint = <&apu_etf_out_port>;
                                         };
                                 };
@@ -1996,7 +2068,7 @@
                                 port {
 
                                         fpd_funnel_out_port: endpoint {
-                                                phandle = <0x95>;
+                                                phandle = <0x97>;
                                                 remote-endpoint = <&fpd_etf_in_port>;
                                         };
                                 };
@@ -2016,7 +2088,7 @@
                                 port {
 
                                         fpd_etf_in_port: endpoint {
-                                                phandle = <0x94>;
+                                                phandle = <0x96>;
                                                 remote-endpoint = <&fpd_funnel_out_port>;
                                         };
                                 };
@@ -2027,7 +2099,7 @@
                                 port {
 
                                         fpd_etf_out_port: endpoint {
-                                                phandle = <0x97>;
+                                                phandle = <0x99>;
                                                 remote-endpoint = <&replicator_in_port>;
                                         };
                                 };
@@ -2047,7 +2119,7 @@
                                 port {
 
                                         replicator_in_port: endpoint {
-                                                phandle = <0x96>;
+                                                phandle = <0x98>;
                                                 remote-endpoint = <&fpd_etf_out_port>;
                                         };
                                 };
@@ -2061,7 +2133,7 @@
                                         reg = <0x0>;
 
                                         replicator_out_port0: endpoint {
-                                                phandle = <0x99>;
+                                                phandle = <0x9b>;
                                                 remote-endpoint = <&etr_in_port>;
                                         };
                                 };
@@ -2081,7 +2153,7 @@
                                 port {
 
                                         etr_in_port: endpoint {
-                                                phandle = <0x98>;
+                                                phandle = <0x9a>;
                                                 remote-endpoint = <&replicator_out_port0>;
                                         };
                                 };
@@ -2104,7 +2176,7 @@
                                         reg = <0x0>;
 
                                         funnel_in_port0: endpoint {
-                                                phandle = <0xa0>;
+                                                phandle = <0xa2>;
                                                 remote-endpoint = <&etm0_out_port>;
                                         };
                                 };
@@ -2113,7 +2185,7 @@
                                         reg = <0x1>;
 
                                         funnel_in_port1: endpoint {
-                                                phandle = <0xa2>;
+                                                phandle = <0xa4>;
                                                 remote-endpoint = <&etm1_out_port>;
                                         };
                                 };
@@ -2124,7 +2196,7 @@
                                 port {
 
                                         funnel_out_port: endpoint {
-                                                phandle = <0x9d>;
+                                                phandle = <0x9f>;
                                                 remote-endpoint = <&etf_in_port>;
                                         };
                                 };
@@ -2144,7 +2216,7 @@
                                 port {
 
                                         etf_in_port: endpoint {
-                                                phandle = <0x9c>;
+                                                phandle = <0x9e>;
                                                 remote-endpoint = <&funnel_out_port>;
                                         };
                                 };
@@ -2155,7 +2227,7 @@
                                 port {
 
                                         apu_etf_out_port: endpoint {
-                                                phandle = <0x93>;
+                                                phandle = <0x95>;
                                                 remote-endpoint = <&fpd_funnel_in_port1>;
                                         };
                                 };
@@ -2186,7 +2258,7 @@
                                 port {
 
                                         etm0_out_port: endpoint {
-                                                phandle = <0x9a>;
+                                                phandle = <0x9c>;
                                                 remote-endpoint = <&funnel_in_port0>;
                                         };
                                 };
@@ -2217,7 +2289,7 @@
                                 port {
 
                                         etm1_out_port: endpoint {
-                                                phandle = <0x9b>;
+                                                phandle = <0x9d>;
                                                 remote-endpoint = <&funnel_in_port1>;
                                         };
                                 };
@@ -2226,7 +2298,7 @@
         };
 
         pl_alt_ref: pl-alt-ref {
-                phandle = <0xa4>;
+                phandle = <0xa6>;
                 bootph-all;
                 compatible = "fixed-clock";
                 #clock-cells = <0x0>;
@@ -2235,7 +2307,7 @@
         };
 
         ref: ref {
-                phandle = <0xa3>;
+                phandle = <0xa5>;
                 bootph-all;
                 compatible = "fixed-clock";
                 #clock-cells = <0x0>;
@@ -2244,7 +2316,7 @@
         };
 
         rtc_clk: rtc-clk {
-                phandle = <0x8b>;
+                phandle = <0x8d>;
                 bootph-all;
                 compatible = "fixed-clock";
                 #clock-cells = <0x0>;
@@ -2253,7 +2325,7 @@
         };
 
         can0_clk: can0-clk {
-                phandle = <0x88>;
+                phandle = <0x8a>;
                 #clock-cells = <0x0>;
                 compatible = "fixed-factor-clock";
                 clocks = <&versal_clk 0x60>;
@@ -2263,7 +2335,7 @@
         };
 
         can1_clk: can1-clk {
-                phandle = <0x89>;
+                phandle = <0x8b>;
                 #clock-cells = <0x0>;
                 compatible = "fixed-factor-clock";
                 clocks = <&versal_clk 0x61>;
@@ -2298,7 +2370,7 @@
                         };
 
                         versal_reset: reset-controller {
-                                phandle = <0x8c>;
+                                phandle = <0x8e>;
                                 compatible = "xlnx,versal-reset";
                                 #reset-cells = <0x1>;
                         };
@@ -2444,7 +2516,7 @@
         };
 
         usb_hub_delay: enable-delay {
-                phandle = <0x8d>;
+                phandle = <0x8f>;
                 compatible = "gpio-delay";
                 #gpio-cells = <0x3>;
                 gpio-controller;
@@ -2452,7 +2524,7 @@
         };
 
         vdd_usb_hub: regulator-vdd-usb-hub {
-                phandle = <0x8e>;
+                phandle = <0x90>;
                 compatible = "regulator-fixed";
                 regulator-name = "vdd_usb_hub";
                 regulator-min-microvolt = <0x325aa0>;
@@ -2462,7 +2534,7 @@
         };
 
         vdd2_usb_hub: regulator-vdd2-usb-hub {
-                phandle = <0x8f>;
+                phandle = <0x91>;
                 compatible = "regulator-fixed";
                 regulator-name = "vdd2_usb_hub";
                 regulator-min-microvolt = <0x124f80>;
@@ -2472,10 +2544,10 @@
         };
 
         __symbols__ {
-                cpus_a72 = "/cpus-a72@0";
-                psv_cortexa72_0 = "/cpus-a72@0/cpu@0";
-                psv_cortexa72_1 = "/cpus-a72@0/cpu@1";
-                CPU_SLEEP_0 = "/cpus-a72@0/idle-states/cpu-sleep-0";
+                psv_cortexa72_0 = "/cpus/cpu@0";
+                psv_cortexa72_1 = "/cpus/cpu@1";
+                CPU_SLEEP_0 = "/cpus/idle-states/cpu-sleep-0";
+                cpus_a72 = "/cpus";
                 l2 = "/l2-cache";
                 cpu_opp_table = "/opp-table-cpu";
                 dcc = "/dcc";
@@ -2484,20 +2556,16 @@
                 timer = "/timer";
                 versal_fpga = "/versal-fpga";
                 sensor0 = "/versal-thermal-sensor";
-                versal_thermal = "/thermal-zones/versal-thermal";
                 temp_alert = "/thermal-zones/versal-thermal/trips/temp-alert";
                 ot_crit = "/thermal-zones/versal-thermal/trips/ot-crit";
-                versal_thermal_aie = "/thermal-zones/versal-aie-thermal";
+                versal_thermal = "/thermal-zones/versal-thermal";
                 temp_alert_aie = "/thermal-zones/versal-aie-thermal/trips/temp-alert-aie";
                 ot_crit_aie = "/thermal-zones/versal-aie-thermal/trips/ot-crit-aie";
-                amba_apu = "/apu-bus";
-                gic_its = "/axi/interrupt-controller@f9000000/msi-controller@f9020000";
-                amba = "/axi";
-                imux = "/axi/interrupt-multiplex";
+                versal_thermal_aie = "/thermal-zones/versal-aie-thermal";
                 can0 = "/axi/can@ff060000";
                 can1 = "/axi/can@ff070000";
-                cci = "/axi/cci@fd000000";
                 cci_pmu = "/axi/cci@fd000000/pmu@10000";
+                cci = "/axi/cci@fd000000";
                 lpd_dma_chan0 = "/axi/dma-controller@ffa80000";
                 lpd_dma_chan1 = "/axi/dma-controller@ffa90000";
                 lpd_dma_chan2 = "/axi/dma-controller@ffaa0000";
@@ -2506,17 +2574,17 @@
                 lpd_dma_chan5 = "/axi/dma-controller@ffad0000";
                 lpd_dma_chan6 = "/axi/dma-controller@ffae0000";
                 lpd_dma_chan7 = "/axi/dma-controller@ffaf0000";
-                gem0 = "/axi/ethernet@ff0c0000";
-                mdio = "/axi/ethernet@ff0c0000/mdio";
                 phy0 = "/axi/ethernet@ff0c0000/mdio/ethernet-phy@1";
+                mdio = "/axi/ethernet@ff0c0000/mdio";
+                gem0 = "/axi/ethernet@ff0c0000";
                 gem1 = "/axi/ethernet@ff0d0000";
                 gpio0 = "/axi/gpio@ff0b0000";
                 gpio1 = "/axi/gpio@f1020000";
                 i2c0 = "/axi/i2c@ff020000";
-                i2c1 = "/axi/i2c@ff030000";
-                i2carb = "/axi/i2c@ff030000/i2c-arbitrator@72";
-                i2carb1 = "/axi/i2c@ff030000/i2c-arbitrator@72/i2c-arb";
                 eeprom = "/axi/i2c@ff030000/i2c-arbitrator@72/i2c-arb/eeprom@54";
+                i2carb1 = "/axi/i2c@ff030000/i2c-arbitrator@72/i2c-arb";
+                i2carb = "/axi/i2c@ff030000/i2c-arbitrator@72";
+                i2c1 = "/axi/i2c@ff030000";
                 i2c2 = "/axi/i2c@f1000000";
                 mc0 = "/axi/memory-controller@f6150000";
                 mc1 = "/axi/memory-controller@f62c0000";
@@ -2541,19 +2609,18 @@
                 ttc1 = "/axi/timer@ff0f0000";
                 ttc2 = "/axi/timer@ff100000";
                 ttc3 = "/axi/timer@ff110000";
-                usb0 = "/axi/usb@ff9d0000";
-                dwc3_0 = "/axi/usb@ff9d0000/usb@fe200000";
                 hub_2_0 = "/axi/usb@ff9d0000/usb@fe200000/hub@1";
-                cpm_pciea = "/axi/pci@fca10000";
+                dwc3_0 = "/axi/usb@ff9d0000/usb@fe200000";
+                usb0 = "/axi/usb@ff9d0000";
                 pcie_intc_0 = "/axi/pci@fca10000/interrupt-controller";
-                cpm5_pcie = "/axi/pcie@fcdd0000";
+                cpm_pciea = "/axi/pci@fca10000";
                 pcie_intc_2 = "/axi/pcie@fcdd0000/interrupt-controller";
+                cpm5_pcie = "/axi/pcie@fcdd0000";
                 watchdog = "/axi/watchdog@fd4d0000";
                 watchdog1 = "/axi/watchdog@ff120000";
                 xilsem_edac = "/axi/edac@f2014050";
                 dma0 = "/axi/pmcdma@f11c0000";
                 dma1 = "/axi/pmcdma@f11d0000";
-                ipi0 = "/axi/mailbox@ff330000";
                 ipi_0_to_ipi_0 = "/axi/mailbox@ff330000/child@ff330000";
                 ipi_0_to_ipi_1 = "/axi/mailbox@ff330000/child@ff340000";
                 ipi_0_to_ipi_2 = "/axi/mailbox@ff330000/child@ff350000";
@@ -2564,7 +2631,7 @@
                 ipi_0_to_ipi_pmc = "/axi/mailbox@ff330000/child@ff320000";
                 ipi_0_to_ipi_pmc_nobuf = "/axi/mailbox@ff330000/child@ff390000";
                 ipi_0_to_ipi_psm = "/axi/mailbox@ff330000/child@ff310000";
-                ipi3 = "/axi/mailbox@ff360000";
+                ipi0 = "/axi/mailbox@ff330000";
                 ipi_3_to_ipi_0 = "/axi/mailbox@ff360000/child@ff330000";
                 ipi_3_to_ipi_1 = "/axi/mailbox@ff360000/child@ff340000";
                 ipi_3_to_ipi_2 = "/axi/mailbox@ff360000/child@ff350000";
@@ -2575,7 +2642,7 @@
                 ipi_3_to_ipi_pmc = "/axi/mailbox@ff360000/child@ff320000";
                 ipi_3_to_ipi_pmc_nobuf = "/axi/mailbox@ff360000/child@ff390000";
                 ipi_3_to_ipi_psm = "/axi/mailbox@ff360000/child@ff310000";
-                ipi4 = "/axi/mailbox@ff370000";
+                ipi3 = "/axi/mailbox@ff360000";
                 ipi_4_to_ipi_0 = "/axi/mailbox@ff370000/child@ff330000";
                 ipi_4_to_ipi_1 = "/axi/mailbox@ff370000/child@ff340000";
                 ipi_4_to_ipi_2 = "/axi/mailbox@ff370000/child@ff350000";
@@ -2586,7 +2653,7 @@
                 ipi_4_to_ipi_pmc = "/axi/mailbox@ff370000/child@ff320000";
                 ipi_4_to_ipi_pmc_nobuf = "/axi/mailbox@ff370000/child@ff390000";
                 ipi_4_to_ipi_psm = "/axi/mailbox@ff370000/child@ff310000";
-                ipi5 = "/axi/mailbox@ff380000";
+                ipi4 = "/axi/mailbox@ff370000";
                 ipi_5_to_ipi_0 = "/axi/mailbox@ff380000/child@ff330000";
                 ipi_5_to_ipi_1 = "/axi/mailbox@ff380000/child@ff340000";
                 ipi_5_to_ipi_2 = "/axi/mailbox@ff380000/child@ff350000";
@@ -2597,7 +2664,7 @@
                 ipi_5_to_ipi_pmc = "/axi/mailbox@ff380000/child@ff320000";
                 ipi_5_to_ipi_pmc_nobuf = "/axi/mailbox@ff380000/child@ff390000";
                 ipi_5_to_ipi_psm = "/axi/mailbox@ff380000/child@ff310000";
-                ipi6 = "/axi/mailbox@ff3a0000";
+                ipi5 = "/axi/mailbox@ff380000";
                 ipi_6_to_ipi_0 = "/axi/mailbox@ff3a0000/child@ff330000";
                 ipi_6_to_ipi_1 = "/axi/mailbox@ff3a0000/child@ff340000";
                 ipi_6_to_ipi_2 = "/axi/mailbox@ff3a0000/child@ff350000";
@@ -2608,12 +2675,15 @@
                 ipi_6_to_ipi_pmc = "/axi/mailbox@ff3a0000/child@ff320000";
                 ipi_6_to_ipi_pmc_nobuf = "/axi/mailbox@ff3a0000/child@ff390000";
                 ipi_6_to_ipi_psm = "/axi/mailbox@ff3a0000/child@ff310000";
+                ipi6 = "/axi/mailbox@ff3a0000";
                 coresight = "/axi/coresight@f0800000";
-                amba_xppu = "/indirect-bus@1";
+                gic_its = "/axi/interrupt-controller@f9000000/msi-controller@f9020000";
+                gic = "/axi/interrupt-controller@f9000000";
+                amba = "/axi";
                 lpd_xppu = "/indirect-bus@1/xppu@ff990000";
                 pmc_xppu = "/indirect-bus@1/xppu@f1310000";
                 pmc_xppu_npi = "/indirect-bus@1/xppu@f1300000";
-                amba_xmpu = "/indirect-bus@2";
+                amba_xppu = "/indirect-bus@1";
                 fpd_xmpu = "/indirect-bus@2/xmpu@fd390000";
                 pmc_xmpu = "/indirect-bus@2/xmpu@f12f0000";
                 ocm_xmpu = "/indirect-bus@2/xmpu@ff980000";
@@ -2621,41 +2691,40 @@
                 ddrmc_xmpu_1 = "/indirect-bus@2/xmpu@f6220000";
                 ddrmc_xmpu_2 = "/indirect-bus@2/xmpu@f6390000";
                 ddrmc_xmpu_3 = "/indirect-bus@2/xmpu@f6500000";
-                fpd_funnel = "/indirect-bus@2/fpd-funnel@f0b20000";
                 fpd_funnel_in_port1 = "/indirect-bus@2/fpd-funnel@f0b20000/in-ports/port@1/endpoint";
                 fpd_funnel_out_port = "/indirect-bus@2/fpd-funnel@f0b20000/out-ports/port/endpoint";
-                fpd_etf = "/indirect-bus@2/fpd-etf@f0b30000";
+                fpd_funnel = "/indirect-bus@2/fpd-funnel@f0b20000";
                 fpd_etf_in_port = "/indirect-bus@2/fpd-etf@f0b30000/in-ports/port/endpoint";
                 fpd_etf_out_port = "/indirect-bus@2/fpd-etf@f0b30000/out-ports/port/endpoint";
-                replicator = "/indirect-bus@2/replicator@f0b40000";
+                fpd_etf = "/indirect-bus@2/fpd-etf@f0b30000";
                 replicator_in_port = "/indirect-bus@2/replicator@f0b40000/in-ports/port/endpoint";
                 replicator_out_port0 = "/indirect-bus@2/replicator@f0b40000/out-ports/port@0/endpoint";
-                etr = "/indirect-bus@2/etr@f0b50000";
+                replicator = "/indirect-bus@2/replicator@f0b40000";
                 etr_in_port = "/indirect-bus@2/etr@f0b50000/in-ports/port/endpoint";
-                apu_funnel = "/indirect-bus@2/funnel@f0c20000";
+                etr = "/indirect-bus@2/etr@f0b50000";
                 funnel_in_port0 = "/indirect-bus@2/funnel@f0c20000/in-ports/port@0/endpoint";
                 funnel_in_port1 = "/indirect-bus@2/funnel@f0c20000/in-ports/port@1/endpoint";
                 funnel_out_port = "/indirect-bus@2/funnel@f0c20000/out-ports/port/endpoint";
-                apu_etf = "/indirect-bus@2/etf@f0c30000";
+                apu_funnel = "/indirect-bus@2/funnel@f0c20000";
                 etf_in_port = "/indirect-bus@2/etf@f0c30000/in-ports/port/endpoint";
                 apu_etf_out_port = "/indirect-bus@2/etf@f0c30000/out-ports/port/endpoint";
+                apu_etf = "/indirect-bus@2/etf@f0c30000";
                 cpu0_debug = "/indirect-bus@2/cpu0-debug@f0d00000";
-                etm0 = "/indirect-bus@2/etm@f0d30000";
                 etm0_out_port = "/indirect-bus@2/etm@f0d30000/out-ports/port/endpoint";
+                etm0 = "/indirect-bus@2/etm@f0d30000";
                 cpu1_debug = "/indirect-bus@2/cpu1-debug@f0d40000";
-                etm1 = "/indirect-bus@2/etm@f0d70000";
                 etm1_out_port = "/indirect-bus@2/etm@f0d70000/out-ports/port/endpoint";
+                etm1 = "/indirect-bus@2/etm@f0d70000";
+                amba_xmpu = "/indirect-bus@2";
                 pl_alt_ref = "/pl-alt-ref";
                 ref = "/ref";
                 rtc_clk = "/rtc-clk";
                 can0_clk = "/can0-clk";
                 can1_clk = "/can1-clk";
-                versal_firmware = "/firmware/versal-firmware";
                 versal_clk = "/firmware/versal-firmware/clock-controller";
                 zynqmp_power = "/firmware/versal-firmware/power-management";
                 versal_reset = "/firmware/versal-firmware/reset-controller";
                 pinctrl0 = "/firmware/versal-firmware/pinctrl";
-                versal_sec_cfg = "/firmware/versal-firmware/versal-sec-cfg";
                 bbram_zeroize = "/firmware/versal-firmware/versal-sec-cfg/nvmem-layout/bbram-zeroize@4";
                 bbram_key = "/firmware/versal-firmware/versal-sec-cfg/nvmem-layout/bbram-key@10";
                 bbram_usr = "/firmware/versal-firmware/versal-sec-cfg/nvmem-layout/bbram-usr@30";
@@ -2668,6 +2737,8 @@
                 user_key5 = "/firmware/versal-firmware/versal-sec-cfg/nvmem-layout/user-key@1b0";
                 user_key6 = "/firmware/versal-firmware/versal-sec-cfg/nvmem-layout/user-key@1d0";
                 user_key7 = "/firmware/versal-firmware/versal-sec-cfg/nvmem-layout/user-key@1f0";
+                versal_sec_cfg = "/firmware/versal-firmware/versal-sec-cfg";
+                versal_firmware = "/firmware/versal-firmware";
                 NoC_C0_ddr_memory = "/memory@00000000";
                 NoC_C1_ddr_memory = "/memory@50000000000";
                 NoC_C2_ddr_memory = "/memory@60000000000";
@@ -2676,6 +2747,5 @@
                 usb_hub_delay = "/enable-delay";
                 vdd_usb_hub = "/regulator-vdd-usb-hub";
                 vdd2_usb_hub = "/regulator-vdd2-usb-hub";
-                gic = "/axi/interrupt-controller@f9000000";
         };
 };

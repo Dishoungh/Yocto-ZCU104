@@ -19,7 +19,7 @@ ROS_BPN = "open_sound_control"
 
 ROS_BUILD_DEPENDS = ""
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     ament-cmake-native \
 "
 
@@ -27,7 +27,7 @@ ROS_EXPORT_DEPENDS = ""
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     open-sound-control-bridge \
     open-sound-control-msgs \
 "
@@ -46,7 +46,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/jazzy/open_sound_control"
 SRC_URI = "git://github.com/ros2-gbp/open_sound_control-release;${ROS_BRANCH};protocol=https"
 SRCREV = "5f94cdcf7df48f8835f0633388cf648b9ad32b84"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

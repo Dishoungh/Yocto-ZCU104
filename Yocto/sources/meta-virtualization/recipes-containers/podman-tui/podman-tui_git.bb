@@ -17,11 +17,11 @@ DEPENDS = " \
     libgpg-error \
 "
 
-SRCREV_FORMAT = "podmantui_storage"
-SRCREV_podmantui = "b4350927babdaa35fbf50424190683aeb9f5f66f"
-SRCREV_storage = "246ba3062e8b551026aef2708eee747014ce5c52"
+SRCREV_FORMAT = "podmantui"
+SRCREV_podmantui = "84a58100eb760e793b7af5e904e789062d3ccb64"
 SRC_URI = " \
-    git://github.com/containers/podman-tui;protocol=https;name=podmantui;branch=release-v0.17 \
+    git://github.com/containers/podman-tui;protocol=https;name=podmantui;branch=release-v1.11;destsuffix=${GO_SRCURI_DESTSUFFIX} \
+    file://0001-vendor-remove-duplicate-unshare-C-symbols.patch;patchdir=src/import \
 "
 # Due to some other API changes, we can't directly import containers/storage at
 # the right commit, so we instead extract a patch and apply it to the tree
@@ -32,9 +32,7 @@ LIC_FILES_CHKSUM = "file://src/import/LICENSE;md5=86d3f3a95c324c9479bd8986968f43
 
 GO_IMPORT = "import"
 
-S = "${WORKDIR}/git"
-
-PV = "v0.17.0+git"
+PV = "1.11.1+git"
 
 PODMAN_PKG = "github.com/containers/podman-tui"
 

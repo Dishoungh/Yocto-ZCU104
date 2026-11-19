@@ -44,7 +44,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/boost_sml_vendor"
 SRC_URI = "git://github.com/ros2-gbp/boost_sml_vendor-release;${ROS_BRANCH};protocol=https"
 SRCREV = "7c296e2349fe45c73c388a4fb54686883a82fd8e"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

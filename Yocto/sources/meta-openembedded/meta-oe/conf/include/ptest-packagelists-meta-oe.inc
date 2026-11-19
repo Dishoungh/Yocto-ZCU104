@@ -8,66 +8,89 @@
 # ptests which take less than ~30s each
 PTESTS_FAST_META_OE = "\
     asio \
+    audiofile \
+    botan \
+    cjson \
+    cli11 \
     cmocka \
+    conserver \
     cunit \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'dbus-broker', '', d)} \
     duktape \
+    exiv2 \
+    freerdp3 \
+    fuse3 \
     function2 \
     fwupd \
     gcab \
+    imagemagick \
     jemalloc \
     jq \
     leveldb \
     libcereal \
-    libee \
+    libdbi-perl \
     libgpiod \
+    libjcat \
     libio-pty-perl \
     libmanette \
+    libplist \
     librelp \
     libssh \
+    libteam \
     libtinyxml2 \
+    libtoml11 \
     libxml++-5.0 \
     libyang \
     lmdb \
+    mbedtls \
     microsoft-gsl \
     minicoredumper \
+    minizip-ng \
     neon \
     nlohmann-json \
     nodejs \
     onig \
     oprofile \
-    protobuf \
+    pegtl \
     pv \
     sdbus-c++ \
+    tomlplusplus \
+    uriparser \
+    utf8proc \
     uthash \
-    xmlsec1 \
+    xdg-dbus-proxy \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'pam x11', 'xrdp', '', d)} \
     zeromq \
-    cjson \
 "
 PTESTS_FAST_META_OE:append:x86 = " mcelog"
 PTESTS_FAST_META_OE:append:x86-64 = " mcelog"
 
-PTESTS_FAST_META_OE:remove:libc-musl = "minicoredumper"
+PTESTS_FAST_META_OE:remove:libc-musl = "jemalloc minicoredumper oprofile"
 PTESTS_FAST_META_OE:remove:riscv64 = "nodejs oprofile"
-PTESTS_FAST_META_OE:remove:riscv32 = "nodejs oprofile"
+# botan needs go
+PTESTS_FAST_META_OE:remove:riscv32 = "botan nodejs oprofile"
 
 PTESTS_SLOW_META_OE = "\
     c-ares \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'freerdp', '', d)} \
     fftw \
+    jsoncpp \
     libusb-compat \
-    rsyslog \
     mariadb \
-    poco \
+    postgresql \
     re2 \
+    rocksdb \
+    tbb \
 "
 PTESTS_SLOW_META_OE:append:x86 = " kernel-selftest"
 PTESTS_SLOW_META_OE:append:x86-64 = " kernel-selftest"
 PTESTS_SLOW_META_OE:remove:libc-musl = "kernel-selftest"
 
-PTESTS_PROBLEMS_META_OE ="\
+PTESTS_PROBLEMS_META_OE = "\
     keyutils \
-    libdbi-perl \
-    libjcat \
-    libteam \
     ostree \
+    poco \
     psqlodbc \
+    rsyslog \
 "
+PTESTS_PROBLEMS_META_OE:append:libc-musl = " jemalloc minicoredumper oprofile"

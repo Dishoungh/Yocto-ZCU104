@@ -4,9 +4,6 @@ This layer is meant to augment Yocto/OE functionality to provide a
 Baremetal/Standalone distribution as well as a generic version of various
 firmware that is required to boot a ZynqMP or Versal system.
 
-For optimized versions of the firmware and additional components you must use
-the meta-xilinx-tools layer.
-
 ## Building
 
 The software in this layer may be used in either a standard single configuration
@@ -56,7 +53,7 @@ $ MACHINE=versal-generic bitbake plmfw psmfw
 ### How to patch embeddedsw components
 
 This section describes on how to patches to embeddedsw-source recipe in Yocto
-XSCT or SDT build flows. In 2025.2 and later release all embeddedsw firmware
+SDT build flows. In 2025.2 and later release all embeddedsw firmware
 recipes such as pmu-firmware, plm-firmware etc. uses source from embeddedsw-source
 recipe. If you apply the patch to embeddedsw-source recipe it will be applied to
 all embeddedsw firmware recipes. Also it is recommended to create a new custom
@@ -111,20 +108,54 @@ $ bitbake embeddedsw-source plm-firmware -c clean; bitbake plm-firmware
 
 This layer depends on:
 
-	URI: https://git.yoctoproject.org/poky
-	layers: meta, meta-poky
-	branch: scarthgap
-
-	URI: https://git.openembedded.org/meta-openembedded
-	layers: meta-oe
-	branch: scarthgap
+	URI: https://git.openembedded.org/openembedded-core
+	layers: meta
+	branch: wrynose
 
 	URI: https://git.yoctoproject.org/meta-arm
 	layers: meta-arm, meta-arm-toolchain
-	branch: scarthgap
+	branch: wrynose
 
 	URI:
-        https://git.yoctoproject.org/meta-xilinx (official version)
-        https://github.com/Xilinx/meta-xilinx (development and AMD release)
-	layers: meta-xilinx-microblaze, meta-xilinx-core, meta-xilinx-bsp
-	branch: scarthgap or AMD release version (e.g. rel-v2026.1)
+	 https://git.yoctoproject.org/meta-xilinx (official version)
+	 https://github.com/Xilinx/meta-xilinx (development and AMD release)
+	layers: meta-xilinx-core
+	branch: wrynose or AMD release version (e.g. rel-v2026.2)
+
+Recommended (optional) layers:
+
+	URI:
+	 https://git.yoctoproject.org/meta-xilinx (official version)
+	 https://github.com/Xilinx/meta-xilinx (development and AMD release)
+	layers: meta-microblaze
+	branch: wrynose or AMD release version (e.g. rel-v2026.2)
+
+	URI:
+	 https://github.com/OpenAMP/meta-openamp (official version)
+	 https://github.com/Xilinx/meta-openamp (development and AMD release)
+	branch: wrynose or AMD release version (e.g. rel-v2026.2)
+
+## Note: 
+
+* **dynamic-layers vs. LAYERRECOMMENDS**
+
+`conf/layer.conf` in this layer defines one or more `BBFILES_DYNAMIC` entries
+of the form `<collection>:<path>/*.bb(append)`. Each entry only takes effect
+if `<collection>` is already enabled in the current build (i.e. some other
+layer providing that BitBake collection is present in `bblayers.conf`); if it
+isn't, the corresponding recipes/bbappends under that path are silently
+skipped.
+
+Not every `<collection>` referenced this way is also listed in
+`LAYERDEPENDS`/`LAYERRECOMMENDS` for this layer. A `LAYERDEPENDS` entry means
+the collection is required for this layer to parse; a `LAYERRECOMMENDS` entry
+is a soft suggestion that `bitbake-layers` will offer to add automatically.
+Some `BBFILES_DYNAMIC` hooks are neither: this layer will opportunistically
+augment its recipes with extra content *if* the collection happens to
+already be part of the build, but it does not require, and does not
+recommend, adding that collection just to satisfy the hook. There is no
+formal BitBake term for this "augment-if-present, don't-recommend"
+relationship, so it is called out here to avoid confusion when auditing
+`LAYERDEPENDS`/`LAYERRECOMMENDS` completeness against `BBFILES_DYNAMIC`.
+
+Currently, the `dynamic-layers/openamp-layer` hook in this layer's `conf/layer.conf` reacts to the `openamp-layer` collection, which is also covered by `LAYERRECOMMENDS`.

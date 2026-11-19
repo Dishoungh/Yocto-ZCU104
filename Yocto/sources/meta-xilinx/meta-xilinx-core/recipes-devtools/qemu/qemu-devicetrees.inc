@@ -13,13 +13,11 @@ PV .= "+git"
 
 REPO ?= "git://github.com/Xilinx/qemu-devicetrees.git;protocol=https"
 
-BRANCHARG = "${@['nobranch=1', 'branch=${BRANCH}'][d.getVar('BRANCH', True) != '']}"
+BRANCHARG = "${@['nobranch=1', 'branch=${BRANCH}'][d.getVar('BRANCH') != '']}"
 SRC_URI = "${REPO};${BRANCHARG}"
 
-SRC_URI += "file://0001-versal-Reorder-serial-ports.patch"
-SRC_URI += "file://0001-versal-net-Reorder-serial-port.patch"
+SRC_URI += "file://0001-Yocto-boards-with-alternative-UART-order.patch"
 
-S = "${WORKDIR}/git"
 
 # Don't do anything for target or native
 do_install() {

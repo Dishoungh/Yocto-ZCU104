@@ -4,10 +4,10 @@ The `runfvp` tool in meta-arm makes it easy to run Yocto Project disk images ins
 
 ## Running images with `runfvp`
 
-To build images with the FVP integration, the `fvpboot` class needs to be inherited.  If the machine does not do this explicitly it can be done in `local.conf`:
+To build images with the FVP integration, the `fvpboot` image class needs to be inherited.  If the machine does not do this explicitly it can be done in `local.conf`:
 
 ```
-INHERIT += "fvpboot"
+IMAGE_CLASSES += "fvpboot"
 ```
 
 The class will download the correct FVP and write a `.fvpconf` configuration file when an image is built.
@@ -27,6 +27,13 @@ $ ./meta-arm/scripts/runfvp fvp-base
 Note that currently meta-arm's `scripts` directory isn't in `PATH`, so a full path needs to be used.
 
 `runfvp` will automatically start terminals connected to each of the serial ports that the machine specifies.  This can be controlled by using the `--terminals` option, for example `--terminals=none` will mean no terminals are started, and `--terminals=tmux` will start the terminals in [`tmux`][tmux] sessions.  Alternatively, passing `--console` will connect the serial port directly to the current session, without needing to open further windows.
+
+The tool attempts to automatically select a suitable terminal type. To see which terminal type is selected by default in your environment, run `runfvp --help`.
+
+`runfvp` determines availability by checking for required executables in your PATH as well as environment variables specific to each terminal type. If any of these checks fail, the corresponding terminal type is disabled.
+The --help output also lists all currently available terminal types.
+
+When using `-terminals=screen`, `runfvp` must be launched from within an existing [`screen`][screen] session. Normally, screen sets the `STY` environment variable to reference the current session. However, if the session is renamed or if `kas` is started from within the screen session, this value may become invalid or be lost. In such cases, `STY` must be set manually. Use `screen -ls` to view the list of currently attached sessions.
 
 The default terminal can also be configured by writing a [INI-style][INI] configuration file to `~/.config/runfvp.conf`:
 
@@ -58,6 +65,16 @@ The name of the recipe that provides the FVP executable set in `FVP_EXE`, for ex
 There are recipes for common FVPs in meta-arm already, and writing new recipes is trivial.  For FVPs which are free to download `fvp-base-a-aem.bb` is a good example. Some FVPs must be downloaded separately as they need an account on Arm's website.
 
 If `FVP_PROVIDER` is not set then it is assumed that `FVP_EXE` is installed on the host already.
+
+### `FVP_BINDIR`
+
+Optional parameter to configure the path of the FVP binary. For example, `fvp-base` uses path from the build host by default. This path can be customized by configuring like below.
+
+```
+FVP_BINDIR ?= "utilities/fvp/usr/bin"
+```
+
+Potential use case for this parameter configuration is to execute `runfvp` script without the need for bitbake environment initialization.
 
 ### `FVP_CONFIG`
 
@@ -129,3 +146,4 @@ FVP_ENV_PASSTHROUGH = "ARMLMD_LICENSE_FILE FM_TRACE_PLUGINS"
 [FVP]: https://developer.arm.com/tools-and-software/simulation-models/fixed-virtual-platforms
 [tmux]: https://tmux.github.io/
 [INI]: https://docs.python.org/3/library/configparser.html
+[screen]: https://www.gnu.org/software/screen/

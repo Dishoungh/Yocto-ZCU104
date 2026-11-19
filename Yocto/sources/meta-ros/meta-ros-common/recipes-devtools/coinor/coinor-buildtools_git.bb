@@ -6,7 +6,6 @@ SRC_URI = "git://github.com/coin-or-tools/BuildTools.git;protocol=https;branch=m
 SRCREV = "743a4f662032b246661042902da1a2e374b956c5"
 
 PV = "0.8.10+git"
-S = "${WORKDIR}/git"
 
 do_install () {
     install -d -m 0755 ${D}/${datadir}/coinor

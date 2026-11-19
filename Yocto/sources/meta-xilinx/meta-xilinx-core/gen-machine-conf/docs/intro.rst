@@ -1,4 +1,4 @@
-.. Copyright (C) 2022-2025, Advanced Micro Devices, Inc. All rights reserved.
+.. Copyright (C) 2022-2026, Advanced Micro Devices, Inc. All rights reserved.
 
 .. SPDX-License-Identifier: MIT
 
@@ -7,19 +7,19 @@ Introduction
 
 The gen-machine-conf tool is a comprehensive automation tool designed
 for generating machine configuration files for embedded Linux platforms,
-specifically targeting PetaLinux and Yocto build environments. Developed
+specifically targeting Yocto build environments. Developed
 to streamline the hardware-to-software integration process.
 
 gen-machine-conf simplifies the conversion of hardware descriptions,
-such as Xilinx System Architecture (.xsa) files or System Device-tree
-directories into ready-to-use machine configuration files.
+such as System Device-tree directories into ready-to-use machine
+configuration files.
 These files are essential for customizing and building Linux images
 tailored to specific hardware platforms.
 
 The tool features robust command-line argument parsing, template-driven
 configuration, and dynamic output directory management. It integrates
-seamlessly with Bitbake for Yocto workflows and offers a dedicated mode
-for PetaLinux, ensuring compatibility and flexibility across different
+seamlessly with Bitbake for Yocto workflows, ensuring compatibility and
+flexibility across different
 development scenarios. Its plugin architecture allows for easy extension,
 enabling users to add custom subcommands and processing logic as needed.
 
@@ -41,7 +41,7 @@ System Requirements
 
 **Disk Space:**
 
-- Minimum 100 GB free disk space for Yocto/PetaLinux builds
+- Minimum 100 GB free disk space for Yocto builds
 - Additional space for hardware description files and generated configurations
 
 Required Software
@@ -70,28 +70,16 @@ Required Software
 - If not in your PATH, Yocto will automatically fetch lopper from sources
 - See official documentation: https://github.com/devicetree-org/lopper
 
-**XSCT (Xilinx Software Command-Line Tool):**
-
-- Part of Vivado or Vitis installation
-- Required only for legacy XSA-based workflows (deprecated)
-- Specify path with ``--xsct-tool`` option if not in PATH
-
 Hardware Description Files
 ---------------------------
 
 Prepare one of the following hardware description formats:
 
-**System Device Tree (SDT) - Recommended:**
+**System Device Tree (SDT):**
 
 - Directory containing system-top.dts and related device tree files
 - Generated from Vivado flow
 - Includes hardware configuration and IP block information
-
-**XSA File - Deprecated:**
-
-- Xilinx System Archive (.xsa) file exported from Vivado
-- Contains hardware design, bitstream, and metadata
-- Will be removed in future releases; migrate to SDT flow
 
 
 Lopper Integration
@@ -159,7 +147,7 @@ configurations.
 
 Example use cases:
 
-- Custom Zynq-7000, ZynqMP, Versal, or versal-2ve-2vm board designs
+- Custom Zynq-7000, ZynqMP, Versal, versal-2ve-2vm, or versal-2vp board designs
 - FPGA designs with custom IP blocks and peripherals
 - Custom memory maps and device configurations
 
@@ -174,6 +162,7 @@ Example configurations:
 - **ZynqMP**: Cortex-A53 running Linux + Cortex-R5 running FreeRTOS
 - **Versal**: Cortex-A72 running Linux + Cortex-R5 running bare-metal + PLM firmware
 - **versal-2ve-2vm**: Cortex-A78 running Linux + Cortex-R52 running Zephyr RTOS
+- **versal-2vp**: Cortex-A72 running Linux + Cortex-R5 running bare-metal + PLM firmware
 
 The tool generates multiconfig targets for each domain automatically.
 
@@ -195,12 +184,12 @@ Getting Started
 
 If gen-machine-conf is right for your project, here's how to get started:
 
-1. **Prepare your hardware description**: XSA file or System Device Tree directory
+1. **Prepare your hardware description**: System Device Tree directory
 2. **Review examples**: See `gen-machine-conf Examples <examples.rst>`_ for common use cases
 3. **Understand options**: Check `Gen Machine Conf: Detailed Options and Usage <options.rst>`_ for all available configurations
 4. **Create configuration**: Use template YAML or command-line options
 5. **Generate files**: Run gen-machine-conf to create your machine configuration
 6. **Package PL overlays when needed**: Use `Firmware Recipe Generation <firmware_recipes.rst>`_ to turn SDT PL overlay outputs into Yocto firmware recipes
-7. **Build**: Use the generated files with Yocto/PetaLinux
+7. **Build**: Use the generated files with Yocto
 
 For detailed usage examples, see `gen-machine-conf Examples <examples.rst>`_.

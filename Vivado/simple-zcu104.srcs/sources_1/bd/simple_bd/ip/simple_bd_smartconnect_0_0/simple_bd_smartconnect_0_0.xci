@@ -4,7 +4,7 @@
     "xci_name": "simple_bd_smartconnect_0_0",
     "cell_name": "smartconnect_0",
     "component_reference": "xilinx.com:ip:smartconnect:1.0",
-    "ip_revision": "29",
+    "ip_revision": "30",
     "gen_directory": "../../../../../../simple-zcu104.gen/sources_1/bd/simple_bd/ip/simple_bd_smartconnect_0_0",
     "parameters": {
       "component_parameters": {
@@ -15,11 +15,8 @@
         "HAS_ARESETN": [ { "value": "1", "resolve_type": "user", "format": "long", "usage": "all" } ],
         "HID_PARAM_26_1": [ { "value": "1", "resolve_type": "user", "format": "long", "usage": "all" } ],
         "STRATEGY": [ { "value": "AUTOMATIC", "resolve_type": "user", "usage": "all" } ],
-        "ADVANCED_PROPERTIES": [ { "value": "0", "resolve_type": "user", "usage": "all" } ]
-      },
-      "model_parameters": {
-        "TLM_COMPONENT_NAME": [ { "value": "simple_bd_smartconnect_0_0", "resolve_type": "generated", "usage": "simulation.tlm" } ],
-        "HAS_RESET": [ { "value": "1", "resolve_type": "generated", "format": "long", "usage": "simulation.tlm" } ]
+        "ADVANCED_PROPERTIES": [ { "value": "0", "value_src": "user", "resolve_type": "user", "usage": "all" } ],
+        "INTERNAL_FEATURE": [ { "value": "0", "resolve_type": "user", "format": "long", "enabled": false, "usage": "all" } ]
       },
       "project_parameters": {
         "ARCHITECTURE": [ { "value": "zynquplus", "resolve_type": "generated", "usage": "all" } ],
@@ -36,12 +33,13 @@
       },
       "runtime_parameters": {
         "IPCONTEXT": [ { "value": "IP_Integrator" } ],
-        "IPREVISION": [ { "value": "29" } ],
+        "IPREVISION": [ { "value": "30" } ],
         "MANAGED": [ { "value": "TRUE" } ],
         "OUTPUTDIR": [ { "value": "../../../../../../simple-zcu104.gen/sources_1/bd/simple_bd/ip/simple_bd_smartconnect_0_0" } ],
         "SELECTEDSIMMODEL": [ { "value": "" } ],
         "SHAREDDIR": [ { "value": "../../ipshared" } ],
-        "SWVERSION": [ { "value": "2026.1" } ],
+        "SWPRODUCT": [ { "value": "Vivado" } ],
+        "SWVERSION": [ { "value": "2026.2" } ],
         "SYNTHESISFLOW": [ { "value": "OUT_OF_CONTEXT" } ]
       }
     },
@@ -437,5 +435,5 @@
       }
     }
   },
-  "checksum": "877d1be8"
+  "checksum": "5e87c8c8"
 }

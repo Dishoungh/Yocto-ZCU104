@@ -18,7 +18,7 @@ ROS_BPN = "octomap"
 
 ROS_BUILD_DEPENDS = ""
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     cmake-native \
 "
 
@@ -42,7 +42,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/humble/octomap"
 SRC_URI = "git://github.com/ros2-gbp/octomap-release;${ROS_BRANCH};protocol=https"
 SRCREV = "71d3428f9ce3c55acbe624261166f6eb2f513798"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "cmake"
 

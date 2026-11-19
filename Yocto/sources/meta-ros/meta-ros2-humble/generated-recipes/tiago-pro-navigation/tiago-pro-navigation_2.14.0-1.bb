@@ -20,7 +20,7 @@ ROS_BPN = "tiago_pro_navigation"
 
 ROS_BUILD_DEPENDS = ""
 
-ROS_BUILDTOOL_DEPENDS = " \
+ROS_BUILDTOOL_DEPENDS = "\
     ament-cmake-auto-native \
 "
 
@@ -28,7 +28,7 @@ ROS_EXPORT_DEPENDS = ""
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
-ROS_EXEC_DEPENDS = " \
+ROS_EXEC_DEPENDS = "\
     tiago-pro-2dnav \
     tiago-pro-laser-sensors \
     tiago-pro-rgbd-sensors \
@@ -48,7 +48,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/humble/tiago_pro_navigation"
 SRC_URI = "git://github.com/ros2-gbp/tiago_pro_navigation-release;${ROS_BRANCH};protocol=https"
 SRCREV = "ab70084cba6b11f8484b4b820e41cbb6c95c6d98"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

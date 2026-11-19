@@ -13,10 +13,13 @@ SRC_URI = "git://git.musl-libc.org/libc-bench;branch=master \
            file://0001-build-Do-not-override-ldflags-from-environment.patch \
            "
 
-S = "${WORKDIR}/git"
+# Upstream repo does not tag
+UPSTREAM_CHECK_COMMITS = "1"
+
+# i686-yoe-linux-ld.lld: error: undefined symbol: __addtf3
+LDFLAGS:append:libc-glibc:toolchain-clang:x86 = " --rtlib=libgcc --unwindlib=libgcc"
 
 do_install () {
     install -d ${D}${bindir}
     install -m 0755 ${B}/libc-bench ${D}${bindir}
 }
-

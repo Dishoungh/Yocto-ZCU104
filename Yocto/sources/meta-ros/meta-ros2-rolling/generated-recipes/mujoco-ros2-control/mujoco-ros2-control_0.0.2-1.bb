@@ -100,7 +100,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/mujoco_ros2_control"
 SRC_URI = "git://github.com/ros2-gbp/mujoco_ros2_control-release;${ROS_BRANCH};protocol=https"
 SRCREV = "ec9346d463e7e3419963ed7e80121b238f99c093"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_cmake"
 

@@ -9,7 +9,6 @@ SRC_URI = "git://github.com/gazebosim/gz-common.git;protocol=https;branch=gz-com
 
 SRCREV = "9d775ab82cf8284d9078e0b1b58e22b87c177e61"
 
-S = "${WORKDIR}/git"
 
 inherit cmake pkgconfig
 
@@ -36,7 +35,7 @@ DEPENDS = " \
 
 do_install:append() {
     # Remove references to the build directory in the Doxygen tagfile
-    sed -i -e "s:${S}::g" ${D}${datadir}/gz/gz-common5/gz-common5.tag.xml
+    sed -i -e "s:${UNPACKDIR}::g" ${D}${datadir}/gz/gz-common5/gz-common5.tag.xml
 }
 
 FILES:${PN} += " \

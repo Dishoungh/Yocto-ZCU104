@@ -51,7 +51,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/jrl_cmakemodules"
 SRC_URI = "git://github.com/ros2-gbp/jrl_cmakemodules-release;${ROS_BRANCH};protocol=https"
 SRCREV = "5bd47f5db1c39fe740a146d2cbf9c3b5ace2ff8d"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "cmake"
 

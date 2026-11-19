@@ -51,7 +51,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 ROS_BRANCH ?= "branch=release/rolling/camera_info_manager_py"
 SRC_URI = "git://github.com/ros2-gbp/image_common-release;${ROS_BRANCH};protocol=https"
 SRCREV = "62a427f27fc208dcde8bde164b0c766d6e9a8388"
-S = "${WORKDIR}/git"
 
 ROS_BUILD_TYPE = "ament_python"
 
