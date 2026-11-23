@@ -2,7 +2,7 @@
 # Generate boot.scr:
 # mkimage -c none -A arm -T script -d custom.boot.cmd boot.scr
 
-fit_name=image.ub
+fit_name=image.itb
 load_addr=0x10000000
 fit_offset=0x03300000
 fit_size=0x12C00000

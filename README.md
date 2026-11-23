@@ -255,7 +255,7 @@ https://.*/.* file:///opt/AMD/2026.2/Yocto/downloads \
 http://.*/.* http://downloads.yoctoproject.org/mirror/sources/ \
 https://.*/.* https://downloads.yoctoproject.org/mirror/sources/"
 
-SSTATE_MIRRORS = "file://.* file:///opt/Xilinx/2025.2/Yocto/sstate-cache/PATH"
+SSTATE_MIRRORS = "file://.* file:///opt/AMD/2026.2/Yocto/sstate-cache/PATH"
 ```
 
 6. Edit edf-init-build-env
@@ -503,7 +503,7 @@ Last thing to edit, we'll edit the boot script that will eventually become the `
 # Generate boot.scr:
 # mkimage -c none -A arm -T script -d custom.boot.cmd boot.scr
 
-fit_name=image.ub
+fit_name=image.itb
 load_addr=0x10000000
 fit_offset=0x03300000
 fit_size=0x12C00000
@@ -872,4 +872,72 @@ We're now done configuring everything and it's time for a build:
 
 **The build was successful; however, the build failed to produce a fitImage file as I've been able to do in the past. I need to figure out how to get this working on Wrynose**
 
+### Manually Packaging Image
 
+Unfortunately, I still haven't figured out how to have Yocto automatically generate the FIT image, but I think I have a way to **manually** compile and deploy a FIT image. This is how I did it:
+
+1. `vim ./image.its`
+    - **Warning: Make sure the compatible property for the system configuration matches what you put for your device tree**
+```
+/dts-v1/;
+
+/ {
+	description = "Custom FIT Image Source File for EDF Demo";
+	#address-cells = <1>;
+	
+	images {
+		sys-kernel {
+			description = "Linux kernel";
+			data = /incbin/("linux.bin");
+			type = "kernel";
+			arch = "arm64";
+			os = "linux";
+			compression = "gzip";
+			load = <0x00200000>;
+			entry = <0x00200000>;
+			
+			hash-1 {
+				algo = "sha256";
+			};
+		};
+		
+		sys-fdt {
+			description = "Flattened Device Tree Blob";
+			data = /incbin/("system.dtb");
+			type = "flat_dt";
+			arch = "arm64";
+			compression = "none";
+			
+			hash-1 {
+				algo = "sha256";
+			};
+		};
+	};
+	
+	configurations {
+		default = "sys-conf";
+		sys-conf {
+			description = "System Configuration";
+			compatible = "xlnx,zynqmp-zcu104-revC", "xlnx,zynqmp-zcu104", "xlnx,zynqmp";
+			kernel = "sys-kernel";
+			fdt = "sys-fdt";
+			
+			hash-1 {
+				algo = "sha256";
+			};
+		};
+	};
+};
+```
+
+2. `mkdir -p ../extracted-images`
+3. `cp -Lv ./tmp/deploy/images/zcu104/BOOT-zcu104.bin ./BOOT.BIN`
+4. `cp -v ./tmp/deploy/images/zcu104/boot.scr ./boot.scr`
+5. `cp -v ./tmp/deploy/images/zcu104/linux.bin ./linux.bin`
+6. `cp -Lv ./tmp/deploy/images/zcu104/system.dtb ./system.dtb`
+7. `cp -v ./tmp/deploy/images/zcu104/fsbl-zcu104.elf ./zynqmp_fsbl.elf`
+8. `mkimage -f ./image.its ./image.itb`
+9. `rm -v ./linux.bin`
+10. `mv -v ./{BOOT.BIN,boot.scr,image.its,image.itb,system.dtb,zynqmp_fsbl.elf} ../extracted-images/`
+
+**Note: I have not tested this yet, but I will give an update when I have a chance!**

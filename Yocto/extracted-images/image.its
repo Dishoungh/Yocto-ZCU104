@@ -1,0 +1,49 @@
+/dts-v1/;
+
+/ {
+	description = "Custom FIT Image Source File for EDF Demo";
+	#address-cells = <1>;
+	
+	images {
+		sys-kernel {
+			description = "Linux kernel";
+			data = /incbin/("linux.bin");
+			type = "kernel";
+			arch = "arm64";
+			os = "linux";
+			compression = "gzip";
+			load = <0x00200000>;
+			entry = <0x00200000>;
+			
+			hash-1 {
+				algo = "sha256";
+			};
+		};
+		
+		sys-fdt {
+			description = "Flattened Device Tree Blob";
+			data = /incbin/("system.dtb");
+			type = "flat_dt";
+			arch = "arm64";
+			compression = "none";
+			
+			hash-1 {
+				algo = "sha256";
+			};
+		};
+	};
+	
+	configurations {
+		default = "sys-conf";
+		sys-conf {
+			description = "System Configuration";
+			compatible = "xlnx,zynqmp-zcu104-revC", "xlnx,zynqmp-zcu104", "xlnx,zynqmp";
+			kernel = "sys-kernel";
+			fdt = "sys-fdt";
+			
+			hash-1 {
+				algo = "sha256";
+			};
+		};
+	};
+};
