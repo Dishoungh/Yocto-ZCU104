@@ -13,7 +13,7 @@ This project will *thoroughly* document from **start to finish** creating a simp
 
 ## What's New?
 
-AMD has made some pretty controversial changes starting with 2026.1, namely their [licensing model](https://www.amd.com/en/products/software/adaptive-socs-and-fpgas/vivado/vivado-buy.html#tiers).
+AMD has made some changes to their [licensing model](https://www.amd.com/en/products/software/adaptive-socs-and-fpgas/vivado/vivado-buy.html#tiers).
 
 **At least for the free tier, you now have to register a license annually to use the free version of Vivado. Otherwise, Vivado and Vitis will not open!** I will try to document how I was able to get a license for this release. For those of you who use enterprise licenses, it doesn't seem like much has changed, but I could be wrong.
 
