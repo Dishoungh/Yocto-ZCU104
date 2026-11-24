@@ -940,4 +940,72 @@ Unfortunately, I still haven't figured out how to have Yocto automatically gener
 9. `rm -v ./linux.bin`
 10. `mv -v ./{BOOT.BIN,boot.scr,image.its,image.itb,system.dtb,zynqmp_fsbl.elf} ../extracted-images/`
 
-**Note: I have not tested this yet, but I will give an update when I have a chance!**
+### Manually Packaging Image (Zynq-7000)
+
+**Update: I have not yet tested the images for Zynq MPSoC yet, but I was able to test on my Zynq-7000 board. I am happy to report that the image at least boots! I have not fully tested the image yet, but this is still a major breakthrough for me! I am going to document some of the slight changes I had to make for Zynq-7000 just in case if I need to do this again in the future.**
+
+Most of the method above applies for Zynq-7000 except these things:
+
+1. In `linux-xlnx_%.bbappend`, add this line: `DEPENDS += "u-boot-tools-native`
+	- Why? I don't know. For some reason, linux-xlnx cannot find `mkimage` for the zynq-7000 build. It kept giving me `mkimage command not found` errors. So, to get around this, I threw my system-installed `mkimage` binary at it and that seemed to work just fine.
+2. For `dts-mods.dtsi`, since it's a Digilent Arty-Z7 board, I of course had to make changes to the board model:
+```
+/ {
+    // Digilent Arty Z7-20
+    model = "Zynq Arty Z7 Development Board";
+    compatible = "digilent,zynq-artyz7", "xlnx,zynq-7000";
+};
+```
+3. For `image.its`, since the architecture is 32-bit ARM instead of 64-bit ARM and the kernel load/entry address is different, this is what I changed the ITS file to:
+```
+/dts-v1/;
+
+/ {
+	description = "Custom FIT Image Source File for EDF Demo";
+	#address-cells = <1>;
+	
+	images {
+		sys-kernel {
+			description = "Linux kernel";
+			data = /incbin/("linux.bin");
+			type = "kernel";
+			arch = "arm";
+			os = "linux";
+			compression = "none";
+			load = <0x00300000>;
+			entry = <0x00300000>;
+			
+			hash-1 {
+				algo = "sha256";
+			};
+		};
+		
+		sys-fdt {
+			description = "Flattened Device Tree Blob";
+			data = /incbin/("system.dtb");
+			type = "flat_dt";
+			arch = "arm";
+			compression = "none";
+			
+			hash-1 {
+				algo = "sha256";
+			};
+		};
+	};
+	
+	configurations {
+		default = "sys-conf";
+		sys-conf {
+			description = "System Configuration";
+			compatible = "digilent,zynq-artyz7", "xlnx,zynq-7000";
+			kernel = "sys-kernel";
+			fdt = "sys-fdt";
+			
+			hash-1 {
+				algo = "sha256";
+			};
+		};
+	};
+};
+
+```
