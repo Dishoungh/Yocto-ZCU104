@@ -539,7 +539,7 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 SRC_URI += "file://custom.boot.cmd"
 
 do_compile:append() {
-    mkimage -A arm -T script -C none -n "Custom U-Boot Script" -d "${UNPACKDIR}/custom.boot.cmd" boot.scr
+    mkimage -A arm64 -T script -C none -n "Custom U-Boot Script" -d "${UNPACKDIR}/custom.boot.cmd" boot.scr
 }
 ```
 
