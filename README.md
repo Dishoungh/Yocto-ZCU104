@@ -1009,3 +1009,5 @@ Most of the method above applies for Zynq-7000 except these things:
 };
 
 ```
+
+**Note: I do realize that this is not a real, long-term solution; however, I think this is acceptable for now until something is fixed. I still find it useful that I at least know how to do some of this process manually.**
