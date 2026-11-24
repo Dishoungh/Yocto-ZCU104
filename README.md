@@ -155,7 +155,7 @@ I have generated an XSA and derived the SDT ([System Device Tree](https://static
 To start with AMD's EDF, I need to use `repo` (this was installed in the [Installation section](#installation)) to grab the necessary components to build our image for ZCU104.
 
 - `$ cd ~/workspace/Yocto-ZCU104/Yocto`
-- `$ repo init -u https://github.com/Xilinx/yocto-manifests.git -b rel-v2026.1 -m default-edf.xml`
+- `$ repo init -u https://github.com/Xilinx/yocto-manifests.git -b rel-v2026.2 -m default-edf.xml`
 - `$ repo sync`
 
 With the `repo sync` command, we now should have everything for EDF. However, I'm going to remove repo's metadata and all of the layer's git metadata so our larger git project will add and push to my repo. **Yes, I know I'm not supposed to do this, but I don't care for this demo until I know of a better way to version control this project.**
