@@ -501,7 +501,7 @@ Last thing to edit, we'll edit the boot script that will eventually become the `
 ```
 # This is a boot script for U-Boot (only supported modes are SD and QSPI).
 # Generate boot.scr:
-# mkimage -c none -A arm -T script -d custom.boot.cmd boot.scr
+# mkimage -c none -A arm64 -T script -d custom.boot.cmd boot.scr
 
 fit_name=image.itb
 load_addr=0x10000000
