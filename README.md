@@ -43,12 +43,12 @@ AMD has made some changes to their [licensing model](https://www.amd.com/en/prod
     - Vivado is installed under: */opt/AMD/2026.2/Vivado*
 
 - Yocto Artifacts (Downloads + Sstate Cache)
-    - Go to [Embedded Software](https://www.amd.com/en/support/downloads/adaptive-socs-and-fpgas/embedded-software.html)
+    - Go to [EDF Yocto Downloads](https://edf.docs.amd.com/en/v26.11/downloads.html#yocto-downloads-and-sstate-cache)
         - ![Yocto Artifacts](./IMG/Yocto_Artifacts.png)
         - **Warning: AMD Account Required!!!**
-    - `$ mkdir -p /opt/AMD/2026.2/Yocto/sstate-cache`
-    - `$ tar -xpvf ~/Downloads/downloads_2026.2_11071215.tar.gz -C /opt/AMD/2026.2/Yocto`
-    - `$ tar -xpvf ~/Downloads/sstate_aarch64_2026.2_11071215.tar.gz -C /opt/AMD/2026.2/Yocto/sstate-cache`
+    - `$ mkdir -p /opt/AMD/2026.2/Yocto`
+    - `$ tar -xpvf ~/Downloads/downloads_edf_26.11_11071327.tar.gz -C /opt/AMD/2026.2/Yocto/`
+    - `$ tar -xpvf ~/Downloads/sstate-cache_edf_26.11_11071327.tar.gz -C /opt/AMD/2026.2/Yocto/`
     
 - License Acquisition
     - Go to [AMD's Vivado License Page](https://account.amd.com/en/forms/license/license-form.html)
@@ -68,7 +68,7 @@ AMD has made some changes to their [licensing model](https://www.amd.com/en/prod
     - Select the .lic file you just saved and your license should now be applied
         - **Warning: Free licenses seem to only last for a year, so you must renew your license anually to keep using the free version of Vivado**
 
-- Tar Upgrade
+- Tar Upgrade (RHEL 9 Only)
     - Read [this archived e-mail](https://www.mail-archive.com/openembedded-core@lists.openembedded.org/msg214999.html) for context of why we need to do this.
     - **Warning: As of November 17th, 2026, RHEL has not updated their mirrors to host v1.35 of the `tar` package yet. Thus, we will need to manually build v1.35 from source**
     - Grab tar v1.35 from one of the [GNU mirrors](https://ftp.wayne.edu/gnu/tar/). GNU has quite a bit of mirrors so if a tarball is not downloading or fetching quick enough, just pick another one.
@@ -85,6 +85,7 @@ AMD has made some changes to their [licensing model](https://www.amd.com/en/prod
         - `$ sudo make uninstall`
         - `$ sudo rm -v /usr/bin/tar`
         - `$ sudo dnf install tar`
+    - **Note: This step isn't necessary for RHEL 10 since it has tar v1.35+**
 
 - Install AMD's buildtools for `gen-machine-conf`
     - `$ cd ~/Downloads`
@@ -249,13 +250,10 @@ BBLAYERS ?= " \
 # Source and Sstate mirror settings
 AMD-EDF_VERSION ??= "26.11"
 
-PREMIRRORS:prepend = "\
-http://.*/.* file:///opt/AMD/2026.2/Yocto/downloads \
-https://.*/.* file:///opt/AMD/2026.2/Yocto/downloads \
-http://.*/.* http://downloads.yoctoproject.org/mirror/sources/ \
-https://.*/.* https://downloads.yoctoproject.org/mirror/sources/"
-
-SSTATE_MIRRORS = "file://.* file:///opt/AMD/2026.2/Yocto/sstate-cache/PATH"
+BB_NO_NETWORK = "1"
+INHERIT += "own-mirrors"
+SOURCE_MIRROR_URL = "file:///opt/Xilinx/2026.2/Yocto/downloads"
+SSTATE_MIRRORS = "file://.* file:///opt/Xilinx/2026.2/Yocto/sstate-cache/PATH"
 ```
 
 6. Edit edf-init-build-env
