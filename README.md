@@ -87,7 +87,7 @@ AMD has made some changes to their [licensing model](https://www.amd.com/en/prod
         - `$ sudo dnf install tar`
     - **Note: This step isn't necessary for RHEL 10 since it has tar v1.35+**
 
-- Install AMD's buildtools for `gen-machine-conf`
+- Install the build tools for EDF
     - `$ cd ~/Downloads`
     - `$ wget https://edf.amd.com/sswreleases/rel-v2026.2/sdkupdate/buildtools`
     - `$ ./buildtools -d /opt/AMD/2026.2/Yocto`
