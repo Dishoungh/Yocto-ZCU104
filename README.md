@@ -876,6 +876,8 @@ Unfortunately, I still haven't figured out how to have Yocto automatically gener
 
 1. `vim ./image.its`
     - **Warning: Make sure the compatible property for the system configuration matches what you put for your device tree**
+    - **Warning: Make sure the load and entry addresses match with the `UBOOT_LOADADDRESS` and `UBOOT_ENTRYPOINT` variables**
+    	- To see what these variables are set to, use this command: `bitbake -e virtual/bootloader | grep -E '^(UBOOT_LOADADDRESS|UBOOT_ENTRYPOINT)='`
 ```
 /dts-v1/;
 
